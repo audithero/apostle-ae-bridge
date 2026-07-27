@@ -45,13 +45,13 @@ Captured 2026-07-27 by applying `PEHC` to a clean 3D null (`HC_RIG` in probe com
 | Source camera (layer ref) | `PEHC-0042` | Source Camera |
 | Source camera int | `PEHC-0059` | Source Camera Int |
 | Frame edges | `PEHC-0043..0046` | Left / Top / Right / Bottom |
-| **Setup state flag** | `PEHC-0047` | Initialised |
+| Initialised (NOT a Setup flag — stays 0 after Setup) | `PEHC-0047` | Initialised |
 
 Unnamed indices (`PEHC-0007/0008/0013/0018/0027/0030/0035/0037..0041/0053..0058`) are separators/hidden params — do not touch. `PEHC-0054/0056` carry the unregistered-license warning text.
 
 ## Usage rules (from the build brief, Section 8)
 
 1. Apply `PEHC` to a clean null with NO transform keyframes.
-2. Human clicks **Setup** once (compiled-effect button, unscriptable). `PEHC-0047` (Initialised) should read non-zero afterwards — use it as the programmatic "has Setup been clicked" check before keyframing.
+2. Human clicks **Setup** once (compiled-effect button, unscriptable). Verified post-Setup behavior (AE 26.2.1, HandyCam on this machine): the null is **renamed** to `HandyCam_Controller_1`, a `HandyCam_Camera_1` camera layer is created with expressions on Anchor Point / Position / Z Rotation (all evaluate clean), and `PEHC-0059` (Source Camera Int) is set to the camera's layer ID. **Programmatic "has Setup been clicked" check: `PEHC-0059` ≠ 0.** (`PEHC-0047` "Initialised" stays 0 — do not use it.) Scripts must not assume the null keeps its pre-Setup name.
 3. Keyframe ONLY effect properties (Position Offset / Local Transform / Orbit above). Null raw Transform = static rig relocation only.
 4. Never keyframe the null's Transform.Position — double-transforms the rig.
