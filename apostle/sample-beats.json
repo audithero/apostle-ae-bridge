@@ -1,0 +1,92 @@
+{
+  "meta": {
+    "title": "CommBank Yello V3 Earning Deep Dive (demo)",
+    "fps": 25,
+    "resolution": [1920, 1080],
+    "wpm": 150,
+    "layout": "corridor"
+  },
+  "brand": {
+    "fontHeadingPS": "HelveticaNeue-Bold",
+    "fontBodyPS": "HelveticaNeue",
+    "headingSize": 84,
+    "bodySize": 42,
+    "safeMarginPct": 10,
+    "colors": {
+      "primary": "#FFCC00",
+      "secondary": "#1E1E1E",
+      "background": "#FFFFFF",
+      "text": "#111111"
+    },
+    "logo": null
+  },
+  "beats": [
+    {
+      "id": 1,
+      "vo": "Eligible customers can earn CommBank Yello points in several different ways.",
+      "voSpokenWords": 12,
+      "superText": "Earn Yello points, several ways",
+      "visual": "Title card",
+      "stylePreset": "titleCard",
+      "durationSec": null,
+      "transitIn": "dollyPush"
+    },
+    {
+      "id": 2,
+      "vo": "They can earn via banking including through their home loan, savings account, and insurance.",
+      "voSpokenWords": 15,
+      "superText": "Earn through your banking",
+      "visual": "Icons: home loan, savings, insurance",
+      "stylePreset": "listBuild",
+      "durationSec": null,
+      "transitIn": "dollyPush"
+    },
+    {
+      "id": 3,
+      "vo": "They can earn points shopping with brands they love through the CommBank Yello hub.",
+      "voSpokenWords": 14,
+      "superText": "Shop brands you love",
+      "visual": "Yello hub UI",
+      "stylePreset": "uiWalkthrough",
+      "uiStates": 2,
+      "durationSec": null,
+      "transitIn": "whipOrbit"
+    },
+    {
+      "id": 4,
+      "vo": "And they can earn points by hitting banking milestones through eligible CommBank products.",
+      "voSpokenWords": 13,
+      "superText": "Hit banking milestones",
+      "visual": "Milestone tracker",
+      "stylePreset": "titleCard",
+      "durationSec": null,
+      "transitIn": "dollyPush"
+    },
+    {
+      "id": 5,
+      "vo": "Eligible customers will also be able to earn CommBank Yello points on their credit card purchases.",
+      "voSpokenWords": 16,
+      "superText": "Earn on credit card purchases",
+      "visual": "Card tap moment",
+      "stylePreset": "titleCard",
+      "durationSec": null,
+      "transitIn": "dollyPush"
+    },
+    {
+      "id": 6,
+      "vo": "And by activating offers for points boosts in the CommBank app.",
+      "voSpokenWords": 11,
+      "superText": "Activate offers for points boosts",
+      "visual": "App offers screen",
+      "stylePreset": "uiWalkthrough",
+      "uiStates": 2,
+      "durationSec": null,
+      "transitIn": "lateralTruck"
+    }
+  ],
+  "endcard": {
+    "superText": "Search CommBank Yello on One.CBA",
+    "url": "commbank.com.au/commbankyello",
+    "holdSec": 3.0
+  }
+}
