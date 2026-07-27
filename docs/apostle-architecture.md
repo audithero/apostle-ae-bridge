@@ -43,7 +43,7 @@ Trade-off accepted: with collapse off, scenes rasterize at comp resolution; soft
 
 MCP tool wiring: upstream `run-script`/`execute-script` + the loader snippet (CLAUDE.md) cover all APOSTLE entry points; no new `src/` tools were needed. `see-frame` remains available for quick in-AE downscaled captures; `renderKeyFrames` + `scripts/downscale-frame.sh` is the primary loop path.
 
-## Camera rig decision (Phase 3 — pending)
+## Camera rig decision (Phase 3 A/B, 2026-07-28)
 
 Two rigs behind one interface in `apostle/apostle.jsx`:
 
@@ -52,7 +52,22 @@ Two rigs behind one interface in `apostle/apostle.jsx`:
 
 Pre-agreed threshold: if the HandyCam path needs more than one human touch per comp or hits the duplicate-rig bug ("Couldn't find HandyCam Camera"), the expression rig becomes the default and HandyCam remains a manual-polish option only.
 
-**Decision: TBD after Phase 3 A/B.**
+**Decision: expression rig is the default. HandyCam is explicit opt-in for static-position shake/polish only; `meta.rig = "auto"` resolves to expression.**
+
+A/B protocol: identical sample-beats (7-beat CommBank corridor) through both rigs. Expression arm = APOSTLE_P1/P2 builds — all checks green, frames verified, zero manual steps. HandyCam arm = APOSTLE_HC build — Setup click done, effect keyframes laid correctly (13 keys on Position Offset, zero transform keys on the null), expressions clean, margins green. Results that decided it:
+
+1. **HandyCam cannot do station transport.** `checkCameraDistance` reported zGap = 0 at stations 2–7 (camera exactly ON each scene plane); rendered frames corroborated: blank at the station-2 dwell, off-by-one scene at every later station. Sampling the Setup-generated (obfuscated) camera expressions showed why: camera position tracks Position Offset, but the look-at target is baked at Setup as controller + [0, 0, 2666.7] and stays pinned near the rig home — so a corridor-scale offset translates the camera onto the target plane facing backward. Position Offset is shake-scale by design. Small offsets (station 1, ≤ tens of px) frame correctly.
+2. The only HandyCam-native big-move path is keyframing the controller's transform — exactly the double-transform bug that broke the old panel. The expression chain is obfuscated compiled-plugin output; not scriptably fixable with confidence.
+3. **Human-touch count: 2 for one comp.** The Setup click is per-build, and an AE restart that predates a save forces a rebuild + re-click (this happened in the A/B itself).
+4. Caveats recorded: HandyCam is unregistered on this machine ("some features are disabled" — conceivably related, unverifiable here); a licensed install might behave differently, but the touch-count and double-transform findings stand regardless.
+
+The deterministic camera check and the rendered frames agreed exactly (zGap 0 ⇔ blank/off-by-one frames) — the closed loop diagnosed a third-party plugin's internals without opening a UI.
+
+## Phase 2 results (2026-07-28)
+
+`.claude/skills/verify-comp/SKILL.md` encodes the loop (check order: expression errors → safe margins → camera distance → serialize → 4–8 downscaled frames; 8-pass cap; same-defect-twice = blocked). Acceptance: three deliberate defects injected into a fresh APOSTLE_P2 build (super stripped of its autoFit expression and pushed 542 px past the left margin; opacity expression referencing a missing layer; rig station-4 key shifted +500 px x). Pass 1 detected all three exactly; fixes (remove orphan expression / mirror healthy sibling's autoFit + x / snap rig key to scene position) went green on pass 2; four rendered frames confirmed visually. **2 of 8 passes, zero human input.**
+
+Transport note: the run used `scripts/ae-run.sh`, an AppleScript-DoScript fallback added when the bridge panel died mid-session — same contract as `bridge-exec.sh executeScript --file` (top-level `return`, JSON result), works whenever AE itself is responsive, no panel needed.
 
 ## Phase 0 gate results (2026-07-27, AE 26.2.1, bridge v1.10.0)
 

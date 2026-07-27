@@ -49,9 +49,11 @@ Every `run-script`/`executeScript` call that uses APOSTLE functions must start w
 if (typeof $.global.APOSTLE === "undefined") { $.evalFile(new File("<repo>/apostle/apostle.jsx")); }
 ```
 
-Reload explicitly (unconditional `$.evalFile`) after editing apostle.jsx. `scripts/bridge-exec.sh <command> [args-json]` (or `executeScript --file <f.jsx>`) drives the file bridge from the shell when MCP tools aren't loaded.
+Reload explicitly (unconditional `$.evalFile`) after editing apostle.jsx. `scripts/bridge-exec.sh <command> [args-json]` (or `executeScript --file <f.jsx>`) drives the file bridge from the shell when MCP tools aren't loaded. If the bridge panel is dead but AE is responsive, `scripts/ae-run.sh <f.jsx> [timeout]` runs the same script contract via AppleScript DoScript — no panel needed.
 
 ## HandyCam order of operations (if the HandyCam rig path is used)
+
+**Phase 3 verdict: HandyCam cannot do station transport.** Its Position Offset is shake-scale local offset — the Setup-baked look-at target stays pinned near the rig home, so corridor-scale offsets put the camera ON the target plane facing backward (verified by check + frames). The expression rig is the default; `meta.rig = "auto"` resolves to expression; use HandyCam only as explicit opt-in shake/polish on a static rig position.
 
 1. Script applies HandyCam effect to a **clean null with NO transform keyframes**.
 2. **Human clicks Setup once** (compiled-effect button; unscriptable — this is the one manual step; a marker on the null says so).

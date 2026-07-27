@@ -480,7 +480,9 @@ var APOSTLE = (function () {
       return null;
     }
     var m = new MarkerValue("MANUAL STEP: click HandyCam SETUP on this layer (once). The null gets renamed by Setup; that is expected. Do NOT add transform keyframes to this null.");
-    rig.property("Marker").setValueAtTime(0, m);
+    // at 0.2s, not 0: the Station 1 marker lands at t=0 and a same-time
+    // setValueAtTime would silently replace this instruction marker
+    rig.property("Marker").setValueAtTime(0.2, m);
     report.rigPath = "HandyCam (effect applied; click Setup once; PEHC-0059 != 0 confirms)";
     return { rig: rig, fx: fx, mode: "handycam" };
   }
@@ -603,7 +605,13 @@ var APOSTLE = (function () {
       master.motionBlur = true;
 
       var rigMode = data.meta.rig || "expression";
-      if (rigMode === "auto") rigMode = detectHandyCam(master) ? "handycam" : "expression";
+      // Phase 3 A/B verdict: "auto" resolves to the expression rig even when
+      // HandyCam is installed. HandyCam's Position Offset is shake-scale local
+      // offset — the Setup-baked look-at target stays pinned near the rig home,
+      // so corridor-scale offsets put the camera ON the target plane facing
+      // backward. HandyCam remains explicit opt-in ("handycam") for
+      // static-position shake/polish only.
+      if (rigMode === "auto") rigMode = "expression";
 
       var ctrl = buildControl(master, data, report);
 

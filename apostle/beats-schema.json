@@ -32,7 +32,7 @@
           "type": "string",
           "enum": ["expression", "handycam", "auto"],
           "default": "expression",
-          "description": "Camera rig. expression = autonomous two-node rig, zero manual steps. handycam = HandyCam effect rig, requires one human Setup click. auto = handycam if the plugin is installed, else expression."
+          "description": "Camera rig. expression = autonomous two-node rig, zero manual steps (the default and the Phase 3 A/B winner). handycam = HandyCam effect rig — requires one human Setup click and CANNOT do station transport (Position Offset is shake-scale; the Setup-baked look-at stays pinned); explicit opt-in for static-position polish only. auto = resolves to expression."
         }
       }
     },
