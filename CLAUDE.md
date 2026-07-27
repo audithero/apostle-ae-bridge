@@ -33,6 +33,24 @@ Claude Code warns at 10k tokens of tool output and caps at 25k (`MAX_MCP_OUTPUT_
 
 No `const`/`let`, no arrow functions, no template literals, no `forEach`/`map`/`filter`, no `Object.keys`, no spread, no `class`, no `async`. `var` and classic `for` loops only. Every entry point wrapped in `app.beginUndoGroup`/`app.endUndoGroup` — one undo group per command.
 
+Verified AE/ExtendScript traps (each one cost a debugging pass — do not reintroduce):
+
+1. **No chained ternaries.** ExtendScript parses `a ? b : c ? d : e` left-associatively, silently returning the wrong branch. Use if/else.
+2. **Pin `layer.startTime = 0` immediately after creating any layer via script.** AE creates layers at the comp's current playhead time; a nonzero startTime shifts every subsequent keyframe in composite space while `keyTime`/`valueAtTime` stay self-consistent in layer time — DOM checks pass, renders are wrong.
+3. **Never set `collapseTransformation` on 3D scene precomps.** Collapsed 3D precomp groups composite in layer-stack order instead of z-sorting under the camera — the top scene paints over every station.
+4. The bridge's `executeScript` wraps code in a function: use `return`, and `$.evalFile` results need explicit `$.global.X = X` to persist.
+5. `app.effects` is 0-based (unlike the 1-based DOM collections).
+
+## Loading the Apostle library
+
+Every `run-script`/`executeScript` call that uses APOSTLE functions must start with:
+
+```javascript
+if (typeof $.global.APOSTLE === "undefined") { $.evalFile(new File("<repo>/apostle/apostle.jsx")); }
+```
+
+Reload explicitly (unconditional `$.evalFile`) after editing apostle.jsx. `scripts/bridge-exec.sh <command> [args-json]` (or `executeScript --file <f.jsx>`) drives the file bridge from the shell when MCP tools aren't loaded.
+
 ## HandyCam order of operations (if the HandyCam rig path is used)
 
 1. Script applies HandyCam effect to a **clean null with NO transform keyframes**.

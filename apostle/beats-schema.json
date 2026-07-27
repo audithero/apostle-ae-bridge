@@ -1,0 +1,104 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "apostle-beats-schema",
+  "title": "Apostle beats JSON contract",
+  "description": "Single source of truth for what buildFromBeats builds. See sample-beats.json for a working example. Transits eat into the following beat's duration; they never extend total runtime. Any text-bearing beat must rest at least 1.8s after its transit completes — the builder extends the beat and logs a warning when violated.",
+  "type": "object",
+  "required": ["meta", "brand", "beats"],
+  "properties": {
+    "meta": {
+      "type": "object",
+      "properties": {
+        "title": { "type": "string" },
+        "fps": { "type": "number", "default": 25 },
+        "resolution": {
+          "type": "array", "items": { "type": "number" },
+          "minItems": 2, "maxItems": 2, "default": [1920, 1080]
+        },
+        "wpm": {
+          "type": "number", "default": 150,
+          "description": "Words per minute for VO-paced timing. Spoken word count with URLs and prices expanded."
+        },
+        "layout": {
+          "type": "string",
+          "enum": ["corridor", "gallery", "carousel", "stack"],
+          "default": "corridor"
+        },
+        "masterName": {
+          "type": "string", "default": "MASTER",
+          "description": "Name for the master comp. Scene precomps are prefixed with it. Build fails if a comp with this name already exists."
+        },
+        "rig": {
+          "type": "string",
+          "enum": ["expression", "handycam", "auto"],
+          "default": "expression",
+          "description": "Camera rig. expression = autonomous two-node rig, zero manual steps. handycam = HandyCam effect rig, requires one human Setup click. auto = handycam if the plugin is installed, else expression."
+        }
+      }
+    },
+    "brand": {
+      "type": "object",
+      "properties": {
+        "fontHeadingPS": { "type": "string", "default": "HelveticaNeue-Bold", "description": "PostScript name" },
+        "fontBodyPS": { "type": "string", "default": "HelveticaNeue" },
+        "headingSize": { "type": "number", "default": 84 },
+        "bodySize": { "type": "number", "default": 42 },
+        "safeMarginPct": { "type": "number", "default": 10 },
+        "colors": {
+          "type": "object",
+          "properties": {
+            "primary": { "type": "string" },
+            "secondary": { "type": "string" },
+            "background": { "type": "string" },
+            "text": { "type": "string" }
+          }
+        },
+        "logo": { "type": ["string", "null"], "description": "Path to logo footage, or null" }
+      }
+    },
+    "beats": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["stylePreset"],
+        "properties": {
+          "id": { "type": "number" },
+          "vo": { "type": "string", "description": "Voiceover line for this beat" },
+          "voSpokenWords": {
+            "type": "number",
+            "description": "Spoken word count (URLs and prices expanded). Preferred over counting vo words."
+          },
+          "superText": { "type": "string", "description": "On-screen super" },
+          "visual": { "type": "string", "description": "Intent note for the visual; not built literally" },
+          "stylePreset": {
+            "type": "string",
+            "enum": ["titleCard", "listBuild", "uiWalkthrough", "endcard"]
+          },
+          "uiStates": {
+            "type": "number", "default": 1,
+            "description": "uiWalkthrough only: number of UI states; adds 1.2s dwell per state"
+          },
+          "durationSec": {
+            "type": ["number", "null"],
+            "description": "null = compute from VO at meta.wpm. A number is fixed; never overridden."
+          },
+          "transitIn": {
+            "type": "string",
+            "enum": ["dollyPush", "lateralTruck", "whipOrbit", "crane", "dollyZoom", "none"],
+            "default": "dollyPush"
+          }
+        }
+      }
+    },
+    "endcard": {
+      "type": ["object", "null"],
+      "description": "Folded into beats as a final endcard beat at build time",
+      "properties": {
+        "superText": { "type": "string" },
+        "url": { "type": "string" },
+        "holdSec": { "type": "number", "default": 3.0 }
+      }
+    }
+  }
+}
