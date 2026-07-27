@@ -40,8 +40,8 @@ Pre-agreed threshold: if the HandyCam path needs more than one human touch per c
 
 **Decision: TBD after Phase 3 A/B.**
 
-## Phase 0 gate results
+## Phase 0 gate results (2026-07-27, AE 26.2.1, bridge v1.10.0)
 
-- Gate A (see-frame inline image, <25k tokens at 800px): **pending**
-- Gate B (HandyCam matchNames captured to `apostle/matchnames-handycam.md`): **pending**
-- Bridge round-trip latency: **pending** (expect 1–3 s)
+- **Gate A — PASS (disk-file path)**: `seeFrame` bridge command rendered MASTER at 800×450 (21 KB PNG, in-AE temp-comp downscale) in 0.45 s; Claude Code read it from disk as a native inline image at negligible token cost. The MCP-native `see-frame` tool path (ImageContent over stdio) still needs verification in a session where the AfterEffectsMCP tools are loaded (server was registered mid-session); the disk-file path is the brief's approved fallback and is fully working.
+- **Gate B — PASS**: HandyCam (`PEHC`) property tree captured to `apostle/matchnames-handycam.md`. Orbit, Position Offset, Local Transform, Lens, and Wiggle matchNames all identified. Bonus: `PEHC-0047` "Initialised" is a scriptable Setup-was-clicked check. ⚠️ HandyCam is **unregistered** on this machine ("some features are disabled") — weigh in Phase 3.
+- **Bridge round-trip latency**: 0.25 s (ping), 0.45 s (frame render) — far under the expected 1–3 s. Panel poll interval is fast enough for tight loops.
