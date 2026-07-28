@@ -9,6 +9,15 @@ Closed-loop system: Claude Code drives a live After Effects instance on macOS vi
 - **Verify motion, not just stills**: after any animation-affecting change, render a short strip across at least one transit and one entrance (still frames alone missed every v2.1 motion bug — empty transits, ghost arrivals).
 - The master comp has a full-frame 2D `MASTER BG` solid (color-linked to CONTROL). Do not delete it — without it, transits cross white void with visible plane edges.
 
+## Brief pipeline (v2.4.0, Phase 5)
+
+- Scripts live in `briefs/<client>/`; brand kits in `brands/<kit>.json`; parsed beats in `briefs/<client>/beats/`. Roadmap: `docs/phase5-8-roadmap.md`.
+- Parse: `node scripts/parse-brief.cjs <script.md> --brand brands/<kit>.json --brief-id X --master-name NAME [--prior prev.json --script-version N]`. Claude is the primary parser for messy scripts; this is the deterministic path and cross-check. `--prior` inherits stable beatIds across revisions.
+- Sync a revised script: parse with `--prior`, then `node scripts/diff-beats.cjs old.json new.json -o plan.json --canonical new.json` (the `--canonical` write-back is required — fuzzy-matched beatIds must land in the beats file or retime can't find the scene comps), then apply via library ops: `updateBeatText(master, beatId, {superText,url})` per text change + one `retimeBeats(master, beatsJSON)` when `needsRetime`.
+- Surgical-edit invariant: scene comps of beats not named in the plan stay byte-identical (`hashCompState`). Scene comp contents are never rebuilt by sync — that's where human polish lives. Structural ops (insert/remove beat) are not built yet; a structural diff means rebuild for now.
+- Beats are found by the `apostle beatId=<id>` comment tag on scene precomps, never by name or index.
+- Verification of any build/sync must include rendered pixels before reporting success (Tim, 2026-07-28): sampled frames today, aerender in Phase 8.
+
 ## Commands
 
 - Build server: `npm run build` (output: `build/index.js`)

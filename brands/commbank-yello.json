@@ -1,0 +1,26 @@
+{
+  "kitId": "commbank-yello",
+  "client": "Commonwealth Bank — CommBank Yello",
+  "fontHeadingPS": "HelveticaNeue-Bold",
+  "fontBodyPS": "HelveticaNeue",
+  "headingSize": 84,
+  "bodySize": 42,
+  "headingTracking": 10,
+  "bodyTracking": 10,
+  "safeMarginPct": 10,
+  "colors": {
+    "primary": "#FFCC00",
+    "secondary": "#1E1E1E",
+    "background": "#FFFFFF",
+    "text": "#111111"
+  },
+  "logo": null,
+  "defaults": {
+    "wpm": 150,
+    "fps": 25,
+    "resolution": [1920, 1080],
+    "layout": "gallery",
+    "easeProfile": "corporate-smooth",
+    "handycam": "subtle"
+  }
+}

@@ -19,7 +19,7 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.3.0";
+  var LIB_VERSION = "2.4.0";
 
   // Captured at load time; locates the repo for crash-recovery run snapshots
   var LIB_FILE = null;
@@ -437,6 +437,12 @@ var APOSTLE = (function () {
     var h = data.meta.resolution[1];
     var dur = beat._dur + 6; // buffer so the layer never runs out under the camera
     var c = project.items.addComp(masterName + " SC" + pad2(index + 1) + " " + shortName(beat), w, h, 1, dur, fps);
+    // Schema v2: tag the precomp with its stable beat identity so surgical
+    // edit ops (updateBeatText / retimeBeats) can find beats without relying
+    // on comp names or indices. Comment format: apostle beatId=<id> section=<id>
+    if (beat.beatId) {
+      c.comment = "apostle beatId=" + beat.beatId + (beat.sectionId ? " section=" + beat.sectionId : "");
+    }
 
     buildBGSolid(c, data, masterName);
 
@@ -811,6 +817,8 @@ var APOSTLE = (function () {
       for (i = 0; i < beats.length; i++) {
         report.beats.push({
           index: i + 1,
+          beatId: beats[i].beatId || null,
+          sectionId: beats[i].sectionId || null,
           name: shortName(beats[i]),
           arrive: Math.round(beats[i]._arrive * 100) / 100,
           duration: Math.round(beats[i]._dur * 100) / 100,
@@ -1447,9 +1455,157 @@ var APOSTLE = (function () {
   }
 
   // ---------------------------------------------------------------
+  // SURGICAL EDIT OPS (schema v2)
+  // Script-sync edits that touch only the beats they name. Scene comp
+  // contents (where human polish lives) are never rebuilt; retime re-lays
+  // the master timeline (camera keys, scene layer start times) around
+  // untouched scene comps. Beats are found via the comment tag written by
+  // buildBeatComp ("apostle beatId=<id> ...") — never by name or index.
+  // ---------------------------------------------------------------
+
+  function commentHasBeatId(comment, beatId) {
+    var toks = String(comment || "").split(" ");
+    for (var i = 0; i < toks.length; i++) {
+      if (toks[i] === "beatId=" + beatId) return true;
+    }
+    return false;
+  }
+
+  function findBeatComp(masterName, beatId) {
+    for (var i = 1; i <= app.project.numItems; i++) {
+      var it = app.project.item(i);
+      if (!(it instanceof CompItem)) continue;
+      if (it.name.indexOf(masterName + " SC") !== 0) continue;
+      if (commentHasBeatId(it.comment, beatId)) return it;
+    }
+    return null;
+  }
+
+  function setTextLayerString(comp, layerName, str) {
+    var l = findLayer(comp, layerName);
+    if (!l) return false;
+    var prop = l.property("ADBE Text Properties").property("ADBE Text Document");
+    var doc = prop.value;
+    doc.text = str;
+    prop.setValue(doc);
+    return true;
+  }
+
+  // opts: {superText, url, vo}. vo alone changes no layers (timing only —
+  // run retimeBeats with the updated beats JSON afterwards); it is accepted
+  // here so a diff plan can be applied uniformly.
+  function updateBeatText(masterName, beatId, opts) {
+    var sc = findBeatComp(masterName, beatId);
+    if (!sc) return { status: "error", error: "No scene comp tagged beatId=" + beatId + " under " + masterName };
+    if (!opts) opts = {};
+    var report = { status: "success", beatId: beatId, comp: sc.name, updated: [], warnings: [] };
+    app.beginUndoGroup("Apostle updateBeatText " + beatId);
+    try {
+      if (opts.superText !== undefined && opts.superText !== null) {
+        var target = findLayer(sc, "Endcard Headline") ? "Endcard Headline" : "Super";
+        if (setTextLayerString(sc, target, opts.superText)) report.updated.push(target);
+        else report.warnings.push("Text layer not found: " + target);
+      }
+      if (opts.url !== undefined && opts.url !== null) {
+        if (setTextLayerString(sc, "URL", opts.url)) report.updated.push("URL");
+        else report.warnings.push("Text layer not found: URL");
+      }
+      if (opts.vo !== undefined) report.warnings.push("vo change affects timing only — run retimeBeats with the updated beats JSON.");
+    } catch (e) {
+      report.status = "error";
+      report.error = e.toString();
+    } finally {
+      app.endUndoGroup();
+    }
+    return report;
+  }
+
+  function removeAllKeys(prop) {
+    while (prop.numKeys > 0) prop.removeKey(1);
+  }
+
+  // Recompute timing from an updated beats JSON and re-lay the master
+  // timeline: camera transit keys, station markers, scene layer start
+  // times and positions, comp durations. Scene comp contents untouched.
+  // Expression rig only — HandyCam static rigs have no transport keys.
+  function retimeBeats(masterName, beatsJSON) {
+    var data = parseJSONSafe(beatsJSON);
+    if (!data || !data.beats || data.beats.length === 0) return { status: "error", error: "No beats in JSON." };
+    var master = findComp(masterName);
+    if (!master) return { status: "error", error: "Comp not found: " + masterName };
+    var rig = findLayer(master, "APOSTLE RIG");
+    var cam = findLayer(master, "APOSTLE CAM");
+    if (!rig || !cam) return { status: "error", error: "Expression rig not found on " + masterName + " (retime supports the expression rig only)." };
+    if (!data.meta) data.meta = {};
+    if (!data.meta.resolution) data.meta.resolution = [master.width, master.height];
+    var report = { status: "success", warnings: [], totalDuration: 0, beats: [] };
+    computeTiming(data, report);
+    var beats = data.beats;
+    var stations = buildStations(data.meta.layout || "corridor", beats.length, master.width, master.height);
+
+    app.beginUndoGroup("Apostle retimeBeats");
+    try {
+      var newDur = report.totalDuration;
+      if (newDur > master.duration) master.duration = newDur;
+
+      removeAllKeys(rig.property("ADBE Transform Group").property("ADBE Position"));
+      removeAllKeys(rig.property("ADBE Transform Group").property("ADBE Rotate Y"));
+      try { removeAllKeys(cam.property("ADBE Camera Options Group").property("ADBE Camera Zoom")); } catch (eZ) {}
+      try { removeAllKeys(rig.property("Marker")); } catch (eM) {}
+      keyframeTransitExpression({ rig: rig, cam: cam, mode: "expression" }, stations, beats);
+
+      for (var i = 0; i < beats.length; i++) {
+        var b = beats[i];
+        if (!b.beatId) { report.warnings.push("Beat " + (i + 1) + " has no beatId; skipped."); continue; }
+        var sc = findBeatComp(masterName, b.beatId);
+        if (!sc) { report.warnings.push("No scene comp for beatId=" + b.beatId + " — structural change? insert/remove ops are not built yet."); continue; }
+        if (sc.duration < b._dur + 6) sc.duration = b._dur + 6;
+        var lay = null;
+        for (var L = 1; L <= master.numLayers; L++) {
+          if (master.layer(L).source === sc) { lay = master.layer(L); break; }
+        }
+        if (!lay) { report.warnings.push("Scene comp " + sc.name + " has no layer in master."); continue; }
+        lay.property("ADBE Transform Group").property("ADBE Position").setValue(stations[i].pos);
+        lay.startTime = Math.max(0, b._arrive - 0.45);
+        try { lay.outPoint = Math.min(newDur, lay.startTime + sc.duration); } catch (eO) {}
+        report.beats.push({ index: i + 1, beatId: b.beatId, arrive: Math.round(b._arrive * 100) / 100, duration: Math.round(b._dur * 100) / 100 });
+      }
+
+      // full-duration layers (CONTROL, BG, rig) follow the new length where
+      // their solid sources allow; warn when a source is too short to extend
+      for (var K = 1; K <= master.numLayers; K++) {
+        var ml = master.layer(K);
+        if (ml.source instanceof CompItem) continue;
+        try { if (ml.outPoint < newDur) ml.outPoint = newDur; } catch (eE) {
+          report.warnings.push("Layer '" + ml.name + "' could not extend to " + newDur.toFixed(1) + "s (solid source length).");
+        }
+      }
+    } catch (e) {
+      report.status = "error";
+      report.error = e.toString();
+    } finally {
+      app.endUndoGroup();
+    }
+    return report;
+  }
+
+  // djb2 over a comp's serialized state — cheap fingerprint for the
+  // "untouched beats stay byte-identical" invariant checks
+  function hashCompState(compName) {
+    var s = serializeCompState(compName);
+    var h = 5381;
+    for (var i = 0; i < s.length; i++) h = ((h * 33) + s.charCodeAt(i)) & 0xffffffff;
+    return { comp: compName, length: s.length, hash: (h >>> 0).toString(16) };
+  }
+
+  // ---------------------------------------------------------------
 
   return {
     version: LIB_VERSION,
+    findBeatComp: findBeatComp,
+    updateBeatText: updateBeatText,
+    retimeBeats: retimeBeats,
+    hashCompState: hashCompState,
     findMasterComps: findMasterComps,
     listFonts: listFonts,
     readTypography: readTypography,

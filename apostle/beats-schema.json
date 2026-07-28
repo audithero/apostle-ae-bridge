@@ -9,6 +9,10 @@
     "meta": {
       "type": "object",
       "properties": {
+        "schemaVersion": { "type": "number", "default": 1, "description": "2 = brief-pipeline schema: stable beatIds, sections, per-beat motion block, brand kit provenance. All v2 fields are optional additions; v1 files remain valid." },
+        "briefId": { "type": "string", "description": "v2: stable identifier for the client brief this build came from (e.g. commbank-yello-video1)" },
+        "scriptVersion": { "type": "number", "description": "v2: increments each time the client revises the script; diffBeats compares consecutive versions" },
+        "sourceScriptPath": { "type": "string", "description": "v2: repo-relative path of the raw script this was parsed from" },
         "title": { "type": "string" },
         "fps": { "type": "number", "default": 25 },
         "resolution": {
@@ -36,9 +40,22 @@
         }
       }
     },
+    "sections": {
+      "type": "array",
+      "description": "v2: the script's chapters (numbered headers like '1. Earning...'). Beats reference sections via sectionId. Sections drive pacing review and the panel's timing bars; section-title cards are ordinary beats whose beatId ends in '-title'.",
+      "items": {
+        "type": "object",
+        "required": ["id", "title"],
+        "properties": {
+          "id": { "type": "string", "description": "kebab-case slug, stable across script revisions" },
+          "title": { "type": "string" }
+        }
+      }
+    },
     "brand": {
       "type": "object",
       "properties": {
+        "kitId": { "type": "string", "description": "v2: brand kit this block was resolved from (brands/<kitId>.json). The parser resolves the kit into the concrete fields below before the file reaches AE — ExtendScript never loads kits." },
         "fontHeadingPS": { "type": "string", "default": "HelveticaNeue-Bold", "description": "PostScript name. Seeds the master comp's FONT Heading guide layer — after build, retype that layer's text to change every heading font in the build." },
         "fontBodyPS": { "type": "string", "default": "HelveticaNeue", "description": "PostScript name. Seeds the FONT Body guide layer (same master-control mechanism)." },
         "headingSize": { "type": "number", "default": 84 },
@@ -66,6 +83,19 @@
         "required": ["stylePreset"],
         "properties": {
           "id": { "type": "number" },
+          "beatId": { "type": "string", "description": "v2: stable kebab-case identity, assigned once at first parse and inherited across script revisions (diffBeats matches on it). Written to the scene precomp's comment field at build time so surgical edit ops can find the beat's layers. Never regenerated." },
+          "sectionId": { "type": "string", "description": "v2: id of the section this beat belongs to" },
+          "contentHash": { "type": "string", "description": "v2: hash of normalized superText+vo; identical beats across sibling videos share it (reuse candidates report)" },
+          "motion": {
+            "type": "object",
+            "description": "v2: per-beat motion personality. Build stores these; the Phase 6 motion system consumes ease/entrance/exit; handycam sets the polish-layer intensity (default per brand kit; 'subtle' for client work per 2026-07-28 decision).",
+            "properties": {
+              "ease": { "type": "string", "description": "ease profile or explicit easing name (e.g. corporate-smooth, outQuint, outBack)" },
+              "entrance": { "type": "string", "description": "text entrance preset (fadeRise, staggerRise, trackIn, maskReveal, listCascade)" },
+              "exit": { "type": "string", "description": "text exit preset; default mirrors entrance" },
+              "handycam": { "type": "string", "enum": ["off", "subtle", "energetic"], "description": "HandyCam polish intensity for this beat" }
+            }
+          },
           "vo": { "type": "string", "description": "Voiceover line for this beat" },
           "voSpokenWords": {
             "type": "number",

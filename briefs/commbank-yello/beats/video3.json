@@ -1,0 +1,184 @@
+{
+  "meta": {
+    "schemaVersion": 2,
+    "briefId": "commbank-yello-video3",
+    "scriptVersion": 1,
+    "sourceScriptPath": "briefs/commbank-yello/video3-earning-deep-dive.md",
+    "title": "CommBank Yello V3 Earning Deep Dive",
+    "fps": 25,
+    "resolution": [
+      1920,
+      1080
+    ],
+    "wpm": 150,
+    "layout": "gallery",
+    "masterName": "YELLO_EARN_DEEP",
+    "rig": "auto"
+  },
+  "sections": [],
+  "brand": {
+    "kitId": "commbank-yello",
+    "fontHeadingPS": "HelveticaNeue-Bold",
+    "fontBodyPS": "HelveticaNeue",
+    "headingSize": 84,
+    "bodySize": 42,
+    "headingTracking": 10,
+    "bodyTracking": 10,
+    "safeMarginPct": 10,
+    "colors": {
+      "primary": "#FFCC00",
+      "secondary": "#1E1E1E",
+      "background": "#FFFFFF",
+      "text": "#111111"
+    },
+    "logo": null
+  },
+  "beats": [
+    {
+      "id": 1,
+      "beatId": "earn-more-like-never-before-with-com",
+      "sectionId": null,
+      "contentHash": "2ee76f5b",
+      "vo": "",
+      "voSpokenWords": 0,
+      "superText": "Earn more like never before with CommBank Yello.",
+      "stylePreset": "titleCard",
+      "durationSec": null,
+      "transitIn": "none",
+      "motion": {
+        "ease": "corporate-smooth",
+        "entrance": "fadeRise",
+        "exit": "fadeRise",
+        "handycam": "subtle"
+      }
+    },
+    {
+      "id": 2,
+      "beatId": "earning-commbank-yello-points",
+      "sectionId": null,
+      "contentHash": "714fead7",
+      "vo": "Eligible customers can earn CommBank Yello points in several different ways.",
+      "voSpokenWords": 11,
+      "superText": "Earning CommBank Yello points.",
+      "stylePreset": "titleCard",
+      "durationSec": null,
+      "transitIn": "lateralTruck",
+      "motion": {
+        "ease": "corporate-smooth",
+        "entrance": "fadeRise",
+        "exit": "fadeRise",
+        "handycam": "subtle"
+      }
+    },
+    {
+      "id": 3,
+      "beatId": "earn-via-banking-home-loans-savings",
+      "sectionId": null,
+      "contentHash": "2ebbba66",
+      "vo": "They can earn via banking including through their home loan, savings account, and insurance;",
+      "voSpokenWords": 14,
+      "superText": "Earn via Banking. / Home Loans. Savings Accounts. Insurance.",
+      "stylePreset": "listBuild",
+      "durationSec": null,
+      "transitIn": "crane",
+      "motion": {
+        "ease": "corporate-smooth",
+        "entrance": "listCascade",
+        "exit": "listCascade",
+        "handycam": "subtle"
+      }
+    },
+    {
+      "id": 4,
+      "beatId": "earn-via-shopping-partner-stores-via",
+      "sectionId": null,
+      "contentHash": "1d2e85e3",
+      "vo": "They can earn points shopping with brands they love through the CommBank Yello hub;",
+      "voSpokenWords": 14,
+      "superText": "Earn via Shopping. / Partner Stores via the CommBank Yello hub.",
+      "stylePreset": "listBuild",
+      "durationSec": null,
+      "transitIn": "whipOrbit",
+      "motion": {
+        "ease": "corporate-smooth",
+        "entrance": "listCascade",
+        "exit": "listCascade",
+        "handycam": "subtle"
+      }
+    },
+    {
+      "id": 5,
+      "beatId": "earn-via-milestones-eligible-commban",
+      "sectionId": null,
+      "contentHash": "f48bdaee",
+      "vo": "And they can earn points by hitting banking milestones through eligible CommBank products.",
+      "voSpokenWords": 13,
+      "superText": "Earn via Milestones. / Eligible CommBank products.",
+      "stylePreset": "listBuild",
+      "durationSec": null,
+      "transitIn": "dollyZoom",
+      "motion": {
+        "ease": "corporate-smooth",
+        "entrance": "listCascade",
+        "exit": "listCascade",
+        "handycam": "subtle"
+      }
+    },
+    {
+      "id": 6,
+      "beatId": "earn-via-credit-card-purchases",
+      "sectionId": null,
+      "contentHash": "d99232fd",
+      "vo": "Eligible customers will also be able to earn CommBank Yello points on their credit card purchases...",
+      "voSpokenWords": 16,
+      "superText": "Earn via Credit Card Purchases.",
+      "stylePreset": "titleCard",
+      "durationSec": null,
+      "transitIn": "lateralTruck",
+      "motion": {
+        "ease": "corporate-smooth",
+        "entrance": "fadeRise",
+        "exit": "fadeRise",
+        "handycam": "subtle"
+      }
+    },
+    {
+      "id": 7,
+      "beatId": "activating-in-app-points-boosts",
+      "sectionId": null,
+      "contentHash": "13d5ab96",
+      "vo": "...and by activating offers for points boosts in the CommBank app.",
+      "voSpokenWords": 16,
+      "superText": "Activating In-app Points Boosts",
+      "stylePreset": "uiWalkthrough",
+      "durationSec": null,
+      "transitIn": "crane",
+      "motion": {
+        "ease": "corporate-smooth",
+        "entrance": "fadeRise",
+        "exit": "fadeRise",
+        "handycam": "subtle"
+      },
+      "uiStates": 1
+    },
+    {
+      "id": 8,
+      "beatId": "to-find-out-more-visit-commbank-com",
+      "sectionId": null,
+      "contentHash": "5d9b1ebf",
+      "vo": "To find out more about earning points, visit commbank.com.au/commbankyello or search CommBank Yello on One.CBA",
+      "voSpokenWords": 29,
+      "superText": "To find out more, visit commbank.com.au/commbankyello or search CommBank Yello on One.CBA",
+      "stylePreset": "endcard",
+      "durationSec": null,
+      "transitIn": "dollyPush",
+      "motion": {
+        "ease": "corporate-smooth",
+        "entrance": "fadeRise",
+        "exit": "fadeRise",
+        "handycam": "subtle"
+      },
+      "url": "commbank.com.au/commbankyello"
+    }
+  ]
+}
