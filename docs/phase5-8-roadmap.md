@@ -198,3 +198,21 @@ Recommended order: **5 → 6 → 7(v1 jobs) → 8 → 7(v2 embedded terminal)**,
 - **ES3 discipline** now spans three surfaces (library, host.jsx, parse fallback in modern Node) — the library stays the only place AE logic lives.
 - **Ease and Wizz licensing** — reference the pattern, implement Penner ourselves (tracked in 6.1).
 - **Fuzzy beat matching** on heavily rewritten scripts can mis-pair — the diff view in the panel (and Claude's judgment in v1) is the human checkpoint before Apply.
+
+## Phase 9 — AI comp redesign (v2.8.0, shipped 2026-07-28)
+
+Feature brief (Tim): select a comp → generate improved design concepts (OpenAI image model via fal.ai, optional style references as inspiration-only) → pick one → reconstruct it natively in AE, fully editable.
+
+Architecture (three decoupled modules, models swappable via `prompts/redesign/config.json`):
+1. **Analysis** — `APOSTLE.extractDesignSpec` (text/fonts/colors/bounds/structure) + `captureCompReference` (full-res PNG, stable-size write guard).
+2. **Concepts** — `scripts/lib/redesign-providers.cjs` ImageProvider: `fal` (queue API, data-URI uploads, poll+timeout+retry) / `mock` (offline). Prompt `concept.v1.md` preserves messaging verbatim, refs are style-only.
+3. **Reconstruction** — PlanProvider `claude-cli` (`claude -p` reads original+concept PNGs, emits rebuild-plan JSON validated against `apostle/redesign-plan-schema.json`, one retry with errors fed back) → `APOSTLE.applyRebuildPlan` on a duplicate comp.
+
+Verified E2E on SC02 (BANK REWARDS project): claude-produced 3-op plan rebuilt a hand-designed concept faithfully (left-margin block + 100px left-justified heading), entrance animation preserved (delta-shifted keys), pixels verified at settle + entrance-mid. Panel REDESIGN tab (NO./05) driven via CDP: analyze → gallery → select → apply through evalScript transport.
+
+Bugs found by pixel verification (now guarded in `applyRebuildPlan`):
+- Master style expression on sourceText silently swallows TextDocument writes → bake evaluated style + remove expression.
+- Fit-width autoscale expression on Scale rendered restyled text at 27% or blank → bake all transform expressions on touched layers.
+- `saveFrameToPng` returns before write completes → wait for stable file size.
+
+Deferred: multi-comp batch redesign; concept upscale pass; reconstruction diff overlay (concept vs result) for auto-scoring in the QA loop.

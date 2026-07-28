@@ -1,0 +1,21 @@
+{
+  "comment": "Model wiring for the redesign pipeline. Swap models here — never in code. imageParams passes through to the fal endpoint verbatim (plus prompt + image_urls), so a different fal model only needs its params updated here.",
+  "image": {
+    "provider": "fal",
+    "model": "fal-ai/gpt-image-1/edit-image",
+    "params": { "image_size": "landscape_16_9", "quality": "high", "num_images": 1 },
+    "timeoutSec": 240,
+    "retries": 1
+  },
+  "plan": {
+    "provider": "claude-cli",
+    "model": "",
+    "timeoutSec": 420,
+    "retries": 1
+  },
+  "prompts": {
+    "concept": "concept.v1.md",
+    "reconstruct": "reconstruct.v1.md"
+  },
+  "conceptsPerRun": 3
+}

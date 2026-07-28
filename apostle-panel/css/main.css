@@ -136,6 +136,31 @@ hr { border: none; border-top: 1px solid var(--line); margin: 16px 0 4px; }
 .chk input[type="checkbox"] { width: auto; accent-color: var(--text); }
 .chk .dim { font-weight: 400; letter-spacing: 0.04em; }
 
+/* REDESIGN tab — concept gallery */
+.concepts { display: flex; flex-wrap: wrap; gap: 8px; margin-top: 8px; }
+.concept {
+  border: 1px solid var(--line); padding: 4px;
+  flex: 1 1 calc(50% - 12px); min-width: 140px; max-width: calc(50% - 4px);
+}
+.concept img { width: 100%; display: block; cursor: zoom-in; }
+.concept.selected { border-color: var(--ok); }
+.concept .cbar {
+  display: flex; align-items: center; justify-content: space-between;
+  margin-top: 5px; font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
+}
+.concept .cbar .dim { font-weight: 400; }
+.concept button { padding: 4px 8px; font-size: 8px; letter-spacing: 0.12em; }
+.refthumbs { display: flex; gap: 6px; margin-top: 6px; flex-wrap: wrap; }
+.refthumbs img { height: 44px; border: 1px solid var(--line); }
+.refimg { max-width: 260px; border: 1px solid var(--line); display: block; margin-top: 6px; }
+#rdZoom {
+  display: none; position: fixed; inset: 0; z-index: 60;
+  background: rgba(0, 0, 0, 0.94); cursor: zoom-out;
+  align-items: center; justify-content: center;
+}
+#rdZoom.show { display: flex; }
+#rdZoom img { max-width: 96%; max-height: 96%; }
+
 #terminal {
   margin-top: 10px;
   height: 380px;

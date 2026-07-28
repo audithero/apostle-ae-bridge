@@ -1,0 +1,79 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "title": "Apostle rebuild plan",
+  "description": "Structured, native-AE reconstruction plan produced by the reconstruction LLM and interpreted by APOSTLE.applyRebuildPlan. All coordinates are comp pixels (origin top-left). All colors are [r,g,b] floats 0-1. The interpreter always works on a duplicate comp — the original is never touched.",
+  "type": "object",
+  "required": ["schemaVersion", "summary", "ops"],
+  "properties": {
+    "schemaVersion": { "const": 1 },
+    "summary": { "type": "string", "description": "One paragraph: what changed and why, in design terms." },
+    "background": {
+      "type": "object",
+      "properties": { "color": { "$ref": "#/definitions/color" } }
+    },
+    "ops": {
+      "type": "array",
+      "maxItems": 80,
+      "items": {
+        "type": "object",
+        "required": ["op"],
+        "properties": {
+          "op": {
+            "enum": [
+              "setText", "setFont", "setFill", "setTransform",
+              "createText", "createShape", "createSolid",
+              "reorder", "deleteLayer", "setEffectProperty", "applyEffect"
+            ]
+          },
+          "layer": { "type": "string", "description": "Target layer name (exact match, from the spec). Required for every op except create*." },
+          "name": { "type": "string", "description": "New layer name for create* ops." },
+
+          "text": { "type": "string" },
+          "postScriptName": { "type": "string" },
+          "size": { "type": "number", "minimum": 4, "maximum": 600 },
+          "tracking": { "type": "number" },
+          "leading": { "type": "number" },
+          "justification": { "enum": ["left", "center", "right"] },
+          "color": { "$ref": "#/definitions/color" },
+
+          "position": { "$ref": "#/definitions/vec2" },
+          "scale": { "$ref": "#/definitions/vec2" },
+          "rotation": { "type": "number" },
+          "opacity": { "type": "number", "minimum": 0, "maximum": 100 },
+          "anchor": { "$ref": "#/definitions/vec2" },
+
+          "shape": { "enum": ["rect", "ellipse"] },
+          "bounds": {
+            "type": "array", "minItems": 2, "maxItems": 4,
+            "items": { "type": "number" },
+            "description": "[x, y, w, h] — top-left + size in comp pixels. On setTransform, [x, y] places the layer's rendered top-left at that point (preferred over `position` for text — the interpreter handles anchor/justification math; w/h ignored). create* ops require all four."
+          },
+          "fill": { "$ref": "#/definitions/color" },
+          "fillOpacity": { "type": "number", "minimum": 0, "maximum": 100 },
+          "stroke": { "$ref": "#/definitions/color" },
+          "strokeWidth": { "type": "number", "minimum": 0 },
+          "roundness": { "type": "number", "minimum": 0 },
+
+          "below": { "type": "string", "description": "Place the created/reordered layer immediately below this layer. Omit = top." },
+          "above": { "type": "string", "description": "Place the created/reordered layer immediately above this layer." },
+
+          "effectMatchName": { "type": "string" },
+          "property": { "type": "string" },
+          "value": {},
+
+          "why": { "type": "string", "description": "Short design rationale for this op." }
+        }
+      }
+    }
+  },
+  "definitions": {
+    "color": {
+      "type": "array", "minItems": 3, "maxItems": 3,
+      "items": { "type": "number", "minimum": 0, "maximum": 1 }
+    },
+    "vec2": {
+      "type": "array", "minItems": 2, "maxItems": 2,
+      "items": { "type": "number" }
+    }
+  }
+}

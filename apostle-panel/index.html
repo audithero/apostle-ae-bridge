@@ -17,8 +17,9 @@
   <button class="tab" data-tab="timing"><span class="no">NO. /02</span>TIMING</button>
   <button class="tab" data-tab="brand"><span class="no">NO. /03</span>BRAND</button>
   <button class="tab" data-tab="motion"><span class="no">NO. /04</span>MOTION</button>
-  <button class="tab" data-tab="review"><span class="no">NO. /05</span>REVIEW</button>
-  <button class="tab" data-tab="claude"><span class="no">NO. /06</span>CLAUDE</button>
+  <button class="tab" data-tab="redesign"><span class="no">NO. /05</span>REDESIGN</button>
+  <button class="tab" data-tab="review"><span class="no">NO. /06</span>REVIEW</button>
+  <button class="tab" data-tab="claude"><span class="no">NO. /07</span>CLAUDE</button>
 </nav>
 
 <main>
@@ -92,7 +93,27 @@
     <div id="motionOut" class="out"></div>
   </section>
 
-  <!-- 05 REVIEW -->
+  <!-- 05 REDESIGN -->
+  <section id="tab-redesign" class="pane">
+    <div class="row"><div class="field grow"><label class="lbl">TARGET COMP</label><select id="rdComp"></select></div>
+    <button id="btnRdComps">RELOAD</button></div>
+    <div class="row">
+      <button id="btnRdAnalyze" class="primary">ANALYZE COMP</button>
+      <button id="btnRdRefs" disabled>ADD STYLE REFS&hellip;</button>
+    </div>
+    <div id="rdAnalysis" class="out"></div>
+    <label class="lbl">CLIENT DIRECTION (OPTIONAL — references stay style-only)</label>
+    <textarea id="rdNotes" rows="2" placeholder="e.g. more editorial, bolder hierarchy, calmer color&hellip;"></textarea>
+    <div class="row">
+      <button id="btnRdGenerate" class="primary" disabled>GENERATE CONCEPTS</button>
+      <span id="rdProviderNote" class="dim small"></span>
+    </div>
+    <div id="rdGallery" class="out"></div>
+    <button id="btnRdReconstruct" class="primary" disabled>RECONSTRUCT SELECTED IN AE</button>
+    <div id="rdResult" class="out"></div>
+  </section>
+
+  <!-- 06 REVIEW -->
   <section id="tab-review" class="pane">
     <div class="row"><div class="field grow"><label class="lbl">MASTER</label><select id="reviewMaster"></select></div></div>
     <div class="row">
@@ -103,7 +124,7 @@
     <div id="reviewOut" class="out"></div>
   </section>
 
-  <!-- 06 CLAUDE -->
+  <!-- 07 CLAUDE -->
   <section id="tab-claude" class="pane">
     <div class="row">
       <button id="btnTermStart" class="primary">START SESSION</button>
@@ -122,6 +143,7 @@
     <div id="jobsList" class="out"></div>
   </section>
 </main>
+<div id="rdZoom"></div>
 <footer id="status" class="dim"></footer>
 <script src="vendor/xterm.js"></script>
 <script src="vendor/xterm-addon-fit.js"></script>

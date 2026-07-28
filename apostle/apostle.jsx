@@ -19,7 +19,7 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.7.0";
+  var LIB_VERSION = "2.8.0";
 
   // Captured at load time; locates the repo for crash-recovery run snapshots
   var LIB_FILE = null;
@@ -1309,7 +1309,17 @@ var APOSTLE = (function () {
     } catch (e) { return null; }
     var waited = 0;
     while (!f.exists && waited < 5000) { $.sleep(100); waited += 100; }
-    return f.exists ? f.fsName : null;
+    if (!f.exists) return null;
+    // existence is not completion — wait for the size to hold steady twice
+    var last = -1, stable = 0;
+    while (stable < 2 && waited < 8000) {
+      $.sleep(150); waited += 150;
+      var len = 0;
+      try { len = f.length; } catch (fe) {}
+      if (len > 0 && len === last) { stable++; } else { stable = 0; }
+      last = len;
+    }
+    return f.fsName;
   }
 
   function renderFrameViaRQ(comp, timeSec, outPath) {
@@ -2044,9 +2054,470 @@ var APOSTLE = (function () {
   }
 
   // ---------------------------------------------------------------
+  // 6. REDESIGN MODULE — analysis, capture, native reconstruction
+  // ---------------------------------------------------------------
+  // Three-module pipeline (see docs): AE owns analysis (extractDesignSpec,
+  // captureCompReference) and reconstruction (applyRebuildPlan on a
+  // DUPLICATE, never the original). Concept generation lives in Node
+  // (scripts/redesign.cjs) and never touches AE.
+
+  function listComps(filter) {
+    try {
+      var out = [];
+      var f = filter ? String(filter).toLowerCase() : null;
+      for (var i = 1; i <= app.project.numItems && out.length < 250; i++) {
+        var it = app.project.item(i);
+        if (!(it instanceof CompItem)) continue;
+        if (f && it.name.toLowerCase().indexOf(f) === -1) continue;
+        var folderName = "";
+        try { if (it.parentFolder && it.parentFolder.name !== "Root") folderName = it.parentFolder.name; } catch (e0) {}
+        out.push({ name: it.name, w: it.width, h: it.height, dur: Math.round(it.duration * 100) / 100, folder: folderName });
+      }
+      return toJSON({ status: "success", comps: out });
+    } catch (e) { return errJSON("listComps", e); }
+  }
+
+  function layerCompBounds(layer, t) {
+    // comp-space bounds for the common case (2D, unparented or static
+    // parent, rotation reported separately). Good enough for a design spec.
+    var r = layer.sourceRectAtTime(t, false);
+    var tr = layer.property("ADBE Transform Group");
+    var pos = tr.property("ADBE Position").valueAtTime(t, false);
+    var anc = tr.property("ADBE Anchor Point").valueAtTime(t, false);
+    var scl = tr.property("ADBE Scale").valueAtTime(t, false);
+    var sx = scl[0] / 100, sy = scl[1] / 100;
+    return {
+      x: Math.round(pos[0] + (r.left - anc[0]) * sx),
+      y: Math.round(pos[1] + (r.top - anc[1]) * sy),
+      w: Math.round(r.width * sx),
+      h: Math.round(r.height * sy)
+    };
+  }
+
+  function col01(c) {
+    if (!c || c.length < 3) return null;
+    return [Math.round(c[0] * 1000) / 1000, Math.round(c[1] * 1000) / 1000, Math.round(c[2] * 1000) / 1000];
+  }
+
+  function firstShapeFill(layer) {
+    // walk one level of vector groups for the first fill color
+    try {
+      var root = layer.property("ADBE Root Vectors Group");
+      for (var i = 1; i <= root.numProperties; i++) {
+        var g = root.property(i);
+        var contents = g.property("ADBE Vectors Group");
+        if (!contents) continue;
+        for (var j = 1; j <= contents.numProperties; j++) {
+          var p = contents.property(j);
+          if (p.matchName === "ADBE Vector Graphic - Fill") {
+            return col01(p.property("ADBE Vector Fill Color").value);
+          }
+        }
+      }
+    } catch (e) {}
+    return null;
+  }
+
+  function extractDesignSpec(compName, timeSec) {
+    try {
+      var comp = findComp(compName);
+      if (!comp) return toJSON({ status: "error", error: "Comp not found: " + compName });
+      var t;
+      if (timeSec !== undefined && timeSec !== null && timeSec >= 0) { t = timeSec; }
+      else { t = comp.duration * 0.6; }
+      if (t > comp.duration) t = comp.duration / 2;
+      var spec = {
+        comp: comp.name,
+        width: comp.width, height: comp.height,
+        duration: Math.round(comp.duration * 100) / 100,
+        fps: Math.round(comp.frameRate * 100) / 100,
+        bgColor: col01(comp.bgColor),
+        sampledAt: Math.round(t * 100) / 100,
+        layers: []
+      };
+      for (var i = 1; i <= comp.numLayers; i++) {
+        var layer = comp.layer(i);
+        var L = { index: i, name: layer.name };
+        if (layer instanceof CameraLayer) { L.type = "camera"; spec.layers.push(L); continue; }
+        if (layer instanceof LightLayer) { L.type = "light"; spec.layers.push(L); continue; }
+        if (layer instanceof TextLayer) { L.type = "text"; }
+        else if (layer instanceof ShapeLayer) { L.type = "shape"; }
+        else if (layer.nullLayer) { L.type = "null"; }
+        else if (layer.source instanceof CompItem) { L.type = "precomp"; L.sourceComp = layer.source.name; }
+        else if (layer.source && layer.source.mainSource instanceof SolidSource) { L.type = "solid"; }
+        else { L.type = "footage"; }
+        try { if (!layer.enabled) L.disabled = true; } catch (e1) {}
+        try { if (layer.threeDLayer) L.threeD = true; } catch (e2) {}
+        try { if (layer.parent) L.parent = layer.parent.name; } catch (e3) {}
+        try { L.bounds = layerCompBounds(layer, t); } catch (e4) {}
+        var tr = layer.property("ADBE Transform Group");
+        try { L.position = tr.property("ADBE Position").valueAtTime(t, false); } catch (e5) {}
+        try {
+          var scv = tr.property("ADBE Scale").valueAtTime(t, false);
+          if (Math.round(scv[0]) !== 100 || Math.round(scv[1]) !== 100) L.scale = [Math.round(scv[0] * 10) / 10, Math.round(scv[1] * 10) / 10];
+        } catch (e5b) {}
+        try { L.opacity = Math.round(tr.property("ADBE Opacity").valueAtTime(t, false)); } catch (e6) {}
+        try {
+          var rot = tr.property("ADBE Rotate Z").valueAtTime(t, false);
+          if (rot !== 0) L.rotation = Math.round(rot * 100) / 100;
+        } catch (e7) {}
+        try {
+          var pk = tr.property("ADBE Position").numKeys;
+          var ok = tr.property("ADBE Opacity").numKeys;
+          if (pk > 0 || ok > 0) L.animated = true;
+        } catch (e8) {}
+        if (L.type === "text") {
+          try {
+            var doc = layer.property("ADBE Text Properties").property("ADBE Text Document").value;
+            L.text = doc.text;
+            L.font = doc.font;
+            L.fontSize = Math.round(doc.fontSize * 10) / 10;
+            try { if (doc.applyFill) L.fillColor = col01(doc.fillColor); } catch (tf) {}
+            try { L.tracking = doc.tracking; } catch (tt) {}
+            try {
+              var j = doc.justification;
+              if (j === ParagraphJustification.LEFT_JUSTIFY) L.justification = "left";
+              else if (j === ParagraphJustification.CENTER_JUSTIFY) L.justification = "center";
+              else if (j === ParagraphJustification.RIGHT_JUSTIFY) L.justification = "right";
+            } catch (tj) {}
+          } catch (e9) { L.textError = e9.toString(); }
+        } else if (L.type === "solid") {
+          try { L.color = col01(layer.source.mainSource.color); } catch (e10) {}
+        } else if (L.type === "shape") {
+          var sf = firstShapeFill(layer);
+          if (sf) L.fill = sf;
+        }
+        spec.layers.push(L);
+      }
+      return toJSON({ status: "success", spec: spec });
+    } catch (e) { return errJSON("extractDesignSpec", e); }
+  }
+
+  function captureCompReference(compName, timeSec, outPath) {
+    try {
+      var comp = findComp(compName);
+      if (!comp) return toJSON({ status: "error", error: "Comp not found: " + compName });
+      var t;
+      if (timeSec !== undefined && timeSec !== null && timeSec >= 0) { t = timeSec; }
+      else { t = comp.duration * 0.6; }
+      if (t > comp.duration) t = comp.duration / 2;
+      var got = renderFramePNG(comp, t, outPath);
+      var via = "saveFrameToPng";
+      if (!got) { got = renderFrameViaRQ(comp, t, outPath); via = "renderQueue"; }
+      if (!got) return toJSON({ status: "error", error: "Both frame render paths failed for " + compName });
+      return toJSON({ status: "success", path: got, time: Math.round(t * 100) / 100, via: via, w: comp.width, h: comp.height });
+    } catch (e) { return errJSON("captureCompReference", e); }
+  }
+
+  function duplicateForRedesign(compName) {
+    try {
+      var comp = findComp(compName);
+      if (!comp) return toJSON({ status: "error", error: "Comp not found: " + compName });
+      app.beginUndoGroup("Apostle duplicateForRedesign");
+      var n = 1;
+      var base = comp.name + " REDESIGN v";
+      while (findComp(base + n) && n < 99) n++;
+      var dup = comp.duplicate();
+      dup.name = base + n;
+      app.endUndoGroup();
+      return toJSON({ status: "success", comp: dup.name, from: comp.name });
+    } catch (e) { app.endUndoGroup(); return errJSON("duplicateForRedesign", e); }
+  }
+
+  // ---- applyRebuildPlan helpers ----
+
+  function planJustification(s) {
+    if (s === "left") return ParagraphJustification.LEFT_JUSTIFY;
+    if (s === "right") return ParagraphJustification.RIGHT_JUSTIFY;
+    return ParagraphJustification.CENTER_JUSTIFY;
+  }
+
+  function bakeLayerExpressions(layer, sampleT, r) {
+    // Master-link expressions (style reads FONT layers; fit-width autoscale
+    // reads CONTROL + sourceRectAtTime) make redesigned layers render
+    // unpredictably once the plan changes text metrics — verified: autoscale
+    // shrank a 96px heading to 27% and blanked frames entirely. Bake the
+    // evaluated value and drop the expression on any layer a plan touches.
+    var tg = layer.property("ADBE Transform Group");
+    var mns = ["ADBE Anchor Point", "ADBE Position", "ADBE Scale", "ADBE Rotate Z", "ADBE Opacity"];
+    var baked = [];
+    for (var i = 0; i < mns.length; i++) {
+      var p = null;
+      try { p = tg.property(mns[i]); } catch (e0) {}
+      if (!p) continue;
+      try {
+        if (p.expressionEnabled) {
+          var v = p.valueAtTime(sampleT, false);
+          p.expression = "";
+          if (p.numKeys === 0) p.setValue(v);
+          baked.push(p.name);
+        }
+      } catch (e1) {}
+    }
+    if (baked.length && r) {
+      var msg = "transform expressions baked: " + baked.join(", ");
+      if (r.warn) { r.warn += "; " + msg; } else { r.warn = msg; }
+    }
+  }
+
+  function mutateTextDoc(layer, fn, r) {
+    // AE 26 intermittently returns a garbage TextDocument on a fresh
+    // layer's first .value read — refetch and retry once (same trap as
+    // makeText).
+    var prop = layer.property("ADBE Text Properties").property("ADBE Text Document");
+    // Master-linked layers carry a style expression that overrides any
+    // static TextDocument write (verified: setValue(fontSize) silently
+    // no-ops under it). Bake the evaluated style, drop the expression,
+    // then mutate — a redesigned comp is meant to diverge from master.
+    try {
+      if (prop.expressionEnabled) {
+        var evald = prop.value; // evaluated through the expression
+        prop.expression = "";
+        prop.setValue(evald);
+        if (r) {
+          if (r.warn) { r.warn += "; style expression baked + removed"; }
+          else { r.warn = "master style expression baked + removed"; }
+        }
+        prop = layer.property("ADBE Text Properties").property("ADBE Text Document");
+      }
+    } catch (be) {}
+    var attempt, doc;
+    for (attempt = 0; attempt < 2; attempt++) {
+      try {
+        doc = prop.value;
+        fn(doc);
+        prop.setValue(doc);
+        return null;
+      } catch (e) {
+        prop = layer.property("ADBE Text Properties").property("ADBE Text Document");
+        if (attempt === 1) return e.toString();
+      }
+    }
+    return "unreachable";
+  }
+
+  function shiftPropKeys(prop, delta, isArray) {
+    // preserve entrance/exit animation: move every key by the same delta
+    for (var k = 1; k <= prop.numKeys; k++) {
+      var v = prop.keyValue(k);
+      if (isArray) {
+        var nv = [];
+        for (var d = 0; d < v.length; d++) nv.push(v[d] + (delta[d] !== undefined ? delta[d] : 0));
+        prop.setValueAtKey(k, nv);
+      } else {
+        prop.setValueAtKey(k, v + delta);
+      }
+    }
+  }
+
+  function setOrShift(prop, target, sampleT) {
+    // unkeyed -> setValue; keyed -> delta-shift all keys so the settled
+    // value lands on target and the animation survives.
+    if (prop.numKeys === 0) { prop.setValue(target); return; }
+    var cur = prop.valueAtTime(sampleT, false);
+    if (cur instanceof Array) {
+      var delta = [];
+      for (var d = 0; d < cur.length; d++) delta.push((target[d] !== undefined ? target[d] : cur[d]) - cur[d]);
+      shiftPropKeys(prop, delta, true);
+    } else {
+      shiftPropKeys(prop, target - cur, false);
+    }
+  }
+
+  function placeCreated(layer, opSpec, comp) {
+    layer.startTime = 0; // trap #2: pin — AE creates layers at the playhead
+    if (opSpec.below) {
+      var b = findLayer(comp, opSpec.below);
+      if (b) layer.moveAfter(b);
+    } else if (opSpec.above) {
+      var a = findLayer(comp, opSpec.above);
+      if (a) layer.moveBefore(a);
+    }
+  }
+
+  function opCreateShape(comp, o) {
+    var layer = comp.layers.addShape();
+    layer.name = o.name || "Shape";
+    var group = layer.property("ADBE Root Vectors Group").addProperty("ADBE Vector Group");
+    var contents = group.property("ADBE Vectors Group");
+    var bx = o.bounds[0], by = o.bounds[1], bw = o.bounds[2], bh = o.bounds[3];
+    var shapeMn;
+    if (o.shape === "ellipse") { shapeMn = "ADBE Vector Shape - Ellipse"; } else { shapeMn = "ADBE Vector Shape - Rect"; }
+    var sh = contents.addProperty(shapeMn);
+    sh.property(o.shape === "ellipse" ? "ADBE Vector Ellipse Size" : "ADBE Vector Rect Size").setValue([bw, bh]);
+    if (o.shape !== "ellipse" && o.roundness) {
+      sh.property("ADBE Vector Rect Roundness").setValue(o.roundness);
+    }
+    if (o.fill) {
+      var fill = contents.addProperty("ADBE Vector Graphic - Fill");
+      fill.property("ADBE Vector Fill Color").setValue(o.fill);
+      if (o.fillOpacity !== undefined) fill.property("ADBE Vector Fill Opacity").setValue(o.fillOpacity);
+    }
+    if (o.stroke && o.strokeWidth) {
+      var st = contents.addProperty("ADBE Vector Graphic - Stroke");
+      st.property("ADBE Vector Stroke Color").setValue(o.stroke);
+      st.property("ADBE Vector Stroke Width").setValue(o.strokeWidth);
+    }
+    // shape layer anchor is [0,0] at its position; put position at bounds center
+    layer.property("ADBE Transform Group").property("ADBE Position").setValue([bx + bw / 2, by + bh / 2]);
+    placeCreated(layer, o, comp);
+    return layer;
+  }
+
+  function opCreateText(comp, o) {
+    var layer = comp.layers.addText(o.text || "");
+    if (o.name) layer.name = o.name;
+    var err = mutateTextDoc(layer, function (doc) {
+      if (o.postScriptName) doc.font = o.postScriptName;
+      if (o.size) doc.fontSize = o.size;
+      if (o.fill || o.color) { doc.applyFill = true; doc.fillColor = (o.fill || o.color); }
+      if (o.tracking !== undefined) doc.tracking = o.tracking;
+      if (o.justification) doc.justification = planJustification(o.justification);
+      if (o.leading) { doc.autoLeading = false; doc.leading = o.leading; }
+    });
+    if (o.position) layer.property("ADBE Transform Group").property("ADBE Position").setValue(o.position);
+    placeCreated(layer, o, comp);
+    return err;
+  }
+
+  function applyRebuildPlan(compName, plan) {
+    try {
+      if (typeof plan === "string") plan = eval("(" + plan + ")");
+      var comp = findComp(compName);
+      if (!comp) return toJSON({ status: "error", error: "Comp not found: " + compName });
+      var sampleT = comp.duration * 0.6;
+      if (sampleT > comp.duration) sampleT = comp.duration / 2;
+      var results = [];
+      var applied = 0, failed = 0;
+      app.beginUndoGroup("Apostle applyRebuildPlan");
+      try {
+        if (plan.background && plan.background.color) {
+          try { comp.bgColor = plan.background.color; } catch (bg) {}
+        }
+        var ops = plan.ops || [];
+        for (var i = 0; i < ops.length; i++) {
+          var o = ops[i];
+          var r = { i: i, op: o.op, layer: o.layer || o.name || "" };
+          try {
+            var layer = null;
+            if (o.op !== "createText" && o.op !== "createShape" && o.op !== "createSolid") {
+              layer = findLayer(comp, o.layer);
+              if (!layer) throw new Error("layer not found: " + o.layer);
+            }
+            if (o.op === "setText" || o.op === "setFont" || o.op === "setFill" || o.op === "setTransform") {
+              bakeLayerExpressions(layer, sampleT, r);
+            }
+            if (o.op === "setText") {
+              var e1 = mutateTextDoc(layer, function (doc) { doc.text = o.text; }, r);
+              if (e1) throw new Error(e1);
+            } else if (o.op === "setFont") {
+              var e2 = mutateTextDoc(layer, function (doc) {
+                if (o.postScriptName) doc.font = o.postScriptName;
+                if (o.size) doc.fontSize = o.size;
+                if (o.tracking !== undefined) doc.tracking = o.tracking;
+                if (o.leading) { doc.autoLeading = false; doc.leading = o.leading; }
+                if (o.justification) doc.justification = planJustification(o.justification);
+              }, r);
+              if (e2) throw new Error(e2);
+            } else if (o.op === "setFill") {
+              var e3 = mutateTextDoc(layer, function (doc) { doc.applyFill = true; doc.fillColor = o.color; }, r);
+              if (e3) throw new Error(e3);
+            } else if (o.op === "setTransform") {
+              var tr = layer.property("ADBE Transform Group");
+              if (o.anchor) tr.property("ADBE Anchor Point").setValue(o.anchor);
+              if (o.bounds) {
+                // place by top-left comp-px bounds — the interpreter does
+                // the anchor/justification math the LLM would get wrong
+                var rb = layer.sourceRectAtTime(sampleT, false);
+                var bScl = tr.property("ADBE Scale").valueAtTime(sampleT, false);
+                var bAnc = tr.property("ADBE Anchor Point").valueAtTime(sampleT, false);
+                var bpx = o.bounds[0] + (bAnc[0] - rb.left) * bScl[0] / 100;
+                var bpy = o.bounds[1] + (bAnc[1] - rb.top) * bScl[1] / 100;
+                setOrShift(tr.property("ADBE Position"), [bpx, bpy], sampleT);
+              }
+              if (o.position) setOrShift(tr.property("ADBE Position"), o.position, sampleT);
+              if (o.scale) {
+                var sp = tr.property("ADBE Scale");
+                var full = o.scale.length === 2 ? [o.scale[0], o.scale[1], 100] : o.scale;
+                if (sp.numKeys === 0) { sp.setValue(full); }
+                else {
+                  var curS = sp.valueAtTime(sampleT, false);
+                  var ratio = [];
+                  for (var d = 0; d < curS.length; d++) {
+                    if (curS[d] !== 0 && full[d] !== undefined) { ratio.push(full[d] / curS[d]); } else { ratio.push(1); }
+                  }
+                  for (var k = 1; k <= sp.numKeys; k++) {
+                    var kv = sp.keyValue(k);
+                    var nv = [];
+                    for (var d2 = 0; d2 < kv.length; d2++) nv.push(kv[d2] * ratio[d2]);
+                    sp.setValueAtKey(k, nv);
+                  }
+                }
+              }
+              if (o.rotation !== undefined) setOrShift(tr.property("ADBE Rotate Z"), o.rotation, sampleT);
+              if (o.opacity !== undefined) {
+                var op2 = tr.property("ADBE Opacity");
+                if (op2.numKeys === 0) { op2.setValue(o.opacity); }
+                else { op2.setValueAtKey(op2.numKeys, o.opacity); }
+              }
+            } else if (o.op === "createText") {
+              var e4 = opCreateText(comp, o);
+              if (e4) r.warn = "text doc styling failed: " + e4;
+            } else if (o.op === "createShape") {
+              opCreateShape(comp, o);
+            } else if (o.op === "createSolid") {
+              var bw2 = Math.round(o.bounds[2]), bh2 = Math.round(o.bounds[3]);
+              var sl = comp.layers.addSolid(o.color || o.fill, o.name || "Solid", bw2, bh2, 1);
+              sl.property("ADBE Transform Group").property("ADBE Position").setValue([o.bounds[0] + bw2 / 2, o.bounds[1] + bh2 / 2]);
+              placeCreated(sl, o, comp);
+            } else if (o.op === "reorder") {
+              if (o.below) {
+                var lb = findLayer(comp, o.below);
+                if (!lb) throw new Error("below target not found: " + o.below);
+                layer.moveAfter(lb);
+              } else if (o.above) {
+                var la = findLayer(comp, o.above);
+                if (!la) throw new Error("above target not found: " + o.above);
+                layer.moveBefore(la);
+              }
+            } else if (o.op === "deleteLayer") {
+              layer.remove();
+            } else if (o.op === "applyEffect") {
+              layer.property("ADBE Effect Parade").addProperty(o.effectMatchName);
+            } else if (o.op === "setEffectProperty") {
+              var fx = layer.property("ADBE Effect Parade").property(o.effectMatchName);
+              if (!fx) throw new Error("effect not found: " + o.effectMatchName);
+              fx.property(o.property).setValue(o.value);
+            } else {
+              throw new Error("unknown op: " + o.op);
+            }
+            r.status = "ok";
+            applied++;
+          } catch (oe) {
+            r.status = "error";
+            r.error = oe.toString();
+            failed++;
+          }
+          results.push(r);
+        }
+      } finally {
+        app.endUndoGroup();
+      }
+      var status;
+      if (failed === 0) { status = "success"; } else if (applied > 0) { status = "partial"; } else { status = "error"; }
+      return toJSON({ status: status, comp: comp.name, applied: applied, failed: failed, ops: results });
+    } catch (e) { return errJSON("applyRebuildPlan", e); }
+  }
+
+  // ---------------------------------------------------------------
 
   return {
     version: LIB_VERSION,
+    listComps: listComps,
+    extractDesignSpec: extractDesignSpec,
+    captureCompReference: captureCompReference,
+    duplicateForRedesign: duplicateForRedesign,
+    applyRebuildPlan: applyRebuildPlan,
     toJSON: toJSON,
     findBeatComp: findBeatComp,
     updateBeatText: updateBeatText,

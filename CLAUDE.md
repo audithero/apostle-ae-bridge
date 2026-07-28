@@ -26,6 +26,15 @@ Closed-loop system: Claude Code drives a live After Effects instance on macOS vi
 - Claude connection, three tiers: (1) **embedded interactive terminal** — CLAUDE tab runs the full Claude Code TUI inside the panel via `scripts/panel-relay.cjs` (dependency-free RFC6455 WebSocket server on 127.0.0.1:8471 + python3 pty bridge; panel auto-spawns it through a login shell, idle-exits after 10 min); (2) one-shot questions via `claude -p`; (3) job files `~/Documents/ae-mcp-bridge/jobs/<id>.json` (answer as `<id>.result.json`) for a watching headless session. Relay E2E test: `node scripts/panel-relay.cjs` + the ws client pattern in the repo history (handshake → TUI ANSI bytes → resize sentinel `\x00resize:cols,rows\n` → /exit).
 - Verification of any build/sync must include rendered pixels before reporting success (Tim, 2026-07-28): the review-export skill is the loop; sampled frames or `renderMovie` + `scripts/extract-frames.sh`.
 
+## AI comp redesign (v2.8.0)
+
+- Three decoupled modules, swappable models: **analysis** (AE: `extractDesignSpec`, `captureCompReference`), **concept generation** (image model via fal.ai queue API), **reconstruction** (`claude -p` → rebuild-plan JSON → `applyRebuildPlan`). Providers live behind interfaces in `scripts/lib/redesign-providers.cjs`; model/params swap in `prompts/redesign/config.json`, never in code. Prompts are versioned files (`prompts/redesign/*.vN.md`).
+- CLI: `node scripts/redesign.cjs analyze|concepts|reconstruct|apply` (see header). Panel: REDESIGN tab (NO./05). Both drive the same lib; the AE transport is injected at APOSTLE-function granularity (`aeCall`) — CLI uses the shell bridge, panel uses evalScript. Runs live in `.apostle-runs/redesign/<slug>-<n>/` (spec.json, reference.png, refs/, concepts/, plan.json, result.json).
+- fal.ai key: `FAL_KEY` env or `~/.apostle/fal.key` (the panel only sees the file). Mock providers (`--provider mock`) run the whole pipeline offline. Style references are inspiration-only by prompt contract — their content must not enter concepts.
+- `applyRebuildPlan` always targets a **duplicate** (`duplicateForRedesign` → `<name> REDESIGN vN`); the original comp is never modified. Plan schema: `apostle/redesign-plan-schema.json` (validated with retry before apply).
+- **Master-link expressions are baked off any layer a plan touches** (style expression on sourceText AND the fit-width autoscale on Scale — the latter shrank a 96px heading to 27% and blanked frames until baked). A redesigned comp intentionally diverges from master font control. Entrance/exit animation survives edits: keyed transforms are delta-shifted, never overwritten.
+- For text placement in plans, prefer `setTransform` + `bounds: [x,y]` (interpreter does the anchor/justification math); emit setFont before setTransform on the same layer.
+
 ## Commands
 
 - Build server: `npm run build` (output: `build/index.js`)

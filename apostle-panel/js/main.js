@@ -31,7 +31,7 @@ document.querySelectorAll(".tab").forEach((b) =>
 // ---------- Node bootstrap -------------------------------------------------
 // NB: never name a top-level binding `cep` — CEP predefines window.cep and
 // the collision is a page-killing SyntaxError (found via CDP, 2026-07-28)
-let fs, path, os, execFile, adobeCep, REPO, BRIDGE_DIR, JOBS_DIR, RENDER_DIR, parseLib, diffLib;
+let fs, path, os, execFile, adobeCep, REPO, BRIDGE_DIR, JOBS_DIR, RENDER_DIR, parseLib, diffLib, redesignLib, provLib;
 let NODE_OK = false;
 try {
   if (typeof require !== "function") {
@@ -53,6 +53,8 @@ try {
   RENDER_DIR = path.join(BRIDGE_DIR, "renders");
   parseLib = require(path.join(REPO, "scripts", "parse-brief.cjs"));
   diffLib = require(path.join(REPO, "scripts", "diff-beats.cjs"));
+  redesignLib = require(path.join(REPO, "scripts", "redesign.cjs"));
+  provLib = require(path.join(REPO, "scripts", "lib", "redesign-providers.cjs"));
   NODE_OK = true;
 } catch (bootErr) {
   panelFatal("bootstrap", bootErr);
@@ -106,6 +108,8 @@ const store = {
   loadBrandKits();
   refreshMasters();
   loadFonts();
+  loadRdComps();
+  rdProviderNote();
   if (state.doc) { $id("btnBuild").disabled = false; $id("btnDiff").disabled = false; renderParse(state.doc, null); }
   [JOBS_DIR, RENDER_DIR].forEach((d) => { try { fs.mkdirSync(d, { recursive: true }); } catch (e) {} });
 })();
@@ -355,7 +359,146 @@ $id("btnMotionApply").addEventListener("click", async () => {
     : '<p class="err">' + esc(r1.result?.error || r2.result?.error || "failed") + "</p>";
 });
 
-// ---------- 05 REVIEW ------------------------------------------------------
+// ---------- 05 REDESIGN ----------------------------------------------------
+// AI comp redesign: analyze (AE) -> concepts (image model via fal.ai) ->
+// reconstruct (LLM plan) -> apply on a DUPLICATE comp. All orchestration
+// lives in scripts/redesign.cjs (shared with the CLI); the panel only
+// supplies UI + its evalScript AE transport.
+const rd = { runDir: null, selected: null, comp: null };
+
+const rdAeCall = async (fn, args) => {
+  const r = await host(fn, args);
+  if (!r.ok) throw new Error(r.error || "host call failed: " + fn);
+  return r.result;
+};
+const rdLog = (m) => status(m);
+
+function fileUrl(p) { return "file://" + encodeURI(p) + "?v=" + Date.now(); }
+
+async function loadRdComps() {
+  try {
+    const r = await rdAeCall("listComps", [""]);
+    const sel = $id("rdComp");
+    const keep = sel.value;
+    sel.innerHTML = "";
+    (r.comps || []).forEach((c) => sel.add(new Option((c.folder ? c.folder + "  /  " : "") + c.name, c.name)));
+    if (keep) sel.value = keep;
+  } catch (e) { status("Comp list failed: " + e.message, "err"); }
+}
+$id("btnRdComps").addEventListener("click", loadRdComps);
+
+function rdProviderNote() {
+  try {
+    $id("rdProviderNote").textContent = provLib.falKey()
+      ? "image model: OpenAI via fal.ai"
+      : "NO FAL KEY — write it to ~/.apostle/fal.key";
+  } catch (e) {}
+}
+
+$id("btnRdAnalyze").addEventListener("click", async () => {
+  const comp = $id("rdComp").value;
+  if (!comp) return status("Pick a comp.", "warn");
+  $id("btnRdAnalyze").disabled = true;
+  try {
+    status("Analyzing " + comp + "…");
+    const r = await redesignLib.analyze({ comp, aeCall: rdAeCall, log: rdLog });
+    rd.runDir = r.runDir; rd.comp = comp; rd.selected = null;
+    $id("rdAnalysis").innerHTML =
+      '<p><span class="ok">ANALYZED</span> ' + r.spec.layers.length + " layers &middot; sampled " + r.time + "s</p>" +
+      '<img class="refimg" src="' + fileUrl(r.reference) + '">' +
+      '<div class="refthumbs" id="rdRefThumbs"></div>';
+    $id("btnRdRefs").disabled = false;
+    $id("btnRdGenerate").disabled = false;
+    $id("rdGallery").innerHTML = "";
+    $id("rdResult").innerHTML = "";
+    $id("btnRdReconstruct").disabled = true;
+    status("Analysis complete — add style refs or generate concepts.", "ok");
+  } catch (e) { status("Analyze failed: " + e.message, "err"); }
+  $id("btnRdAnalyze").disabled = false;
+});
+
+$id("btnRdRefs").addEventListener("click", () => {
+  if (!rd.runDir) return;
+  const res = window.cep.fs.showOpenDialogEx(true, false, "Style reference images (inspiration only)", null, ["png", "jpg", "jpeg", "webp"]);
+  for (const f of (res && res.data) || []) {
+    try { fs.copyFileSync(f, path.join(rd.runDir, "refs", path.basename(f))); } catch (e) {}
+  }
+  renderRefThumbs();
+});
+function renderRefThumbs() {
+  const el = $id("rdRefThumbs");
+  if (!el || !rd.runDir) return;
+  const dir = path.join(rd.runDir, "refs");
+  const imgs = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => /\.(png|jpe?g|webp)$/i.test(f)) : [];
+  el.innerHTML = imgs.map((f) => '<img src="' + fileUrl(path.join(dir, f)) + '" title="' + esc(f) + '">').join("");
+}
+
+async function rdGenerate(regen) {
+  if (!rd.runDir) return;
+  $id("btnRdGenerate").disabled = true;
+  try {
+    status(regen ? "Regenerating concept " + regen + "…" : "Generating concepts… (image model, ~1 min)");
+    await redesignLib.generateConcepts({ runDir: rd.runDir, notes: $id("rdNotes").value, regen, log: rdLog });
+    renderGallery();
+    status("Concepts ready — compare, zoom, select.", "ok");
+  } catch (e) { status("Concept generation failed: " + e.message, "err"); }
+  $id("btnRdGenerate").disabled = false;
+}
+$id("btnRdGenerate").addEventListener("click", () => rdGenerate(undefined));
+
+function renderGallery() {
+  const dir = path.join(rd.runDir, "concepts");
+  const imgs = fs.existsSync(dir) ? fs.readdirSync(dir).filter((f) => /^concept-\d+\.png$/.test(f)) : [];
+  imgs.sort((a, b) => parseInt(a.match(/\d+/)[0], 10) - parseInt(b.match(/\d+/)[0], 10));
+  $id("rdGallery").innerHTML = imgs.length
+    ? '<div class="concepts">' + imgs.map((f) => {
+        const n = parseInt(f.match(/\d+/)[0], 10);
+        return '<div class="concept' + (rd.selected === n ? " selected" : "") + '" data-n="' + n + '">' +
+          '<img src="' + fileUrl(path.join(dir, f)) + '">' +
+          '<div class="cbar"><span>CONCEPT ' + n + '</span><span>' +
+          '<button class="rd-select" data-n="' + n + '">SELECT</button> ' +
+          '<button class="rd-regen" data-n="' + n + '">REGEN</button></span></div></div>';
+      }).join("") + "</div>"
+    : "";
+  document.querySelectorAll("#rdGallery .concept img").forEach((img) =>
+    img.addEventListener("click", () => {
+      $id("rdZoom").innerHTML = '<img src="' + img.src + '">';
+      $id("rdZoom").classList.add("show");
+    }));
+  document.querySelectorAll("#rdGallery .rd-select").forEach((b) =>
+    b.addEventListener("click", () => {
+      rd.selected = Number(b.dataset.n);
+      document.querySelectorAll("#rdGallery .concept").forEach((c) =>
+        c.classList.toggle("selected", Number(c.dataset.n) === rd.selected));
+      $id("btnRdReconstruct").disabled = false;
+    }));
+  document.querySelectorAll("#rdGallery .rd-regen").forEach((b) =>
+    b.addEventListener("click", () => rdGenerate(Number(b.dataset.n))));
+}
+$id("rdZoom").addEventListener("click", () => $id("rdZoom").classList.remove("show"));
+
+$id("btnRdReconstruct").addEventListener("click", async () => {
+  if (!rd.runDir || !rd.selected) return;
+  $id("btnRdReconstruct").disabled = true;
+  try {
+    status("Reconstructing concept " + rd.selected + " — LLM is reading both frames… (a few minutes)");
+    const rec = await redesignLib.reconstruct({ runDir: rd.runDir, concept: rd.selected, log: rdLog });
+    status("Plan ready (" + rec.plan.ops.length + " ops) — applying to a duplicate comp…");
+    const res = await redesignLib.applyPlan({ runDir: rd.runDir, aeCall: rdAeCall, log: rdLog });
+    $id("rdResult").innerHTML =
+      '<p><span class="' + (res.failed ? "warn" : "ok") + '">' + (res.failed ? "PARTIAL" : "REBUILT") + "</span> " +
+      esc(res.comp) + " &middot; " + res.applied + " ops applied" + (res.failed ? ", " + res.failed + " failed" : "") + "</p>" +
+      '<p class="dim small">' + esc(rec.plan.summary) + "</p>" +
+      (res.resultPng ? '<img class="refimg" src="' + fileUrl(res.resultPng) + '">' : "");
+    status("Reconstruction done — " + res.comp + " (original untouched).", "ok");
+  } catch (e) {
+    $id("rdResult").innerHTML = '<p class="err">' + esc(e.message) + "</p>";
+    status("Reconstruction failed.", "err");
+  }
+  $id("btnRdReconstruct").disabled = false;
+});
+
+// ---------- 06 REVIEW ------------------------------------------------------
 $id("btnChecks").addEventListener("click", async () => {
   const master = $id("reviewMaster").value;
   if (!master) return;
@@ -398,7 +541,7 @@ $id("btnClaudeReview").addEventListener("click", () => {
   status("Job queued for Claude.", "ok");
 });
 
-// ---------- 06 CLAUDE: embedded terminal -----------------------------------
+// ---------- 07 CLAUDE: embedded terminal -----------------------------------
 const RELAY_PORT = 8471;
 const term = { xterm: null, ws: null, fit: null };
 
