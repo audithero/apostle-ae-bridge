@@ -73,3 +73,4 @@ settings.local.json
 
 # Apostle overrides: CLAUDE.md is part of this repo
 !CLAUDE.md
+.apostle-runs/

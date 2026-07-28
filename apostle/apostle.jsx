@@ -19,7 +19,11 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.0.0";
+  var LIB_VERSION = "2.1.0";
+
+  // Captured at load time; locates the repo for crash-recovery run snapshots
+  var LIB_FILE = null;
+  try { LIB_FILE = new File($.fileName); } catch (eLibFile) {}
 
   // HandyCam matchNames captured Phase 0 Gate B (apostle/matchnames-handycam.md)
   var HC = {
@@ -62,6 +66,28 @@ var APOSTLE = (function () {
 
   function toJSON(obj) {
     return JSON.stringify(obj, null, 1);
+  }
+
+  // Crash-recovery contract: comps are disposable, beats JSON is the source
+  // of truth. Every successful build snapshots its input + report to
+  // <repo>/.apostle-runs/ so a world lost to an AE crash/restart before a
+  // save rebuilds with one buildFromBeats call on the snapshot's beats.
+  function snapshotRun(beatsData, report) {
+    try {
+      if (!LIB_FILE || !LIB_FILE.exists) return null;
+      var runsDir = new Folder(LIB_FILE.parent.parent.fsName + "/.apostle-runs");
+      if (!runsDir.exists) runsDir.create();
+      var d = new Date();
+      function p2(n) { return (n < 10 ? "0" : "") + n; }
+      var ts = d.getFullYear() + p2(d.getMonth() + 1) + p2(d.getDate()) + "-" +
+        p2(d.getHours()) + p2(d.getMinutes()) + p2(d.getSeconds());
+      var f = new File(runsDir.fsName + "/" + report.masterName + "-" + ts + ".json");
+      f.encoding = "UTF-8";
+      f.open("w");
+      f.write(JSON.stringify({ savedAt: ts, beats: beatsData, report: report }, null, 1));
+      f.close();
+      return f.fsName;
+    } catch (e) { return null; }
   }
 
   function applyEase(prop, keyIndex, inInfluence, outInfluence) {
@@ -670,6 +696,7 @@ var APOSTLE = (function () {
       report.error = err.toString() + (err.line ? (" (line " + err.line + ")") : "");
     }
     app.endUndoGroup();
+    if (report.status === "success") report.snapshot = snapshotRun(data, report);
     return toJSON(report);
   }
 

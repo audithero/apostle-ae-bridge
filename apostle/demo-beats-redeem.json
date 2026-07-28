@@ -1,0 +1,94 @@
+{
+  "meta": {
+    "title": "CommBank Yello V3 Redeeming Points (demo 2)",
+    "fps": 25,
+    "resolution": [1920, 1080],
+    "wpm": 150,
+    "layout": "gallery",
+    "masterName": "APOSTLE_P4",
+    "rig": "auto"
+  },
+  "brand": {
+    "fontHeadingPS": "HelveticaNeue-Bold",
+    "fontBodyPS": "HelveticaNeue",
+    "headingSize": 84,
+    "bodySize": 42,
+    "safeMarginPct": 10,
+    "colors": {
+      "primary": "#FFCC00",
+      "secondary": "#1E1E1E",
+      "background": "#FFFFFF",
+      "text": "#111111"
+    },
+    "logo": null
+  },
+  "beats": [
+    {
+      "id": 1,
+      "vo": "Once you've earned CommBank Yello points, here's how to use them.",
+      "voSpokenWords": 11,
+      "superText": "Use your Yello points, your way",
+      "visual": "Title card",
+      "stylePreset": "titleCard",
+      "durationSec": null,
+      "transitIn": "none"
+    },
+    {
+      "id": 2,
+      "vo": "Redeem for gift cards from big-name retailers, or put points toward travel.",
+      "voSpokenWords": 12,
+      "superText": "Gift cards, travel and more",
+      "visual": "List of redemption categories",
+      "stylePreset": "listBuild",
+      "durationSec": null,
+      "transitIn": "lateralTruck"
+    },
+    {
+      "id": 3,
+      "vo": "In the CommBank app, tap the Yello tab, then Rewards, then Redeem points.",
+      "voSpokenWords": 13,
+      "superText": "Redeem in the CommBank app",
+      "visual": "App walkthrough, two states",
+      "stylePreset": "uiWalkthrough",
+      "uiStates": 2,
+      "durationSec": null,
+      "transitIn": "lateralTruck"
+    },
+    {
+      "id": 4,
+      "vo": "Prefer cash? Convert points straight into your everyday account.",
+      "voSpokenWords": 9,
+      "superText": "Cash out to your account",
+      "visual": "Card to account transfer",
+      "stylePreset": "titleCard",
+      "durationSec": null,
+      "transitIn": "crane"
+    },
+    {
+      "id": 5,
+      "vo": "Track your balance anytime, and see exactly what your points are worth.",
+      "voSpokenWords": 12,
+      "superText": "Track your points balance",
+      "visual": "Balance screen",
+      "stylePreset": "uiWalkthrough",
+      "uiStates": 1,
+      "durationSec": null,
+      "transitIn": "whipOrbit"
+    },
+    {
+      "id": 6,
+      "vo": "And your points won't expire while you stay eligible.",
+      "voSpokenWords": 9,
+      "superText": "Points don't expire while eligible",
+      "visual": "Reassurance card",
+      "stylePreset": "listBuild",
+      "durationSec": null,
+      "transitIn": "dollyZoom"
+    }
+  ],
+  "endcard": {
+    "superText": "Search CommBank Yello",
+    "url": "commbank.com.au/yello",
+    "holdSec": 3.0
+  }
+}

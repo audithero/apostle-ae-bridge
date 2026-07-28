@@ -69,6 +69,17 @@ The deterministic camera check and the rendered frames agreed exactly (zGap 0 �
 
 Transport note: the run used `scripts/ae-run.sh`, an AppleScript-DoScript fallback added when the bridge panel died mid-session — same contract as `bridge-exec.sh executeScript --file` (top-level `return`, JSON result), works whenever AE itself is responsive, no panel needed.
 
+## Phase 4 results (2026-07-28)
+
+Hardening after the live restart incident (AE restart rolled the project back to its last save and destroyed two built worlds):
+
+- **Crash recovery**: `buildFromBeats` (lib v2.1.0) snapshots its input beats + build report to `<repo>/.apostle-runs/<masterName>-<timestamp>.json` on every successful build. Recovery contract: comps are disposable, beats JSON is the source of truth — a lost world rebuilds in one `buildFromBeats` call (~5 s measured).
+- **Preflight**: `scripts/preflight.sh` probes the bridge panel (8 s timeout) then falls back to `scripts/ae-run.sh` (AppleScript DoScript), returning transport + project + dirty flag + library version as JSON. The two transports run the identical script contract.
+- **Save policy** (CLAUDE.md): never save/close the user's project programmatically without their say-so; crash safety comes from snapshots, not saves.
+- **Latency** (measured, warm): bridge panel round-trip 0.27–0.29 s; DoScript round-trip 0.22–0.25 s. Both idle-poll free of AE's render thread; no tuning needed. Build of a 7-beat world ≈ 5 s; 6-frame render pass ≈ 20 s.
+- **Second production script end-to-end**: `apostle/demo-beats-redeem.json` — 6 beats + endcard, **gallery layout** (lateral +x stations, first non-corridor build), full transit vocabulary (lateralTruck, crane, whipOrbit, dollyZoom), `rig: "auto"` (verified it resolves to expression post-Phase-3). Result: all checks green on pass 1 (4,902 props, 8 text layers, 7 stations within 3 px at 1700 z-gap), 6 sampled frames all visually correct. Total 41.4 s world.
+- Known limitation recorded: `stylePreset: "listBuild"` currently renders through the titleCard branch (super + accent bar) — no per-item list build yet. Timing/enum paths are exercised; the dedicated visual is future work.
+
 ## Phase 0 gate results (2026-07-27, AE 26.2.1, bridge v1.10.0)
 
 - **Gate A — PASS (disk-file path)**: `seeFrame` bridge command rendered MASTER at 800×450 (21 KB PNG, in-AE temp-comp downscale) in 0.45 s; Claude Code read it from disk as a native inline image at negligible token cost. The MCP-native `see-frame` tool path (ImageContent over stdio) still needs verification in a session where the AfterEffectsMCP tools are loaded (server was registered mid-session); the disk-file path is the brief's approved fallback and is fully working.

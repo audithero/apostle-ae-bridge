@@ -12,10 +12,10 @@ Closed-loop system: Claude Code drives a live After Effects instance on macOS vi
 
 ## Session preflight (every session, and after any AE restart or tool timeout)
 
-1. AE must be running with the **MCP Bridge Auto** panel open (Window menu > mcp-bridge-auto.jsx) and **Auto-run checked**.
-2. AE preference required: Scripting & Expressions > "Allow Scripts to Write Files and Access Network" enabled. Project expression engine: JavaScript.
-3. Call the `check-bridge` MCP tool. If it fails, stop and ask the user to fix the panel — do not queue commands into a dead bridge.
-4. Auto-save before any automated run: `app.project.save()`. Never `app.project.close()` without saving.
+1. Run `scripts/preflight.sh`. It finds a working transport (bridge panel first, AppleScript DoScript fallback) and reports project name, dirty state, and library version. Only if it exits 1 stop and ask the user — AE is either not running or blocked by a modal dialog.
+2. AE preference required: Scripting & Expressions > "Allow Scripts to Write Files and Access Network" enabled. Project expression engine: JavaScript. For MCP-native tools the **MCP Bridge Auto** panel must be open (Window menu > mcp-bridge-auto.jsx, Auto-run checked); the DoScript fallback needs neither.
+3. Never queue commands into a transport that didn't answer the preflight ping.
+4. Save policy: **never** `app.project.save()` or `app.project.close()` on the user's project without their say-so — an open production project may hold unsaved human work, and saving also bakes test comps into it. Crash safety comes from snapshots instead: every successful `buildFromBeats` writes its beats + report to `<repo>/.apostle-runs/` (gitignored), and a world lost to a crash/restart rebuilds in seconds from its snapshot. Comps are disposable; beats JSON is the source of truth.
 
 ## Verification loop contract
 
