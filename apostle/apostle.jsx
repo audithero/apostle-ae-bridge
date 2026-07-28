@@ -296,6 +296,16 @@ var APOSTLE = (function () {
     var i, b, words, voSec, dwell, dur, transit;
     var transitDur = { dollyPush: 1.1, lateralTruck: 1.0, whipOrbit: 0.75, crane: 1.3, dollyZoom: 1.0, none: 0 };
 
+    // pass 1: every beat's arriving transit (needed for lookahead below)
+    for (i = 0; i < beats.length; i++) {
+      transit = transitDur[beats[i].transitIn || "dollyPush"];
+      if (transit === undefined) transit = 1.1;
+      beats[i]._transit = (i === 0) ? 0 : transit;
+    }
+    // pass 2: durations. The readability floor must survive BOTH the beat's
+    // own arriving transit AND the next beat's departing transit — pixel QA
+    // caught beat-1 leaving after a 1.0s hold because only the arrival was
+    // counted (settle frame still motion-blurred at arrive+1.2).
     for (i = 0; i < beats.length; i++) {
       b = beats[i];
       if (b.durationSec === null || b.durationSec === undefined) {
@@ -306,18 +316,16 @@ var APOSTLE = (function () {
       } else {
         dur = b.durationSec;
       }
-      transit = transitDur[b.transitIn || "dollyPush"];
-      if (transit === undefined) transit = 1.1;
+      var nextTransit = (i + 1 < beats.length) ? beats[i + 1]._transit : 0;
       if (b.superText || b["super"]) {
-        var rest = dur - transit - 0.2;
+        var rest = dur - b._transit - 0.2 - nextTransit;
         if (rest < 1.8) {
           var bump = 1.8 - rest;
           dur = dur + bump;
-          report.warnings.push("Beat " + (i + 1) + " extended by " + bump.toFixed(1) + "s to meet the 1.8s readability floor.");
+          report.warnings.push("Beat " + (i + 1) + " extended by " + bump.toFixed(1) + "s to meet the 1.8s readability floor (incl. departure transit).");
         }
       }
       b._dur = dur;
-      b._transit = (i === 0) ? 0 : transit;
       b._arrive = t;
       t = t + dur;
     }
@@ -402,16 +410,19 @@ var APOSTLE = (function () {
   // name from a guide text layer on the master comp ("FONT Heading" /
   // "FONT Body" — guide, video off, never renders). Changing every font in
   // the build = retyping the PS name in that one layer.
-  function styleExpr(masterName, role) {
+  // sizeMult: per-layer multiplier on the master size slider (list items
+  // render at bodySize * mult while staying fully master-controlled)
+  function styleExpr(masterName, role, sizeMult) {
     var fontLayer = (role === "body") ? "FONT Body" : "FONT Heading";
     var slider = (role === "body") ? "Body Size" : "Heading Size";
     var trackSlider = (role === "body") ? "Body Tracking" : "Heading Tracking";
+    var mult = (sizeMult && sizeMult > 0) ? sizeMult : 1;
     return 'var c = comp("' + masterName + '").layer("CONTROL");\n' +
       'var f = "";\n' +
       'try { f = comp("' + masterName + '").layer("' + fontLayer + '").text.sourceText.toString().replace(/^\\s+|\\s+$/g, ""); } catch (e) { f = ""; }\n' +
       'var st = text.sourceText.style;\n' +
       'if (f != "") { try { st = st.setFont(f); } catch (e2) {} }\n' +
-      'st = st.setFontSize(c.effect("' + slider + '")("Slider"))\n' +
+      'st = st.setFontSize(c.effect("' + slider + '")("Slider") * ' + mult + ')\n' +
       '  .setFillColor(c.effect("Text Color")("Color"));\n' +
       'try { st = st.setTracking(c.effect("' + trackSlider + '")("Slider")); } catch (e3) {}\n' +
       'st;';
@@ -455,20 +466,33 @@ var APOSTLE = (function () {
     var tl = comp.layers.addText(str);
     tl.name = opts.name || ("TXT " + str.substring(0, 18));
     tl.label = 2;
-    var doc = tl.property("ADBE Text Properties").property("ADBE Text Document").value;
-    doc.resetCharStyle();
-    doc.fontSize = opts.size || 84;
-    doc.font = opts.font || data.brand.fontHeadingPS;
-    doc.fillColor = hexToRGB(data.brand.colors.text);
-    doc.applyFill = true;
-    doc.tracking = (opts.tracking !== undefined) ? opts.tracking : 10;
-    doc.justification = ParagraphJustification.CENTER_JUSTIFY;
-    tl.property("ADBE Text Properties").property("ADBE Text Document").setValue(doc);
+    // AE 26 intermittently hands back a garbage TextDocument on the first
+    // .value read after addText (fillColor rejects junk like [3126,1920,
+    // 1080]); non-deterministic, project-state dependent. Re-fetch + retry
+    // once — the second read is reliably sane.
+    var docProp = tl.property("ADBE Text Properties").property("ADBE Text Document");
+    var attempt;
+    for (attempt = 0; attempt < 2; attempt++) {
+      try {
+        var doc = docProp.value;
+        doc.resetCharStyle();
+        doc.fontSize = opts.size || 84;
+        doc.font = opts.font || data.brand.fontHeadingPS;
+        doc.fillColor = hexToRGB(data.brand.colors.text);
+        doc.applyFill = true;
+        doc.tracking = (opts.tracking !== undefined) ? opts.tracking : 10;
+        doc.justification = ParagraphJustification.CENTER_JUSTIFY;
+        docProp.setValue(doc);
+        break;
+      } catch (eDoc) {
+        if (attempt === 1) report.warnings.push("Text style baking failed twice on '" + tl.name + "' (" + eDoc.toString() + "); layer keeps defaults" + (opts.linkStyle ? " until the style expression evaluates" : "") + ".");
+      }
+    }
     tl.property("ADBE Transform Group").property("ADBE Position").setValue(opts.pos || [comp.width / 2, comp.height / 2]);
     if (report.styleExpressions && opts.linkStyle) {
       try {
         tl.property("ADBE Text Properties").property("ADBE Text Document").expression =
-          styleExpr(masterName, opts.role || "heading");
+          styleExpr(masterName, opts.role || "heading", opts.sizeMult);
       } catch (e) {
         report.warnings.push("Style expression failed on layer " + tl.name + ": " + e.toString());
       }
@@ -596,7 +620,7 @@ var APOSTLE = (function () {
           headLayer.enabled = false;
         }
         for (var li = 0; li < itemN; li++) {
-          var itLay = makeText(c, split.items[li], { name: "Item " + (li + 1), size: hasHead ? (data.brand.bodySize || 42) + 12 : 64, font: data.brand.fontBodyPS, role: "body", pos: [w / 2, firstY + li * lineGap], linkStyle: true, autoFit: true }, data, report, masterName);
+          var itLay = makeText(c, split.items[li], { name: "Item " + (li + 1), size: hasHead ? (data.brand.bodySize || 42) + 18 : 64, sizeMult: hasHead ? 1.4 : 1.55, font: data.brand.fontBodyPS, role: "body", pos: [w / 2, firstY + li * lineGap], linkStyle: true, autoFit: true }, data, report, masterName);
           slideUpReveal(itLay, (hasHead ? 0.75 : 0.55) + li * prof.stagger, null, prof);
         }
       }
@@ -755,10 +779,21 @@ var APOSTLE = (function () {
           ];
           pos.setValueAtTime(arrive - transit * 0.5, mid);
         } else if (tt === "whipOrbit") {
-          // lateral whip: rig yaw swings out and back across the move
+          // lateral whip: rig yaw swings out and back across the move.
+          // NEGATIVE yaw = look BACK at the outgoing station: incoming
+          // text only reveals 0.1s after arrival (v2.2 contract), so a
+          // forward whip stares at a blank plane — pixel QA caught the
+          // fully white mid-whip frame. Looking back keeps revealed
+          // content in view for the whole whip.
           yrot.setValueAtTime(arrive - transit, 0);
-          yrot.setValueAtTime(arrive - transit * 0.5, 26);
+          yrot.setValueAtTime(arrive - transit * 0.5, -26);
           yrot.setValueAtTime(arrive, 0);
+          mid = [
+            (stations[i - 1].pos[0] + stations[i].pos[0]) / 2,
+            (stations[i - 1].pos[1] + stations[i].pos[1]) / 2,
+            ((stations[i - 1].pos[2] + stations[i].pos[2]) / 2) - 420
+          ];
+          pos.setValueAtTime(arrive - transit * 0.5, mid);
         } else if (tt === "dollyZoom" && zoomProp) {
           // vertigo push: tight zoom at departure easing to base on arrival;
           // first key = baseZoom*1.18 only from the transit start, and the
@@ -766,6 +801,18 @@ var APOSTLE = (function () {
           zoomProp.setValueAtTime(arrive - transit, baseZoom);
           zoomProp.setValueAtTime(arrive - transit * 0.85, baseZoom * 1.18);
           zoomProp.setValueAtTime(arrive, baseZoom);
+        } else if (tt === "lateralTruck") {
+          // mid-transit z pull-back widens the view so neighbor content
+          // stays visible — pixel QA caught a fully white mid-truck frame
+          // when both supers were narrow (planes visible but their
+          // centered text just off both edges). Trucks only: dollyPush
+          // already moves in z, and "none" has no transit span at all.
+          mid = [
+            (stations[i - 1].pos[0] + stations[i].pos[0]) / 2,
+            (stations[i - 1].pos[1] + stations[i].pos[1]) / 2,
+            ((stations[i - 1].pos[2] + stations[i].pos[2]) / 2) - 420
+          ];
+          pos.setValueAtTime(arrive - transit * 0.5, mid);
         }
       }
       addStationMarker(rigInfo.rig, arrive, i, b);
@@ -1933,6 +1980,60 @@ var APOSTLE = (function () {
     return applyBeatStructure(masterName, beatsJSON);
   }
 
+  // ---------------------------------------------------------------
+  // MOVIE RENDER (Phase 8)
+  // In-app render-queue render of a comp to a movie file — works on the
+  // open (possibly unsaved) project, unlike aerender which needs an .aep
+  // on disk (scripts/aerender-master.sh covers that path). Blocks AE for
+  // the duration. Other queued RQ items are disabled during the render
+  // and restored after; our item is removed on completion.
+  // ---------------------------------------------------------------
+
+  function renderMovie(compName, outPath, templateName) {
+    var comp = findComp(compName);
+    if (!comp) return { status: "error", error: "Comp not found: " + compName };
+    var rq = app.project.renderQueue;
+    var report = { status: "success", comp: compName, out: outPath, template: null, seconds: 0, warnings: [] };
+    var disabled = [];
+    var i;
+    for (i = 1; i <= rq.numItems; i++) {
+      try {
+        if (rq.item(i).status === RQItemStatus.QUEUED && rq.item(i).render) {
+          rq.item(i).render = false;
+          disabled.push(i);
+        }
+      } catch (eD) {}
+    }
+    var rqi = null;
+    try {
+      rqi = rq.items.add(comp);
+      var om = rqi.outputModule(1);
+      var tpls = templateName ? [templateName] : ["H.264 - Match Render Settings - 15 Mbps", "High Quality", "Lossless"];
+      for (i = 0; i < tpls.length; i++) {
+        try { om.applyTemplate(tpls[i]); report.template = tpls[i]; break; } catch (eT) {}
+      }
+      if (!report.template) report.warnings.push("No output template matched; using module defaults.");
+      om.file = new File(outPath);
+      var t0 = new Date().getTime();
+      rq.render();
+      report.seconds = Math.round((new Date().getTime() - t0) / 100) / 10;
+      if (rqi.status !== RQItemStatus.DONE) {
+        report.status = "error";
+        report.error = "Render did not complete (status " + rqi.status + ")";
+      }
+      report.out = om.file.fsName;
+    } catch (e) {
+      report.status = "error";
+      report.error = e.toString();
+    } finally {
+      try { if (rqi) rqi.remove(); } catch (eR) {}
+      for (i = 0; i < disabled.length; i++) {
+        try { rq.item(disabled[i]).render = true; } catch (eE) {}
+      }
+    }
+    return report;
+  }
+
   // djb2 over a comp's serialized state — cheap fingerprint for the
   // "untouched beats stay byte-identical" invariant checks
   function hashCompState(compName) {
@@ -1953,6 +2054,7 @@ var APOSTLE = (function () {
     rebuildBeatScene: rebuildBeatScene,
     applyHandheldPolish: applyHandheldPolish,
     applyEaseExpression: applyEaseExpression,
+    renderMovie: renderMovie,
     hashCompState: hashCompState,
     findMasterComps: findMasterComps,
     listFonts: listFonts,
