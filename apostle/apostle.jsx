@@ -19,7 +19,7 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.2.1";
+  var LIB_VERSION = "2.3.0";
 
   // Captured at load time; locates the repo for crash-recovery run snapshots
   var LIB_FILE = null;
@@ -1322,9 +1322,138 @@ var APOSTLE = (function () {
   }
 
   // ---------------------------------------------------------------
+  // TYPOGRAPHY CONTROL
+  // Scripted access to the master font system: the FONT Heading / FONT
+  // Body guide layers (PostScript name holders) and the CONTROL sliders
+  // (Heading/Body Size, Heading/Body Tracking). Shared by the Apostle
+  // Fonts panel and bridge callers.
+  // ---------------------------------------------------------------
+
+  var TYPO_SLIDERS = {
+    headingSize: "Heading Size",
+    bodySize: "Body Size",
+    headingTracking: "Heading Tracking",
+    bodyTracking: "Body Tracking"
+  };
+
+  // Master comps are identified structurally: CONTROL null + both font
+  // guide layers. Returns names, newest project item first.
+  function findMasterComps() {
+    var out = [];
+    for (var i = app.project.numItems; i >= 1; i--) {
+      var it = app.project.item(i);
+      if (!(it instanceof CompItem)) continue;
+      if (findLayer(it, "CONTROL") && findLayer(it, "FONT Heading") && findLayer(it, "FONT Body")) {
+        out.push(it.name);
+      }
+    }
+    return out;
+  }
+
+  // Installed fonts grouped by family via app.fonts (AE 24+).
+  // Returns [{family, styles: [{style, ps}]}]; empty array when the API
+  // is unavailable — callers must fall back to manual PS-name entry.
+  function listFonts() {
+    var out = [];
+    try {
+      if (!(app.fonts && app.fonts.allFonts)) return out;
+      var groups = app.fonts.allFonts;
+      for (var i = 0; i < groups.length; i++) {
+        var g = groups[i];
+        if (!g || g.length === 0) continue;
+        var fam = { family: String(g[0].familyName), styles: [] };
+        for (var j = 0; j < g.length; j++) {
+          fam.styles.push({ style: String(g[j].styleName), ps: String(g[j].postScriptName) });
+        }
+        out.push(fam);
+      }
+    } catch (e) {}
+    return out;
+  }
+
+  function readGuideText(comp, layerName) {
+    var l = findLayer(comp, layerName);
+    if (!l) return null;
+    var txt = l.property("ADBE Text Properties").property("ADBE Text Document").value.text;
+    return String(txt).replace(/^\s+|\s+$/g, "");
+  }
+
+  function setGuideText(comp, layerName, str) {
+    var l = findLayer(comp, layerName);
+    if (!l) return false;
+    var prop = l.property("ADBE Text Properties").property("ADBE Text Document");
+    var doc = prop.value;
+    doc.text = str;
+    prop.setValue(doc);
+    return true;
+  }
+
+  function readTypography(masterName) {
+    var comp = findComp(masterName);
+    if (!comp) return { status: "error", error: "Comp not found: " + masterName };
+    var out = {
+      status: "success",
+      headingFont: readGuideText(comp, "FONT Heading"),
+      bodyFont: readGuideText(comp, "FONT Body")
+    };
+    var ctrl = findLayer(comp, "CONTROL");
+    for (var k in TYPO_SLIDERS) {
+      out[k] = null;
+      if (ctrl) {
+        try { out[k] = ctrl.property("ADBE Effect Parade").property(TYPO_SLIDERS[k]).property("ADBE Slider Control-0001").value; } catch (e) {}
+      }
+    }
+    return out;
+  }
+
+  // opts: any of {headingFont, bodyFont, headingSize, bodySize,
+  // headingTracking, bodyTracking}. Omitted keys are left untouched.
+  function applyTypography(masterName, opts) {
+    var comp = findComp(masterName);
+    if (!comp) return { status: "error", error: "Comp not found: " + masterName };
+    if (!opts) opts = {};
+    var report = { status: "success", applied: [], warnings: [] };
+    app.beginUndoGroup("Apostle applyTypography");
+    try {
+      var fontKeys = { headingFont: "FONT Heading", bodyFont: "FONT Body" };
+      for (var fk in fontKeys) {
+        if (opts[fk] === undefined || opts[fk] === null) continue;
+        var ps = String(opts[fk]).replace(/^\s+|\s+$/g, "");
+        if (ps === "") continue;
+        if (!fontAvailable(ps)) {
+          report.warnings.push("Font not found by PostScript name: " + ps + ". AE will substitute silently.");
+        }
+        if (setGuideText(comp, fontKeys[fk], ps)) report.applied.push(fk);
+        else report.warnings.push("Guide layer missing: " + fontKeys[fk]);
+      }
+      var ctrl = findLayer(comp, "CONTROL");
+      for (var sk in TYPO_SLIDERS) {
+        if (opts[sk] === undefined || opts[sk] === null) continue;
+        if (!ctrl) { report.warnings.push("CONTROL layer missing; sliders not set."); break; }
+        try {
+          ctrl.property("ADBE Effect Parade").property(TYPO_SLIDERS[sk]).property("ADBE Slider Control-0001").setValue(Number(opts[sk]));
+          report.applied.push(sk);
+        } catch (e2) {
+          report.warnings.push("Could not set slider " + TYPO_SLIDERS[sk] + ": " + e2.toString());
+        }
+      }
+    } catch (e) {
+      report.status = "error";
+      report.error = e.toString();
+    } finally {
+      app.endUndoGroup();
+    }
+    return report;
+  }
+
+  // ---------------------------------------------------------------
 
   return {
     version: LIB_VERSION,
+    findMasterComps: findMasterComps,
+    listFonts: listFonts,
+    readTypography: readTypography,
+    applyTypography: applyTypography,
     HC: HC,
     buildFromBeats: buildFromBeats,
     serializeCompState: serializeCompState,

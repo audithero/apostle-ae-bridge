@@ -1,0 +1,806 @@
+<!DOCTYPE html>
+<html>
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>MotionAmigo</title>
+  
+  <!-- Inter Font -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+  
+  <link rel="stylesheet" href="css/main.css">
+  <link rel="stylesheet" href="css/xterm.css">
+
+  <!-- Physics Engine -->
+  <script src="js/planck.min.js"></script>
+  <script src="js/planck-loader.js"></script>
+  <script src="js/physics-engine.js"></script>
+
+  <!-- PixiJS — generative sketch sandbox (scene-graph based, maps to AE layers) -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/pixi.js/7.3.2/pixi.min.js"></script>
+
+  <!-- p5.js — creative-coding sketch sandbox (immediate-mode draw loop,
+       Perlin noise, vector math, WEBGL mode). Core only; skip p5.sound to
+       keep payload small. Loaded for the sketch component's 'p5' runtime. -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/p5.js/1.9.4/p5.min.js"></script>
+</head>
+<body>
+
+  <!-- Platform-support blocking overlay (Apple Silicon + macOS 13+ only).
+       Shown from initPanelNormal when the host fails the arch/OS floor;
+       blocks all panel interaction so the user isn't left to discover the
+       mismatch via silent "Not Connected" failures downstream. Content is
+       filled in by checkPlatformSupport(). -->
+  <div class="unsupported-platform-overlay hidden" id="unsupportedPlatformOverlay">
+    <div class="unsupported-platform-card">
+      <div class="unsupported-platform-title">Unsupported platform</div>
+      <div class="unsupported-platform-message" id="unsupportedPlatformMessage"></div>
+      <div class="unsupported-platform-note">
+        MotionAmigo is currently macOS 13+ on Apple Silicon only.
+      </div>
+      <!-- Mount point for the reusable email-signup widget (mountSubscribeForm,
+           source 'unsupported_platform'). Filled in by checkPlatformSupport(). -->
+      <div id="unsupportedPlatformSubscribe"></div>
+    </div>
+  </div>
+
+  <!-- SVG Definitions for Knobs -->
+  <svg style="position: absolute; width: 0; height: 0; overflow: hidden;">
+    <defs>
+      <!-- Arc gradient (steel blue ramp) -->
+      <linearGradient id="knobGradient" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#7a9bbb" />
+        <stop offset="50%" stop-color="#597b9f" />
+        <stop offset="100%" stop-color="#3d5f80" />
+      </linearGradient>
+      <!-- Teal arc gradient (complementary) -->
+      <linearGradient id="knobGradientTeal" x1="0%" y1="0%" x2="100%" y2="100%">
+        <stop offset="0%" stop-color="#45EED0" />
+        <stop offset="50%" stop-color="#2CA89A" />
+        <stop offset="100%" stop-color="#136E63" />
+      </linearGradient>
+      <!-- Arc gradient (dark at left/7:30 start, bright at right/5:00 end) -->
+      <linearGradient id="knobGradientScale" x1="0%" y1="50%" x2="100%" y2="50%">
+        <stop offset="0%" stop-color="#1a3a5c" />
+        <stop offset="50%" stop-color="#3b7dd8" />
+        <stop offset="100%" stop-color="#6aadff" />
+      </linearGradient>
+      <!-- Soft metallic body gradient -->
+      <radialGradient id="knobBodyGradient" cx="30%" cy="30%" r="70%">
+        <stop offset="0%" stop-color="#2a2a32" />
+        <stop offset="100%" stop-color="#141418" />
+      </radialGradient>
+      <!-- Soft metallic body gradient (hover) -->
+      <radialGradient id="knobBodyGradientHover" cx="30%" cy="30%" r="70%">
+        <stop offset="0%" stop-color="#323238" />
+        <stop offset="100%" stop-color="#1a1a1e" />
+      </radialGradient>
+    </defs>
+  </svg>
+  
+  <!-- Header -->
+  <div class="header">
+    <div class="mode-toggle">
+      <span class="header-title">MotionAmigo</span>
+      <button class="license-key-btn" id="licenseKeyBtn" title="License">ACTIVATE</button>
+    </div>
+    <!-- AI Target Toggle — centered in the header between the title group and the status group -->
+    <div class="ai-target-toggle" id="aiTargetToggle" title="Choose AI app">
+      <button class="ai-target-btn active" data-target="claude">Claude</button>
+      <button class="ai-target-btn" data-target="codex">Codex</button>
+    </div>
+    <div class="status" id="statusIndicator">
+      <!-- Future feature, hidden for now (display:none). It was already a disabled "coming soon" teaser (pointer-events:none); the placeholder + its uploadToWeb() handler stay in code. -->
+      <button class="upload-to-web-btn" id="uploadToWebBtn" title="Upload active composition to web" style="display: none;">
+        <svg class="upload-icon" viewBox="0 0 16 16" width="12" height="12" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M8 10V2M8 2L5 5M8 2l3 3"/>
+          <path d="M2 10v2a2 2 0 0 0 2 2h8a2 2 0 0 0 2-2v-2"/>
+        </svg>
+        <span class="upload-btn-label">Upload to Web</span>
+      </button>
+      <span id="statusText">Connecting...</span>
+      <!-- Unified connection dot: three visual states — solid green
+           (connected), pulsing amber (connecting/reconnecting), solid
+           red (not connected). Replaces the earlier split of a binary
+           statusDot + a granular relayDot that both tracked the same
+           signal in our default relay-mode topology. -->
+      <span class="status-dot" id="statusDot"></span>
+      <!-- Discoverability affordance for the Not-Connected causes popover.
+           Hidden while connected or reconnecting; shown as a small "more
+           info" button next to the red dot when we're disconnected.
+           A <button> (not <span>) so the control is keyboard-focusable
+           and activatable via Enter/Space for free. -->
+      <button type="button" class="status-info-badge hidden" id="statusInfoBadge" title="Click for troubleshooting steps">more info</button>
+      <div class="menu-wrapper">
+        <button class="menu-btn" id="menuBtn">&#9776;</button>
+        <div class="menu-dropdown" id="menuDropdown">
+          <button class="menu-item" data-action="setup">Set up MotionAmigo</button>
+          <button class="menu-item" data-action="help" aria-expanded="false" aria-controls="helpSubmenu">Help Center<span class="menu-caret" aria-hidden="true">&#9660;</span></button>
+          <div class="menu-subitems hidden" id="helpSubmenu" role="group" aria-label="Help Center">
+            <button class="menu-item menu-subitem" data-action="troubleshooting">Troubleshooting</button>
+            <button class="menu-item menu-subitem" data-action="faq">FAQ</button>
+            <button class="menu-item menu-subitem" data-action="support">Contact Support</button>
+          </div>
+          <div class="menu-divider"></div>
+          <button class="menu-item" data-action="deactivateLicense">Deactivate License</button>
+          <div class="menu-divider"></div>
+          <button class="menu-item menu-item--danger" data-action="clearHistory">Clear History</button>
+          <button class="menu-item menu-item--danger" data-action="clearPresets">Clear All Presets</button>
+          <div class="menu-divider"></div>
+          <button class="menu-item" data-action="dataCollection">Data Collection</button>
+          <button class="menu-item" data-action="about">About</button>
+          <div class="menu-divider"></div>
+          <button class="menu-item" data-action="commands">Open Commands Folder</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Confirm Modal -->
+    <div class="confirm-overlay" id="confirmOverlay">
+      <div class="confirm-modal">
+        <p class="confirm-message" id="confirmMessage"></p>
+        <label class="confirm-remember hidden" id="confirmRemember">
+          <input type="checkbox" id="confirmRememberCheck">
+          <span>Don't ask again</span>
+        </label>
+        <div class="confirm-actions">
+          <button class="confirm-btn confirm-btn--cancel" id="confirmCancel">Cancel</button>
+          <button class="confirm-btn confirm-btn--ok" id="confirmOk">Confirm</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alert Modal (single-button acknowledgment) -->
+    <div class="confirm-overlay" id="alertOverlay">
+      <div class="confirm-modal alert-modal">
+        <div class="alert-icon" id="alertIcon"></div>
+        <p class="confirm-message" id="alertMessage"></p>
+        <div class="confirm-actions alert-actions">
+          <button class="confirm-btn confirm-btn--ok" id="alertOk">OK</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Question Modal (Claude asks the user) -->
+    <div class="confirm-overlay" id="questionOverlay">
+      <div class="confirm-modal question-modal">
+        <div class="question-header">
+          <span class="question-icon">?</span>
+          <span class="question-label">MotionAmigo has a question</span>
+        </div>
+        <p class="confirm-message" id="questionMessage"></p>
+        <div class="question-choices" id="questionChoices"></div>
+        <div class="question-input-wrap" id="questionInputWrap" style="display:none;">
+          <textarea class="question-input" id="questionInput" rows="2" placeholder="Type your answer..."></textarea>
+        </div>
+        <div class="confirm-actions question-actions">
+          <button class="confirm-btn confirm-btn--cancel" id="questionSkip">Skip</button>
+          <button class="confirm-btn confirm-btn--ok" id="questionSubmit" style="display:none;">Send</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Message Overlay (Claude sends informational response) -->
+    <div class="confirm-overlay" id="messageOverlay">
+      <div class="confirm-modal message-modal">
+        <div class="message-header">
+          <span class="message-icon">i</span>
+          <span class="message-label" id="messageTitle">Info</span>
+          <button class="message-close" id="messageClose">&times;</button>
+        </div>
+        <div class="message-body" id="messageBody"></div>
+      </div>
+    </div>
+
+    <!-- About Overlay -->
+    <div class="confirm-overlay" id="aboutOverlay">
+      <div class="confirm-modal about-modal">
+        <div class="about-logo">MotionAmigo</div>
+        <div class="about-version">Version Beta</div>
+        <div class="about-engine-version" id="aboutEngineVersion" style="display:none"></div>
+        <div class="about-divider"></div>
+        <div class="about-copyright">&copy; 2026 MotionAmigo. All rights reserved.</div>
+        <div class="confirm-actions about-actions">
+          <button class="about-close-btn" id="aboutCloseBtn">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Welcome Overlay (shown on every panel open until the user checks "Don't show again") -->
+    <div class="confirm-overlay" id="welcomeOverlay">
+      <div class="confirm-modal welcome-modal">
+        <div class="about-logo">Welcome to MotionAmigo</div>
+        <div class="welcome-body">
+          <p class="welcome-intro">Let's get you going with your first generation</p>
+          <ol class="welcome-steps">
+            <li>Open the <strong>Presets</strong> dropdown.</li>
+            <li>Select <strong>▶ Start here — Matrix Dots demo</strong>.</li>
+            <li>Make sure <strong>Fast</strong> is selected.</li>
+            <li>Click <strong>Send</strong>.</li>
+          </ol>
+          <p class="welcome-expect">The agent will work on it for ~3-4 minutes. No two runs are identical — here's a representative example of what it can produce:</p>
+          <p class="welcome-links">
+            <a class="about-link welcome-link" href="#" data-url="https://vimeo.com/1195791386">Sample generation of the Matrix Dots Demo &rarr;</a>
+          </p>
+          <p class="welcome-expect">Want an in-depth walkthrough?</p>
+          <p class="welcome-links">
+            <a class="about-link welcome-link" href="#" data-url="https://youtu.be/hGfjfJTnjx4">Watch the tutorial &rarr;</a>
+          </p>
+        </div>
+        <label class="confirm-remember welcome-remember" id="welcomeRemember">
+          <input type="checkbox" id="welcomeRememberCheck">
+          <span>Don't show again</span>
+        </label>
+        <div class="confirm-actions about-actions">
+          <button class="about-close-btn" id="welcomeCloseBtn">Got it</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- macOS TCC App Management Notice (one-time, before first HTML footage render on Sonoma+) -->
+    <div class="confirm-overlay" id="tccNoticeOverlay">
+      <div class="confirm-modal welcome-modal">
+        <div class="about-logo">About the macOS permission prompt</div>
+        <div class="welcome-body">
+          <p class="welcome-intro">
+            Rendering HTML sketches to footage uses Chrome on your Mac. On macOS Sonoma and later, you may see a notification saying After Effects "was prevented from modifying apps." This is a standard macOS prompt — nothing is modified, and your render will complete normally.
+          </p>
+          <p class="welcome-expect">
+            To dismiss the prompt permanently, grant After Effects <strong>App Management</strong> permission in System Settings.
+          </p>
+        </div>
+        <div class="confirm-actions about-actions tcc-notice-actions">
+          <button class="about-close-btn" id="tccNoticeSettingsBtn">Open System Settings</button>
+          <button class="about-close-btn" id="tccNoticeCloseBtn">Got it</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Collection Overlay -->
+    <div class="confirm-overlay" id="dataCollectionOverlay">
+      <div class="confirm-modal about-modal data-collection-modal">
+        <div class="about-logo">Data Collection</div>
+        <div class="data-collection-body">
+          <p class="data-collection-intro">Help us improve MotionAmigo by sharing anonymous usage data. We collect:</p>
+          <ul class="data-collection-list">
+            <li>Session timing, panel actions, component usage</li>
+            <li>Tool call names, durations, success/failure</li>
+            <li>Error categories and counts</li>
+            <li>Anonymous machine ID hash</li>
+          </ul>
+          <p class="data-collection-never">We <strong>never</strong> collect prompt text, composition names, file paths, or any content you create &mdash; nor your IP address, location, or device fingerprint.</p>
+          <p class="data-collection-crash"><strong>Error reports</strong> (crash stack traces with paths redacted) are collected separately to fix bugs and aren&rsquo;t controlled by this toggle.</p>
+          <p class="data-collection-link">
+            <a class="about-link" href="#" data-url="https://motionamigo.com/privacy">Read the full policy &rarr;</a>
+          </p>
+        </div>
+        <label class="data-collection-toggle">
+          <input type="checkbox" id="dataCollectionToggle">
+          <span class="data-collection-toggle-label">Share anonymous usage data</span>
+        </label>
+        <div class="confirm-actions about-actions">
+          <button class="about-close-btn" id="dataCollectionCloseBtn">Close</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- License Activation Overlay -->
+    <div class="license-overlay" id="licenseOverlay">
+      <div class="license-modal">
+        <div class="license-logo">MotionAmigo</div>
+        <p class="license-subtitle">Enter your license key to activate</p>
+        <div class="license-input-wrap">
+          <input type="text" class="license-input" id="licenseKeyInput"
+                 placeholder="MA-XXXX-XXXX-XXXX-XXXX" maxlength="24"
+                 spellcheck="false" autocomplete="off">
+        </div>
+        <p class="license-error hidden" id="licenseError"></p>
+        <button class="license-activate-btn" id="licenseActivateBtn">Activate</button>
+        <p class="license-footer">
+          Don't have a key? <a class="license-link" id="licensePurchaseLink" href="#">Purchase here</a>
+        </p>
+        <p class="license-footer">
+          Lost your key? <a class="license-link" id="licenseRecoverLink" href="#">Recover via email</a>
+        </p>
+
+        <!-- Recovery form (hidden by default) -->
+        <div class="license-recover-form hidden" id="licenseRecoverForm">
+          <div class="license-input-wrap">
+            <input type="email" class="license-input" id="licenseRecoverEmail"
+                   placeholder="your@email.com"
+                   spellcheck="false" autocomplete="off">
+          </div>
+          <button class="license-activate-btn license-recover-btn" id="licenseRecoverBtn">Send Recovery Email</button>
+          <p class="license-recover-msg hidden" id="licenseRecoverMsg"></p>
+        </div>
+      </div>
+    </div>
+
+    <!-- Guided Setup Overlay (Epic A — first-run configuration flow). The step
+         rows are rendered dynamically by renderSetupOverlay() from
+         getSetupState(); this is only the shell. On first run it gates the
+         welcome overlay until the user is configured or clicks Skip. -->
+    <div class="setup-overlay" id="setupOverlay">
+      <div class="setup-modal">
+        <div class="setup-logo">Set up MotionAmigo</div>
+        <p class="setup-subtitle">A couple of steps and you're ready to generate.</p>
+        <div class="setup-backend">
+          <div class="setup-backend-label">Which AI agent do you want to use?</div>
+          <div class="ai-target-toggle setup-backend-toggle" id="setupBackendToggle">
+            <button class="ai-target-btn" data-target="claude" type="button">Claude Code</button>
+            <button class="ai-target-btn" data-target="codex" type="button">Codex</button>
+          </div>
+        </div>
+        <div class="setup-steps" id="setupSteps"></div>
+        <div class="setup-verify-msg hidden" id="setupVerifyMsg"></div>
+        <div class="setup-actions">
+          <button class="setup-primary-btn" id="setupVerifyBtn" type="button">Verify &amp; continue</button>
+        </div>
+        <a href="#" class="setup-help-link" id="setupHelpLink">Stuck? Setup help &amp; troubleshooting</a>
+        <a href="#" class="setup-skip" id="setupSkipLink">Skip for now</a>
+      </div>
+    </div>
+
+    <!-- Toast Container -->
+    <div class="toast-container" id="toastContainer"></div>
+  </div>
+
+  <!-- ==================== BRIDGE MODE PANEL ==================== -->
+  <div id="bridgePanel" class="mode-panel active">
+
+    <!-- Timeline Control Section -->
+    <div class="timeline-control-section">
+      <div class="timeline-control-row">
+        <div class="timeline-mode-toggle">
+          <button class="timeline-mode-btn" id="timelineResetBtn" title="Reset panel to clean slate">
+            <span class="timeline-mode-label">Reset</span>
+          </button>
+          <!-- Deprecated: "From <frame>" input. JS scaffolding in main.js
+               (timelineState, initTimelineControl, getCurrentStartFrame,
+               advanceCurrentFrame, etc.) is preserved for now in case the
+               start-frame surface is reintroduced. No live consumer today. -->
+        </div>
+        <button class="timeline-action-btn inactive" id="generationDeleteInlineBtn" disabled title="No generation to delete">
+          <span class="timeline-mode-label" id="generationDeleteLabel">Undo generation</span>
+        </button>
+      </div>
+    </div>
+
+    <!-- Setup cards: first-run pre-flight surface. Rendered dynamically by
+         runSetupChecks() when the selected AI backend's CLI is missing or
+         when AE's "Allow Scripts to Write Files and Access Network" is off.
+         Each card is actionable (install link, AE prefs path) + has a
+         Re-check button so the user can resolve the issue and continue
+         without a full panel reload. Container is hidden when every check
+         passes. See docs/decisions/installation-dependencies.md. -->
+    <div class="setup-cards hidden" id="setupCards"></div>
+
+    <!-- Not-Connected causes popover: click-to-expand list that replaces
+         the silent red dot with a common-causes checklist. Static content —
+         no diagnostic branching (P2.24 covers the full decision tree). -->
+    <div class="not-connected-causes hidden" id="notConnectedCauses">
+      <div class="not-connected-causes-title">Not connected — common causes</div>
+      <ul class="not-connected-causes-list">
+        <li>Relay process died or hasn't restarted — click Retry.</li>
+        <li>Internet connection dropped (license + MCP are remote).</li>
+        <li>License expired or deactivated — reactivate your license using the app's activation flow.</li>
+        <li>Claude or Codex CLI not installed, or not authenticated (run <code>claude</code> or <code>codex</code> to sign in) — the panel shows a setup card above when this is the cause.</li>
+      </ul>
+      <div class="not-connected-causes-actions">
+        <button class="not-connected-retry-btn" id="notConnectedSetupBtn">Open setup</button>
+        <button class="not-connected-retry-btn" id="notConnectedRetryBtn">Retry</button>
+      </div>
+    </div>
+
+    <!-- Presets Section (User's saved presets) -->
+    <div class="section-header clickable" id="presetsHeader">
+      <div class="section-header-left">
+        <span class="section-title">Presets</span>
+        <span class="preset-active-name hidden" id="presetActiveName" title="Click to rename"></span>
+      </div>
+      <div class="section-header-right">
+        <button class="section-add-btn import-preset-btn" id="importPresetBtn" title="Import preset from file">
+          <svg width="12" height="12" viewBox="0 0 12 12" fill="none"><path d="M6 1v7M3 5l3 3 3-3" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/><path d="M1 9v1.5A1.5 1.5 0 002.5 12h7A1.5 1.5 0 0011 10.5V9" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+        </button>
+        <button class="section-add-btn" id="savePresetBtn" title="Save current settings as preset">+</button>
+        <input type="file" id="importPresetFileInput" accept=".json" style="display: none;">
+        <svg class="section-chevron" id="presetsChevron" width="16" height="16" viewBox="0 0 16 16"><path d="M8 11L3 6H13L8 11Z" fill="currentColor"/></svg>
+      </div>
+    </div>
+    <!-- Preset save context menu (shown when a preset is active) -->
+    <div class="context-menu hidden" id="presetSaveMenu">
+      <button class="context-menu-item" id="presetUpdateBtn">Update preset</button>
+      <button class="context-menu-item" id="presetSaveNewBtn">Save as new...</button>
+    </div>
+    <div class="section presets-section collapsed" id="presetsSection">
+      <div class="presets-dropdown-wrapper">
+        <div class="presets-dropdown" id="presetsDropdown">
+          <button class="presets-dropdown-btn" id="presetsDropdownBtn">
+            <span>Select a saved preset...</span>
+            <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 11L3 6H13L8 11Z" fill="currentColor"/></svg>
+          </button>
+          <div class="presets-dropdown-menu hidden" id="presetsDropdownMenu">
+            <div class="presets-search-wrapper">
+              <input type="text" class="presets-search" id="presetsSearch" placeholder="Search presets...">
+            </div>
+            <div class="presets-list" id="presetsList">
+              <div class="presets-empty">No saved presets yet</div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Components Section -->
+    <div class="section-header clickable" id="componentsHeader">
+      <div class="section-header-left">
+        <span class="section-title">Components</span>
+      </div>
+      <div class="section-header-right">
+        <svg class="section-chevron" id="componentsChevron" width="16" height="16" viewBox="0 0 16 16"><path d="M8 11L3 6H13L8 11Z" fill="currentColor"/></svg>
+      </div>
+    </div>
+    <div class="section components-section collapsed" id="componentsSection">
+      <!-- Components Dropdown -->
+      <div class="components-dropdown-wrapper">
+        <div class="components-dropdown" id="componentsDropdown">
+          <button class="components-dropdown-btn" id="componentsDropdownBtn">
+            <span>Select a component to add or create new...</span>
+            <svg width="16" height="16" viewBox="0 0 16 16"><path d="M8 11L3 6H13L8 11Z" fill="currentColor"/></svg>
+          </button>
+          <div class="components-dropdown-menu hidden" id="componentsDropdownMenu">
+            <div class="components-search-wrapper">
+              <input type="text" class="components-search" id="componentsSearch" placeholder="Search components...">
+            </div>
+            <div class="components-list" id="componentsList">
+              <!-- Component items will be populated by JS -->
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- ==================== CHAT OUTPUT (between dropdown and components) ==================== -->
+    <div id="chatOutputSection"></div>
+
+    <!-- ==================== DYNAMIC COMPONENT SECTIONS ==================== -->
+    <div id="dynamicComponentSections"></div>
+
+    <!-- Context Menus -->
+    
+    <!-- Basic Transforms Context Menu -->
+    <div class="transform-context-menu hidden" id="transformContextMenu">
+      <div class="context-menu-title">Add Transform</div>
+      <button class="context-menu-item" data-type="position">+ Position</button>
+      <button class="context-menu-item" data-type="scale">+ Scale</button>
+      <button class="context-menu-item" data-type="rotation">+ Rotation</button>
+      <button class="context-menu-item" data-type="opacity">+ Opacity</button>
+    </div>
+
+    <!-- Color Picker Overlay -->
+    <div class="color-picker-overlay" id="colorWheelOverlay">
+      <div class="color-picker-container">
+        <!-- Color Wheel -->
+        <div class="color-wheel-wrapper">
+          <canvas id="colorWheelCanvas" width="200" height="200"></canvas>
+          <div class="color-wheel-cursor" id="colorWheelCursor"></div>
+        </div>
+        <!-- Brightness Slider -->
+        <div class="color-brightness-row">
+          <canvas id="colorBrightnessCanvas" width="200" height="12"></canvas>
+          <div class="color-brightness-cursor" id="colorBrightnessCursor"></div>
+        </div>
+        <!-- Color Preview + Hex Input -->
+        <div class="color-hex-row">
+          <div class="color-preview-swatch" id="colorPreviewSwatch"></div>
+          <input type="text" class="color-hex-input" id="hexInput" placeholder="#FFFFFF" maxlength="7">
+        </div>
+        <!-- Action Button -->
+        <button class="color-picker-add-btn" id="colorWheelAdd">Add</button>
+      </div>
+    </div>
+
+    <!-- Color Context Menu -->
+    <div class="color-context-menu hidden" id="colorContextMenu">
+      <button class="context-menu-item danger" id="deleteColorBtn">Delete</button>
+    </div>
+
+    <!-- Save Preset Modal -->
+    <div class="modal-overlay hidden" id="savePresetModal">
+      <div class="modal-content">
+        <div class="modal-header">Save Preset</div>
+        <input type="text" class="modal-input" id="presetNameInput" placeholder="Preset name...">
+        <div class="modal-buttons">
+          <button class="modal-btn secondary" id="cancelPresetBtn">Cancel</button>
+          <button class="modal-btn primary" id="confirmSavePresetBtn">Save</button>
+        </div>
+      </div>
+    </div>
+
+
+    <!-- Bounce Graph Panel -->
+    <div class="bounce-graph-overlay hidden" id="bounceGraphOverlay">
+      <div class="bounce-graph-panel">
+        <div class="bounce-graph-header">
+          <div class="bounce-graph-header-left">
+            <span class="bounce-graph-title">Bounce</span>
+          </div>
+          <button class="bounce-graph-close" id="bounceGraphClose">&times;</button>
+        </div>
+        <div class="bounce-graph-canvas-wrapper">
+          <canvas id="bounceGraphCanvas" width="520" height="300"></canvas>
+        </div>
+        <div class="bounce-graph-controls">
+          <!-- Duration and MaxOvershoot removed - bounce uses decay-based settling -->
+          <div class="bounce-knobs-grid">
+            <div class="bounce-knob-item">
+              <label class="bounce-knob-label">Amplitude</label>
+              <div class="bounce-knob-control">
+                <div class="knob-container" id="bounceAmpKnob" data-param="amplitude" data-min="0.01" data-max="1" data-step="0.01">
+                  <svg viewBox="0 0 100 100">
+                    <circle class="knob-track-bg" cx="50" cy="50" r="44" />
+                    <circle class="knob-arc" cx="50" cy="50" r="44" stroke-dasharray="0 277" transform="rotate(135 50 50)" />
+                    <circle class="knob-body" cx="50" cy="50" r="35" />
+                    <line class="knob-indicator-line" x1="50" y1="21" x2="50" y2="33" transform="rotate(-135 50 50)" />
+                  </svg>
+                </div>
+                <input type="number" class="bounce-knob-value" id="bounceAmplitudeValue" min="0.01" max="1" step="0.01" value="0.13">
+              </div>
+            </div>
+            <div class="bounce-knob-item">
+              <label class="bounce-knob-label">Frequency</label>
+              <div class="bounce-knob-control">
+                <div class="knob-container" id="bounceFreqKnob" data-param="frequency" data-min="0.5" data-max="10" data-step="0.1">
+                  <svg viewBox="0 0 100 100">
+                    <circle class="knob-track-bg" cx="50" cy="50" r="44" />
+                    <circle class="knob-arc" cx="50" cy="50" r="44" stroke-dasharray="0 277" transform="rotate(135 50 50)" />
+                    <circle class="knob-body" cx="50" cy="50" r="35" />
+                    <line class="knob-indicator-line" x1="50" y1="21" x2="50" y2="33" transform="rotate(-135 50 50)" />
+                  </svg>
+                </div>
+                <input type="number" class="bounce-knob-value" id="bounceFrequencyValue" min="0.5" max="10" step="0.1" value="2.9">
+              </div>
+            </div>
+            <div class="bounce-knob-item">
+              <label class="bounce-knob-label">Decay</label>
+              <div class="bounce-knob-control">
+                <div class="knob-container" id="bounceDecayKnob" data-param="decay" data-min="0" data-max="20" data-step="0.1">
+                  <svg viewBox="0 0 100 100">
+                    <circle class="knob-track-bg" cx="50" cy="50" r="44" />
+                    <circle class="knob-arc" cx="50" cy="50" r="44" stroke-dasharray="0 277" transform="rotate(135 50 50)" />
+                    <circle class="knob-body" cx="50" cy="50" r="35" />
+                    <line class="knob-indicator-line" x1="50" y1="21" x2="50" y2="33" transform="rotate(-135 50 50)" />
+                  </svg>
+                </div>
+                <input type="number" class="bounce-knob-value" id="bounceDecayValue" min="0" max="20" step="0.1" value="7.5">
+              </div>
+            </div>
+          </div>
+          <div class="bounce-graph-actions">
+            <button class="bounce-graph-btn secondary" id="bounceGraphReset">Reset</button>
+            <button class="bounce-graph-btn secondary" id="bounceGraphApply">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Anticipation Graph Panel -->
+    <div class="bounce-graph-overlay hidden" id="anticipationGraphOverlay">
+      <div class="bounce-graph-panel">
+        <div class="bounce-graph-header">
+          <div class="bounce-graph-header-left">
+            <span class="bounce-graph-title">Anticipation</span>
+          </div>
+          <button class="bounce-graph-close" id="anticipationGraphClose">&times;</button>
+        </div>
+        <div class="bounce-graph-canvas-wrapper">
+          <canvas id="anticipationGraphCanvas" width="520" height="300"></canvas>
+        </div>
+        <div class="bounce-graph-controls">
+          <div class="bounce-settings-row">
+            <label class="bounce-knob-label">Duration</label>
+            <input type="number" class="bounce-knob-value" id="anticipationDurationInput" min="1" max="9999" placeholder="frames">
+          </div>
+          <div class="bounce-knobs-grid anticipation-knobs-grid">
+            <div class="bounce-knob-item">
+              <label class="bounce-knob-label">Antic %</label>
+              <div class="bounce-knob-control">
+                <div class="knob-container" id="anticAmountKnob" data-param="anticAmount" data-min="0" data-max="50" data-step="1">
+                  <svg viewBox="0 0 100 100">
+                    <circle class="knob-track-bg" cx="50" cy="50" r="44" />
+                    <circle class="knob-arc" cx="50" cy="50" r="44" stroke-dasharray="0 277" transform="rotate(135 50 50)" />
+                    <circle class="knob-body" cx="50" cy="50" r="35" />
+                    <line class="knob-indicator-line" x1="50" y1="21" x2="50" y2="33" transform="rotate(-135 50 50)" />
+                  </svg>
+                </div>
+                <input type="number" class="bounce-knob-value" id="anticAmountValue" min="0" max="50" step="1" value="15">
+              </div>
+            </div>
+            <div class="bounce-knob-item">
+              <label class="bounce-knob-label">Antic dur</label>
+              <div class="bounce-knob-control">
+                <div class="knob-container" id="anticDurationKnob" data-param="anticDuration" data-min="1" data-max="24" data-step="1">
+                  <svg viewBox="0 0 100 100">
+                    <circle class="knob-track-bg" cx="50" cy="50" r="44" />
+                    <circle class="knob-arc" cx="50" cy="50" r="44" stroke-dasharray="0 277" transform="rotate(135 50 50)" />
+                    <circle class="knob-body" cx="50" cy="50" r="35" />
+                    <line class="knob-indicator-line" x1="50" y1="21" x2="50" y2="33" transform="rotate(-135 50 50)" />
+                  </svg>
+                </div>
+                <input type="number" class="bounce-knob-value" id="anticDurationValue" min="1" max="24" step="1" value="6">
+              </div>
+            </div>
+            <div class="bounce-knob-item">
+              <label class="bounce-knob-label">Overshoot</label>
+              <div class="bounce-knob-control">
+                <div class="knob-container" id="anticOvershootKnob" data-param="overshoot" data-min="0" data-max="30" data-step="1">
+                  <svg viewBox="0 0 100 100">
+                    <circle class="knob-track-bg" cx="50" cy="50" r="44" />
+                    <circle class="knob-arc" cx="50" cy="50" r="44" stroke-dasharray="0 277" transform="rotate(135 50 50)" />
+                    <circle class="knob-body" cx="50" cy="50" r="35" />
+                    <line class="knob-indicator-line" x1="50" y1="21" x2="50" y2="33" transform="rotate(-135 50 50)" />
+                  </svg>
+                </div>
+                <input type="number" class="bounce-knob-value" id="anticOvershootValue" min="0" max="30" step="1" value="10">
+              </div>
+            </div>
+            <div class="bounce-knob-item">
+              <label class="bounce-knob-label">Settle</label>
+              <div class="bounce-knob-control">
+                <div class="knob-container" id="anticSettleKnob" data-param="settle" data-min="1" data-max="24" data-step="1">
+                  <svg viewBox="0 0 100 100">
+                    <circle class="knob-track-bg" cx="50" cy="50" r="44" />
+                    <circle class="knob-arc" cx="50" cy="50" r="44" stroke-dasharray="0 277" transform="rotate(135 50 50)" />
+                    <circle class="knob-body" cx="50" cy="50" r="35" />
+                    <line class="knob-indicator-line" x1="50" y1="21" x2="50" y2="33" transform="rotate(-135 50 50)" />
+                  </svg>
+                </div>
+                <input type="number" class="bounce-knob-value" id="anticSettleValue" min="1" max="24" step="1" value="6">
+              </div>
+            </div>
+          </div>
+          <div class="bounce-graph-actions">
+            <button class="bounce-graph-btn secondary" id="anticipationGraphReset">Reset</button>
+            <button class="bounce-graph-btn secondary" id="anticipationGraphApply">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Squash & Stretch Graph Panel -->
+    <div class="bounce-graph-overlay hidden" id="squashStretchGraphOverlay">
+      <div class="bounce-graph-panel">
+        <div class="bounce-graph-header">
+          <div class="bounce-graph-header-left">
+            <span class="bounce-graph-title">Squash & Stretch</span>
+          </div>
+          <button class="bounce-graph-close" id="squashStretchGraphClose">&times;</button>
+        </div>
+        <div class="bounce-graph-canvas-wrapper">
+          <canvas id="squashStretchGraphCanvas" width="520" height="300"></canvas>
+        </div>
+        <div class="bounce-graph-controls">
+          <div class="bounce-settings-row">
+            <label class="bounce-knob-label">Duration</label>
+            <input type="number" class="bounce-knob-value" id="squashStretchDurationInput" min="1" max="9999" placeholder="frames">
+            <label class="bounce-knob-label squash-stretch-toggle-label">
+              <input type="checkbox" id="preserveVolumeToggle" checked>
+              Preserve volume
+            </label>
+          </div>
+          <div class="bounce-knobs-grid">
+            <div class="bounce-knob-item">
+              <label class="bounce-knob-label">Max dev</label>
+              <div class="bounce-knob-control">
+                <div class="knob-container" id="squashMaxDevKnob" data-param="maxDev" data-min="5" data-max="50" data-step="1">
+                  <svg viewBox="0 0 100 100">
+                    <circle class="knob-track-bg" cx="50" cy="50" r="44" />
+                    <circle class="knob-arc" cx="50" cy="50" r="44" stroke-dasharray="0 277" transform="rotate(135 50 50)" />
+                    <circle class="knob-body" cx="50" cy="50" r="35" />
+                    <line class="knob-indicator-line" x1="50" y1="21" x2="50" y2="33" transform="rotate(-135 50 50)" />
+                  </svg>
+                </div>
+                <input type="number" class="bounce-knob-value" id="squashMaxDevValue" min="5" max="50" step="1" value="13">
+              </div>
+            </div>
+            <div class="bounce-knob-item">
+              <label class="bounce-knob-label">Frequency</label>
+              <div class="bounce-knob-control">
+                <div class="knob-container" id="squashFreqKnob" data-param="frequency" data-min="1" data-max="60" data-step="1">
+                  <svg viewBox="0 0 100 100">
+                    <circle class="knob-track-bg" cx="50" cy="50" r="44" />
+                    <circle class="knob-arc" cx="50" cy="50" r="44" stroke-dasharray="0 277" transform="rotate(135 50 50)" />
+                    <circle class="knob-body" cx="50" cy="50" r="35" />
+                    <line class="knob-indicator-line" x1="50" y1="21" x2="50" y2="33" transform="rotate(-135 50 50)" />
+                  </svg>
+                </div>
+                <input type="number" class="bounce-knob-value" id="squashFreqValue" min="1" max="60" step="1" value="30">
+              </div>
+            </div>
+            <div class="bounce-knob-item">
+              <label class="bounce-knob-label">Decay</label>
+              <div class="bounce-knob-control">
+                <div class="knob-container" id="squashDecayKnob" data-param="decay" data-min="0.5" data-max="10" data-step="0.1">
+                  <svg viewBox="0 0 100 100">
+                    <circle class="knob-track-bg" cx="50" cy="50" r="44" />
+                    <circle class="knob-arc" cx="50" cy="50" r="44" stroke-dasharray="0 277" transform="rotate(135 50 50)" />
+                    <circle class="knob-body" cx="50" cy="50" r="35" />
+                    <line class="knob-indicator-line" x1="50" y1="21" x2="50" y2="33" transform="rotate(-135 50 50)" />
+                  </svg>
+                </div>
+                <input type="number" class="bounce-knob-value" id="squashDecayValue" min="0.5" max="10" step="0.1" value="1.0">
+              </div>
+            </div>
+          </div>
+          <div class="bounce-graph-actions">
+            <button class="bounce-graph-btn secondary" id="squashStretchGraphReset">Reset</button>
+            <button class="bounce-graph-btn secondary" id="squashStretchGraphApply">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Keyframe Velocity Graph Panel (floating, used by qualifier).
+         Body is injected dynamically with the same markup as the inline
+         keyframe-velocity component (renderKeyframeVelocityContent) so
+         the canvas, draggable handles, and OUT/IN inputs are visually
+         identical and reuse the existing draw + drag code. -->
+    <div class="bounce-graph-overlay hidden" id="velocityGraphOverlay">
+      <div class="bounce-graph-panel">
+        <div class="bounce-graph-header">
+          <div class="bounce-graph-header-left">
+            <span class="bounce-graph-title">Keyframe Velocity</span>
+          </div>
+          <button class="bounce-graph-close" id="velocityGraphClose">&times;</button>
+        </div>
+        <div class="bounce-graph-canvas-wrapper" id="velocityFloatingBody"></div>
+        <div class="bounce-graph-controls">
+          <div class="bounce-graph-actions">
+            <button class="bounce-graph-btn secondary" id="velocityGraphReset">Reset</button>
+            <button class="bounce-graph-btn secondary" id="velocityGraphApply">Add</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+  </div><!-- End Bridge Panel -->
+
+  <!-- Knob Description Context Menu -->
+  <div id="knobDescriptionMenu" class="knob-description-menu hidden">
+    <div class="knob-description-title"></div>
+    <div class="knob-description-text"></div>
+  </div>
+
+
+  <!-- Terminal Emulator -->
+  <script src="js/xterm.js"></script>
+  <script src="js/xterm-addon-fit.js"></script>
+  <script src="js/xterm-loader.js"></script>
+
+  <script src="js/CSInterface.js"></script>
+  <script src="js/main.js?v=20260306a"></script>
+  
+  <!-- Grid Preview Panel -->
+  <!-- Floating Notes Overlay -->
+  <div class="notes-overlay hidden" id="notesOverlay">
+    <div class="notes-panel">
+      <textarea class="notes-panel-textarea" id="notesPanelTextarea" placeholder="Type your notes here..."></textarea>
+    </div>
+  </div>
+
+  <!-- Debug: Test Planck.js on load -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (typeof window.testPlanck === 'function') {
+        console.log('[MotionAmigo] Testing Planck.js integration...');
+        var success = window.testPlanck();
+        if (success) {
+          console.log('[MotionAmigo] Planck.js physics engine ready!');
+        }
+      }
+    });
+  </script>
+</body>
+</html>
