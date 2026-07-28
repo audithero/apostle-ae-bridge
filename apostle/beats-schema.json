@@ -43,6 +43,8 @@
         "fontBodyPS": { "type": "string", "default": "HelveticaNeue", "description": "PostScript name. Seeds the FONT Body guide layer (same master-control mechanism)." },
         "headingSize": { "type": "number", "default": 84 },
         "bodySize": { "type": "number", "default": 42 },
+        "headingTracking": { "type": "number", "default": 10, "description": "Seeds the Heading Tracking slider on CONTROL (uniform letter-spacing, AE tracking units)" },
+        "bodyTracking": { "type": "number", "default": 10, "description": "Seeds the Body Tracking slider on CONTROL" },
         "safeMarginPct": { "type": "number", "default": 10 },
         "colors": {
           "type": "object",

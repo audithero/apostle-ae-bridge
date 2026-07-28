@@ -19,7 +19,7 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.2.0";
+  var LIB_VERSION = "2.2.1";
 
   // Captured at load time; locates the repo for crash-recovery run snapshots
   var LIB_FILE = null;
@@ -273,6 +273,8 @@ var APOSTLE = (function () {
     addColor(ctrl, "Text Color", hexToRGB(data.brand.colors.text));
     addSlider(ctrl, "Heading Size", data.brand.headingSize || 84);
     addSlider(ctrl, "Body Size", data.brand.bodySize || 42);
+    addSlider(ctrl, "Heading Tracking", (data.brand.headingTracking !== undefined) ? data.brand.headingTracking : 10);
+    addSlider(ctrl, "Body Tracking", (data.brand.bodyTracking !== undefined) ? data.brand.bodyTracking : 10);
     addSlider(ctrl, "Safe Margin %", data.brand.safeMarginPct || 10);
     addCheckbox(ctrl, "Logo Visible", true);
     // fonts are controlled by the FONT Heading / FONT Body guide layers
@@ -311,13 +313,16 @@ var APOSTLE = (function () {
   function styleExpr(masterName, role) {
     var fontLayer = (role === "body") ? "FONT Body" : "FONT Heading";
     var slider = (role === "body") ? "Body Size" : "Heading Size";
+    var trackSlider = (role === "body") ? "Body Tracking" : "Heading Tracking";
     return 'var c = comp("' + masterName + '").layer("CONTROL");\n' +
       'var f = "";\n' +
       'try { f = comp("' + masterName + '").layer("' + fontLayer + '").text.sourceText.toString().replace(/^\\s+|\\s+$/g, ""); } catch (e) { f = ""; }\n' +
       'var st = text.sourceText.style;\n' +
       'if (f != "") { try { st = st.setFont(f); } catch (e2) {} }\n' +
-      'st.setFontSize(c.effect("' + slider + '")("Slider"))\n' +
-      '  .setFillColor(c.effect("Text Color")("Color"));';
+      'st = st.setFontSize(c.effect("' + slider + '")("Slider"))\n' +
+      '  .setFillColor(c.effect("Text Color")("Color"));\n' +
+      'try { st = st.setTracking(c.effect("' + trackSlider + '")("Slider")); } catch (e3) {}\n' +
+      'st;';
   }
 
   function buildFontLayers(master, data) {
