@@ -208,7 +208,7 @@
     },
     {
       "id": 10,
-      "beatId": "daily-essentials-travel-gift-cards",
+      "beatId": "daily-essentials-travel-shopping-gif",
       "sectionId": "redeeming-commbank-yello-point",
       "contentHash": "2279da7c",
       "vo": "Customers can redeem their Yello points their way across daily essentials, travel, shopping, gift cards and more.",
@@ -241,7 +241,8 @@
         "exit": "fadeRise",
         "handycam": "subtle"
       },
-      "url": "commbank.com.au/commbankyello"
+      "url": "commbank.com.au/commbankyello",
+      "headline": "To find out more"
     }
   ]
 }

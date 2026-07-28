@@ -214,6 +214,9 @@ const outBeats = ordered.map((b, i) => {
   if (preset === "endcard") {
     const url = (b._sup.match(/[a-z0-9.-]+\.[a-z]{2,}(\/\S*)?/i) || [""])[0].replace(/[.,]$/, "");
     if (url) beat.url = url;
+    // on-screen headline = short pre-comma clause (mirrors apostle.jsx endcardHeadline)
+    const hm = b._sup.match(/^([^,]{3,60}),/);
+    beat.headline = hm ? hm[1] : b._sup;
   }
   if (preset === "uiWalkthrough") beat.uiStates = 1;
   return beat;

@@ -19,7 +19,7 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.4.0";
+  var LIB_VERSION = "2.5.0";
 
   // Captured at load time; locates the repo for crash-recovery run snapshots
   var LIB_FILE = null;
@@ -112,6 +112,97 @@ var APOSTLE = (function () {
 
   function easeAllKeys(prop, inInf, outInf) {
     for (var k = 1; k <= prop.numKeys; k++) applyEase(prop, k, inInf, outInf);
+  }
+
+  // ---------------------------------------------------------------
+  // EASING LIBRARY (Phase 6)
+  // Keyframe-reading easing expressions: animate with plain keys, apply
+  // personality as an expression afterward, swap personality without
+  // touching keys (the Ease-and-Wizz pattern; equations are our own
+  // implementation of the BSD-licensed Penner set — do not copy E&W files).
+  // ---------------------------------------------------------------
+
+  // Body of f(t,b,c,d) for each easing (t elapsed, b start, c delta, d span)
+  var EASE_CORE = {
+    outQuint: "t=t/d-1; return c*(t*t*t*t*t+1)+b;",
+    inOutQuint: "t/=d/2; if (t<1) return c/2*t*t*t*t*t+b; t-=2; return c/2*(t*t*t*t*t+2)+b;",
+    outExpo: "if (t==d) return b+c; return c*(-Math.pow(2,-10*t/d)+1)+b;",
+    outBack: "var s=1.70158; t=t/d-1; return c*(t*t*((s+1)*t+s)+1)+b;",
+    outElastic: "if (t==0) return b; t/=d; if (t==1) return b+c; var p=d*0.3, s=p/4; return c*Math.pow(2,-10*t)*Math.sin((t*d-s)*(2*Math.PI)/p)+c+b;"
+  };
+
+  // Full dimension-aware expression: re-interpolates between the two keys
+  // around `time` with the named easing; returns plain value outside keys.
+  function easeKeyframeExpression(name) {
+    var core = EASE_CORE[name];
+    if (!core) return null;
+    return "function EZ(t,b,c,d){" + core + "}\n" +
+      "var n=0;\n" +
+      "if (numKeys>0){ n=nearestKey(time).index; if (key(n).time>time) n--; }\n" +
+      "if (n===0 || n===numKeys){ value; } else {\n" +
+      "var k1=key(n), k2=key(n+1);\n" +
+      "var t=time-k1.time, d=k2.time-k1.time;\n" +
+      "var v1=k1.value, v2=k2.value;\n" +
+      "if (v1 instanceof Array){ var out=[]; for (var i=0;i<v1.length;i++) out.push(EZ(t,v1[i],v2[i]-v1[i],d)); out; }\n" +
+      "else { EZ(t,v1,v2-v1,d); }\n" +
+      "}";
+  }
+
+  function applyEaseExpression(prop, name) {
+    var ex = easeKeyframeExpression(name);
+    if (!ex) return false;
+    try { prop.expression = ex; return true; } catch (e) { return false; }
+  }
+
+  // Named personalities. transitIn/Out are keyframe influences for camera
+  // transit keys; reveal/revealDur/stagger drive text entrances.
+  var EASE_PROFILES = {
+    "corporate-smooth": { transitIn: 92, transitOut: 78, reveal: "outQuint", revealDur: 0.7, stagger: 0.14 },
+    "snappy":           { transitIn: 96, transitOut: 55, reveal: "outExpo",  revealDur: 0.45, stagger: 0.10 },
+    "playful":          { transitIn: 88, transitOut: 82, reveal: "outBack",  revealDur: 0.75, stagger: 0.18 }
+  };
+
+  function profileFor(beat, data) {
+    var name = null;
+    if (beat && beat.motion && beat.motion.ease) name = beat.motion.ease;
+    if (!name && data && data.meta && data.meta.easeProfile) name = data.meta.easeProfile;
+    if (!EASE_PROFILES[name]) name = "corporate-smooth";
+    return EASE_PROFILES[name];
+  }
+
+  function buildProfile(data) {
+    var name = (data && data.meta && data.meta.easeProfile) || null;
+    if (!name && data && data.beats && data.beats[0] && data.beats[0].motion) name = data.beats[0].motion.ease;
+    if (!EASE_PROFILES[name]) name = "corporate-smooth";
+    return EASE_PROFILES[name];
+  }
+
+  // "Earn via Banking. / Home Loans. Savings Accounts." -> heading + items;
+  // "More points. More perks. More partners." -> items only. Shared contract
+  // with parse-brief's listBuild inference — keep the two in sync.
+  function splitListSuper(superText) {
+    var heading = null, itemsRaw = superText;
+    var slash = superText.indexOf(" / ");
+    if (slash !== -1) {
+      heading = superText.substring(0, slash).replace(/[.\s]+$/g, "");
+      itemsRaw = superText.substring(slash + 3);
+    }
+    var parts = itemsRaw.split(/\.\s*/);
+    var items = [];
+    for (var i = 0; i < parts.length; i++) {
+      var p = parts[i].replace(/^\s+|\s+$/g, "");
+      if (p !== "") items.push(p);
+    }
+    if (heading === null && items.length < 3) return { heading: null, items: null }; // not list-shaped
+    return { heading: heading, items: items };
+  }
+
+  // Endcard supers are long spoken lines; the on-screen headline is the
+  // short pre-comma clause ("To find out more, visit ..." -> "To find out
+  // more"). Mirrored in parse-brief.cjs.
+  function endcardHeadline(superText) {
+    var m = String(superText || "").match(/^([^,]{3,60}),/);
+    return m ? m[1] : superText;
   }
 
   function jitter(seed, amp) {
@@ -276,6 +367,7 @@ var APOSTLE = (function () {
     addSlider(ctrl, "Heading Tracking", (data.brand.headingTracking !== undefined) ? data.brand.headingTracking : 10);
     addSlider(ctrl, "Body Tracking", (data.brand.bodyTracking !== undefined) ? data.brand.bodyTracking : 10);
     addSlider(ctrl, "Safe Margin %", data.brand.safeMarginPct || 10);
+    addSlider(ctrl, "Handheld Amount", 0); // keyframed by keyframeHandheld; camera wiggle reads it
     addCheckbox(ctrl, "Logo Visible", true);
     // fonts are controlled by the FONT Heading / FONT Body guide layers
     // (buildFontLayers), not an effect dropdown — dropdowns can't hold
@@ -387,12 +479,25 @@ var APOSTLE = (function () {
     return tl;
   }
 
-  function slideUpReveal(layer, startTime, duration) {
-    duration = duration || 0.55;
+  // profile (optional): two plain keys shaped by the profile's easing
+  // expression — personality is swappable post-build by changing the
+  // expression alone. Legacy three-key path when no profile given.
+  function slideUpReveal(layer, startTime, duration, profile) {
     var yOffset = 70;
     var pos = layer.property("ADBE Transform Group").property("ADBE Position");
     var opa = layer.property("ADBE Transform Group").property("ADBE Opacity");
     var basePos = pos.value;
+    if (profile) {
+      duration = duration || profile.revealDur;
+      opa.setValueAtTime(startTime, 0);
+      opa.setValueAtTime(startTime + duration * 0.6, 100);
+      easeAllKeys(opa, 70, 70);
+      pos.setValueAtTime(startTime, [basePos[0], basePos[1] + yOffset]);
+      pos.setValueAtTime(startTime + duration, basePos);
+      applyEaseExpression(pos, profile.reveal);
+      return;
+    }
+    duration = duration || 0.55;
     opa.setValueAtTime(startTime, 0);
     opa.setValueAtTime(startTime + duration * 0.6, 100);
     easeAllKeys(opa, 70, 70);
@@ -453,14 +558,48 @@ var APOSTLE = (function () {
     // master, so a reveal at scene-time 0.55 begins 0.1 s AFTER the camera
     // arrives. v2.1 revealed at 0.3-0.5 — half the entrance played out while
     // the camera was still in transit, so arrivals looked washed-out/empty.
+    var prof = profileFor(beat, data);
+
     if (preset == "endcard") {
-      var url = makeText(c, superText, { name: "Endcard Headline", size: 72, pos: [w / 2, h * 0.44], linkStyle: true, autoFit: true }, data, report, masterName);
-      slideUpReveal(url, 0.55);
+      // headline = short pre-comma clause, not the whole spoken line —
+      // the v2.4 endcard autofit shrank long supers below the URL size
+      var headText = beat.headline || endcardHeadline(superText);
+      var hl = makeText(c, headText, { name: "Endcard Headline", size: 96, pos: [w / 2, h * 0.42], linkStyle: true, autoFit: true }, data, report, masterName);
+      slideUpReveal(hl, 0.55, null, prof);
       if (beat.url) {
-        var u = makeText(c, beat.url, { name: "URL", size: 40, font: data.brand.fontBodyPS, pos: [w / 2, h * 0.58], linkStyle: true, role: "body", autoFit: true }, data, report, masterName);
-        slideUpReveal(u, 0.8);
+        var u = makeText(c, beat.url, { name: "URL", size: 44, font: data.brand.fontBodyPS, pos: [w / 2, h * 0.56], linkStyle: true, role: "body", autoFit: true }, data, report, masterName);
+        slideUpReveal(u, 0.8, null, prof);
       }
-      accentBar(c, data, h * 0.66, masterName);
+      accentBar(c, data, h * 0.64, masterName);
+    } else if (preset == "listBuild") {
+      var split = splitListSuper(superText);
+      if (split.items === null) {
+        // not list-shaped after all — fall back to the titleCard layout
+        var solo = makeText(c, superText, { name: "Super", size: 84, pos: [w / 2, h * 0.48], linkStyle: true, autoFit: true }, data, report, masterName);
+        slideUpReveal(solo, 0.55, null, prof);
+        accentBar(c, data, h * 0.58, masterName);
+        slideUpReveal(findLayer(c, "Accent Bar"), 0.75, null, prof);
+      } else {
+        var hasHead = split.heading !== null && split.heading !== "";
+        var itemN = split.items.length;
+        var lineGap = Math.max(64, (data.brand.bodySize || 42) * 1.9);
+        var headY = h * 0.34;
+        var firstY = hasHead ? h * 0.5 : (h / 2 - ((itemN - 1) * lineGap) / 2);
+        // "Super" stays the heading holder (updateBeatText contract); an
+        // empty heading still gets the layer so re-splits have a target
+        var headLayer = makeText(c, hasHead ? split.heading : "", { name: "Super", size: 84, pos: [w / 2, headY], linkStyle: true, autoFit: true }, data, report, masterName);
+        if (hasHead) {
+          slideUpReveal(headLayer, 0.55, null, prof);
+          accentBar(c, data, headY + 64, masterName);
+          slideUpReveal(findLayer(c, "Accent Bar"), 0.65, null, prof);
+        } else {
+          headLayer.enabled = false;
+        }
+        for (var li = 0; li < itemN; li++) {
+          var itLay = makeText(c, split.items[li], { name: "Item " + (li + 1), size: hasHead ? (data.brand.bodySize || 42) + 12 : 64, font: data.brand.fontBodyPS, role: "body", pos: [w / 2, firstY + li * lineGap], linkStyle: true, autoFit: true }, data, report, masterName);
+          slideUpReveal(itLay, (hasHead ? 0.75 : 0.55) + li * prof.stagger, null, prof);
+        }
+      }
     } else if (preset == "uiWalkthrough") {
       var frame = c.layers.addShape();
       frame.name = "Device Frame (placeholder)";
@@ -474,13 +613,13 @@ var APOSTLE = (function () {
       fstr.property("ADBE Vector Stroke Width").setValue(6);
       frame.property("ADBE Transform Group").property("ADBE Position").setValue([w * 0.68, h / 2]);
       var head = makeText(c, superText, { name: "Super", size: 64, pos: [w * 0.32, h / 2], linkStyle: true, autoFit: true }, data, report, masterName);
-      slideUpReveal(head, 0.55);
-      slideUpReveal(frame, 0.7);
+      slideUpReveal(head, 0.55, null, prof);
+      slideUpReveal(frame, 0.7, null, prof);
     } else {
       var main = makeText(c, superText, { name: "Super", size: 84, pos: [w / 2, h * 0.48], linkStyle: true, autoFit: true }, data, report, masterName);
-      slideUpReveal(main, 0.55);
+      slideUpReveal(main, 0.55, null, prof);
       accentBar(c, data, h * 0.58, masterName);
-      slideUpReveal(findLayer(c, "Accent Bar"), 0.75);
+      slideUpReveal(findLayer(c, "Accent Bar"), 0.75, null, prof);
     }
     return c;
   }
@@ -546,8 +685,10 @@ var APOSTLE = (function () {
     cam.property("ADBE Transform Group").property("ADBE Position").setValue([0, 0, -1700]);
     try { cam.property("ADBE Transform Group").property("ADBE Anchor Point").setValue([0, 0, 0]); } catch (e3) {}
     try { cam.property("ADBE Transform Group").property("ADBE Position").expression =
-      "var a = 3; var f = 0.5;\n" +
-      "value + wiggle(f, a) - wiggle(f, 0);";
+      'var a = 0;\n' +
+      'try { a = comp("' + master.name + '").layer("CONTROL").effect("Handheld Amount")("Slider"); } catch (e) {}\n' +
+      'var f = 0.5;\n' +
+      'value + wiggle(f, a) - wiggle(f, 0);';
     } catch (e4) {}
     return { rig: rig, cam: cam, mode: "expression" };
   }
@@ -582,7 +723,8 @@ var APOSTLE = (function () {
     return { rig: rig, fx: fx, mode: "handycam" };
   }
 
-  function keyframeTransitExpression(rigInfo, stations, beats) {
+  function keyframeTransitExpression(rigInfo, stations, beats, profile) {
+    if (!profile) profile = EASE_PROFILES["corporate-smooth"];
     var pos = rigInfo.rig.property("ADBE Transform Group").property("ADBE Position");
     var yrot = rigInfo.rig.property("ADBE Transform Group").property("ADBE Rotate Y");
     var zoomProp = null;
@@ -628,9 +770,86 @@ var APOSTLE = (function () {
       }
       addStationMarker(rigInfo.rig, arrive, i, b);
     }
-    easeAllKeys(pos, 92, 78);
+    easeAllKeys(pos, profile.transitIn, profile.transitOut);
     if (yrot.numKeys > 0) easeAllKeys(yrot, 85, 85);
     if (zoomProp && zoomProp.numKeys > 0) easeAllKeys(zoomProp, 80, 80);
+  }
+
+  // ---------------------------------------------------------------
+  // HANDHELD POLISH (Phase 6)
+  // Per-beat handheld life on the expression rig, plugin-free: a Handheld
+  // Amount slider on CONTROL drives the camera wiggle amplitude; the build
+  // keyframes it from beats[].motion.handycam — settled at stations,
+  // livelier mid-transit. The real HandyCam plugin remains the explicit
+  // opt-in for STATIC rigs only (Phase 3 verdict: it cannot do transport);
+  // this layer is what "handycam: subtle/energetic" means on transport
+  // builds, so client work gets handheld life with zero manual steps.
+  // ---------------------------------------------------------------
+
+  var HANDHELD_LEVELS = { off: 0, subtle: 2.5, energetic: 7 };
+
+  function handheldLevel(beat) {
+    var name = (beat && beat.motion && beat.motion.handycam) ? beat.motion.handycam : "off";
+    var v = HANDHELD_LEVELS[name];
+    return (v === undefined) ? 0 : v;
+  }
+
+  function keyframeHandheld(ctrl, beats) {
+    var slider = null;
+    try { slider = ctrl.property("ADBE Effect Parade").property("Handheld Amount").property("ADBE Slider Control-0001"); } catch (e) { return false; }
+    if (!slider) return false;
+    removeAllKeys(slider);
+    var any = false;
+    for (var i = 0; i < beats.length; i++) {
+      var b = beats[i];
+      var lvl = handheldLevel(b);
+      if (lvl > 0) any = true;
+      slider.setValueAtTime(b._arrive, lvl);
+      if (i > 0 && b._transit > 0) {
+        var mid = Math.min(10, Math.max(lvl, handheldLevel(beats[i - 1])) * 2.4);
+        slider.setValueAtTime(b._arrive - b._transit * 0.5, mid);
+      }
+    }
+    if (!any && slider.numKeys > 0) { removeAllKeys(slider); slider.setValue(0); }
+    else easeAllKeys(slider, 70, 70);
+    return true;
+  }
+
+  // Retrofit/adjust handheld polish on an existing master from a beats JSON.
+  function applyHandheldPolish(masterName, beatsJSON) {
+    var master = findComp(masterName);
+    if (!master) return { status: "error", error: "Comp not found: " + masterName };
+    var ctrl = findLayer(master, "CONTROL");
+    if (!ctrl) return { status: "error", error: "CONTROL layer not found on " + masterName };
+    var data = parseJSONSafe(beatsJSON);
+    if (!data || !data.beats) return { status: "error", error: "No beats in JSON." };
+    var report = { status: "success", warnings: [] };
+    app.beginUndoGroup("Apostle applyHandheldPolish");
+    try {
+      var hasSlider = true;
+      try { ctrl.property("ADBE Effect Parade").property("Handheld Amount").name; } catch (eS) { hasSlider = false; }
+      if (!hasSlider) addSlider(ctrl, "Handheld Amount", 0);
+      var cam = findLayer(master, "APOSTLE CAM");
+      if (cam) {
+        try {
+          cam.property("ADBE Transform Group").property("ADBE Position").expression =
+            'var a = 0;\n' +
+            'try { a = comp("' + masterName + '").layer("CONTROL").effect("Handheld Amount")("Slider"); } catch (e) {}\n' +
+            'var f = 0.5;\n' +
+            'value + wiggle(f, a) - wiggle(f, 0);';
+        } catch (eE) { report.warnings.push("Could not set camera wiggle expression."); }
+      } else {
+        report.warnings.push("APOSTLE CAM not found — handheld polish targets the expression rig.");
+      }
+      computeTiming(data, { warnings: [], beats: [] });
+      keyframeHandheld(ctrl, data.beats);
+    } catch (e) {
+      report.status = "error";
+      report.error = e.toString();
+    } finally {
+      app.endUndoGroup();
+    }
+    return report;
   }
 
   function keyframeTransitHandyCam(rigInfo, stations, beats, master, report) {
@@ -803,7 +1022,8 @@ var APOSTLE = (function () {
       if (rigInfo.mode === "handycam") {
         keyframeTransitHandyCam(rigInfo, stations, beats, master, report);
       } else {
-        keyframeTransitExpression(rigInfo, stations, beats);
+        keyframeTransitExpression(rigInfo, stations, beats, buildProfile(data));
+        keyframeHandheld(ctrl, beats);
       }
 
       for (var si = 0; si < BUILD_SOURCES.length; si++) {
@@ -1502,9 +1722,38 @@ var APOSTLE = (function () {
     app.beginUndoGroup("Apostle updateBeatText " + beatId);
     try {
       if (opts.superText !== undefined && opts.superText !== null) {
-        var target = findLayer(sc, "Endcard Headline") ? "Endcard Headline" : "Super";
-        if (setTextLayerString(sc, target, opts.superText)) report.updated.push(target);
-        else report.warnings.push("Text layer not found: " + target);
+        if (findLayer(sc, "Endcard Headline")) {
+          // endcard shows the short pre-comma clause, not the spoken line
+          var headText = opts.headline || endcardHeadline(opts.superText);
+          if (setTextLayerString(sc, "Endcard Headline", headText)) report.updated.push("Endcard Headline");
+          else report.warnings.push("Text layer not found: Endcard Headline");
+        } else if (findLayer(sc, "Item 1")) {
+          // listBuild scene: re-split and update heading + items in place
+          var split = splitListSuper(opts.superText);
+          if (split.items === null) split = { heading: opts.superText, items: [] };
+          if (setTextLayerString(sc, "Super", split.heading || "")) report.updated.push("Super");
+          var li = 0;
+          while (findLayer(sc, "Item " + (li + 1))) {
+            var itemLayer = findLayer(sc, "Item " + (li + 1));
+            if (li < split.items.length) {
+              setTextLayerString(sc, "Item " + (li + 1), split.items[li]);
+              itemLayer.enabled = true;
+              report.updated.push("Item " + (li + 1));
+            } else {
+              // fewer items than layers: hide the leftovers (removal would
+              // shift reveal timing of siblings; hiding is reversible)
+              itemLayer.enabled = false;
+              report.updated.push("Item " + (li + 1) + " (hidden)");
+            }
+            li++;
+          }
+          if (split.items.length > li) {
+            report.warnings.push((split.items.length - li) + " new item(s) need layers — item-count growth requires a scene rebuild for this beat (rebuildBeatScene).");
+          }
+        } else {
+          if (setTextLayerString(sc, "Super", opts.superText)) report.updated.push("Super");
+          else report.warnings.push("Text layer not found: Super");
+        }
       }
       if (opts.url !== undefined && opts.url !== null) {
         if (setTextLayerString(sc, "URL", opts.url)) report.updated.push("URL");
@@ -1552,7 +1801,9 @@ var APOSTLE = (function () {
       removeAllKeys(rig.property("ADBE Transform Group").property("ADBE Rotate Y"));
       try { removeAllKeys(cam.property("ADBE Camera Options Group").property("ADBE Camera Zoom")); } catch (eZ) {}
       try { removeAllKeys(rig.property("Marker")); } catch (eM) {}
-      keyframeTransitExpression({ rig: rig, cam: cam, mode: "expression" }, stations, beats);
+      keyframeTransitExpression({ rig: rig, cam: cam, mode: "expression" }, stations, beats, buildProfile(data));
+      var rtCtrl = findLayer(master, "CONTROL");
+      if (rtCtrl) keyframeHandheld(rtCtrl, beats);
 
       for (var i = 0; i < beats.length; i++) {
         var b = beats[i];
@@ -1589,6 +1840,99 @@ var APOSTLE = (function () {
     return report;
   }
 
+  function beatIdFromComment(comment) {
+    var toks = String(comment || "").split(" ");
+    for (var i = 0; i < toks.length; i++) {
+      if (toks[i].indexOf("beatId=") === 0) return toks[i].substring(7);
+    }
+    return null;
+  }
+
+  // Structural sync: make the master's scene set match the beats JSON —
+  // build scenes for added beats, remove scenes for dropped beats, then
+  // retime re-lays stations/camera/start times. Scene comps of surviving
+  // beats are untouched (same invariant as retimeBeats).
+  function applyBeatStructure(masterName, beatsJSON) {
+    var data = parseJSONSafe(beatsJSON);
+    if (!data || !data.beats || data.beats.length === 0) return { status: "error", error: "No beats in JSON." };
+    var master = findComp(masterName);
+    if (!master) return { status: "error", error: "Comp not found: " + masterName };
+    var report = { status: "success", added: [], removed: [], warnings: [] };
+    var tmp = { warnings: [], beats: [], totalDuration: 0 };
+    if (!data.meta) data.meta = {};
+    if (!data.meta.resolution) data.meta.resolution = [master.width, master.height];
+    if (!data.brand) data.brand = {};
+    if (!data.brand.colors) data.brand.colors = { primary: "#FFCC00", secondary: "#1E1E1E", background: "#FFFFFF", text: "#111111" };
+    computeTiming(data, tmp);
+    app.beginUndoGroup("Apostle applyBeatStructure");
+    try {
+      var wanted = {};
+      var i;
+      for (i = 0; i < data.beats.length; i++) {
+        if (!data.beats[i].beatId) return { status: "error", error: "Beat " + (i + 1) + " has no beatId — structural sync requires v2 beats." };
+        wanted[data.beats[i].beatId] = true;
+      }
+      // removals: master layers whose source comp is beat-tagged but no longer wanted
+      var fScenes = null;
+      for (var L = master.numLayers; L >= 1; L--) {
+        var lay = master.layer(L);
+        if (!(lay.source instanceof CompItem)) continue;
+        var bid = beatIdFromComment(lay.source.comment);
+        if (!bid) continue;
+        if (wanted[bid]) { fScenes = lay.source.parentFolder; continue; }
+        var deadComp = lay.source;
+        lay.remove();
+        try { deadComp.remove(); } catch (eR) { report.warnings.push("Removed layer but could not delete comp " + deadComp.name); }
+        report.removed.push(bid);
+      }
+      // additions
+      for (i = 0; i < data.beats.length; i++) {
+        var b = data.beats[i];
+        if (findBeatComp(masterName, b.beatId)) continue;
+        var sc = buildBeatComp(app.project, data, b, i, master.frameRate, tmp, masterName);
+        if (fScenes) sc.parentFolder = fScenes;
+        var sl = master.layers.add(sc);
+        sl.threeDLayer = true;
+        sl.motionBlur = true;
+        sl.label = 3;
+        report.added.push(b.beatId);
+      }
+    } catch (e) {
+      report.status = "error";
+      report.error = e.toString();
+      app.endUndoGroup();
+      return report;
+    }
+    app.endUndoGroup();
+    // retime re-lays every station, camera key, and start time for the new set
+    var rt = retimeBeats(masterName, beatsJSON);
+    if (rt.status !== "success") { report.status = "error"; report.error = "retime after structure: " + rt.error; }
+    for (var wI = 0; wI < rt.warnings.length; wI++) report.warnings.push(rt.warnings[wI]);
+    report.totalDuration = rt.totalDuration;
+    return report;
+  }
+
+  // Nuke-and-regenerate one beat's scene comp (e.g. listBuild item count
+  // grew past its layers). Human polish inside THAT scene is lost — by
+  // design, and only that scene.
+  function rebuildBeatScene(masterName, beatsJSON, beatId) {
+    var sc = findBeatComp(masterName, beatId);
+    var master = findComp(masterName);
+    if (!master) return { status: "error", error: "Comp not found: " + masterName };
+    app.beginUndoGroup("Apostle rebuildBeatScene " + beatId);
+    try {
+      if (sc) {
+        for (var L = master.numLayers; L >= 1; L--) {
+          if (master.layer(L).source === sc) { master.layer(L).remove(); break; }
+        }
+        sc.remove();
+      }
+    } finally {
+      app.endUndoGroup();
+    }
+    return applyBeatStructure(masterName, beatsJSON);
+  }
+
   // djb2 over a comp's serialized state — cheap fingerprint for the
   // "untouched beats stay byte-identical" invariant checks
   function hashCompState(compName) {
@@ -1605,6 +1949,10 @@ var APOSTLE = (function () {
     findBeatComp: findBeatComp,
     updateBeatText: updateBeatText,
     retimeBeats: retimeBeats,
+    applyBeatStructure: applyBeatStructure,
+    rebuildBeatScene: rebuildBeatScene,
+    applyHandheldPolish: applyHandheldPolish,
+    applyEaseExpression: applyEaseExpression,
     hashCompState: hashCompState,
     findMasterComps: findMasterComps,
     listFonts: listFonts,
