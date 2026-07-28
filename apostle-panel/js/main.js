@@ -3,22 +3,60 @@
  * through the same scripts/*.cjs libs the CLI and Claude use. */
 "use strict";
 
-const fs = require("fs");
-const path = require("path");
-const os = require("os");
-const { execFile } = require("child_process");
+// ---------- fail loudly, never silently -----------------------------------
+// Tabs must work and errors must be visible even if the Node bootstrap
+// below throws (first field report: header stuck on "connecting…", dead
+// tabs — a top-level exception killed everything).
+function panelFatal(where, err) {
+  try {
+    document.getElementById("libver").textContent = "ERROR";
+    const s = document.getElementById("status");
+    s.textContent = where + ": " + (err && err.message ? err.message : err);
+    s.className = "err";
+  } catch (e2) {}
+}
+window.onerror = (msg, src, line) => { panelFatal("js", msg + " @" + (src || "").split("/").pop() + ":" + line); };
 
-// ---------- environment ----------------------------------------------------
-const cep = window.__adobe_cep__;
-const extPath = decodeURIComponent(cep.getSystemPath("extension").replace("file://", ""));
-let REPO;
-try { REPO = path.dirname(fs.realpathSync(extPath)); } catch (e) { REPO = path.dirname(extPath); }
-const BRIDGE_DIR = path.join(os.homedir(), "Documents", "ae-mcp-bridge");
-const JOBS_DIR = path.join(BRIDGE_DIR, "jobs");
-const RENDER_DIR = path.join(BRIDGE_DIR, "renders");
+// Pure-DOM tab wiring FIRST — navigation survives any bootstrap failure.
+document.querySelectorAll(".tab").forEach((b) =>
+  b.addEventListener("click", () => {
+    document.querySelectorAll(".tab").forEach((x) => x.classList.remove("active"));
+    document.querySelectorAll(".pane").forEach((x) => x.classList.remove("active"));
+    b.classList.add("active");
+    document.getElementById("tab-" + b.dataset.tab).classList.add("active");
+    if (b.dataset.tab === "claude" && typeof renderJobs === "function") { try { renderJobs(); } catch (e) {} }
+  })
+);
 
-const parseLib = require(path.join(REPO, "scripts", "parse-brief.cjs"));
-const diffLib = require(path.join(REPO, "scripts", "diff-beats.cjs"));
+// ---------- Node bootstrap -------------------------------------------------
+// NB: never name a top-level binding `cep` — CEP predefines window.cep and
+// the collision is a page-killing SyntaxError (found via CDP, 2026-07-28)
+let fs, path, os, execFile, adobeCep, REPO, BRIDGE_DIR, JOBS_DIR, RENDER_DIR, parseLib, diffLib;
+let NODE_OK = false;
+try {
+  if (typeof require !== "function") {
+    // CEP builds where Node lives on cep_node instead of the global
+    if (window.cep_node && typeof window.cep_node.require === "function") {
+      window.require = window.cep_node.require;
+    }
+  }
+  if (typeof require !== "function") throw new Error("Node disabled in CEP (no require) — check manifest CEFCommandLine and restart AE");
+  fs = require("fs");
+  path = require("path");
+  os = require("os");
+  execFile = require("child_process").execFile;
+  adobeCep = window.__adobe_cep__;
+  const extPath = decodeURIComponent(adobeCep.getSystemPath("extension").replace("file://", ""));
+  try { REPO = path.dirname(fs.realpathSync(extPath)); } catch (e) { REPO = path.dirname(extPath); }
+  BRIDGE_DIR = path.join(os.homedir(), "Documents", "ae-mcp-bridge");
+  JOBS_DIR = path.join(BRIDGE_DIR, "jobs");
+  RENDER_DIR = path.join(BRIDGE_DIR, "renders");
+  parseLib = require(path.join(REPO, "scripts", "parse-brief.cjs"));
+  diffLib = require(path.join(REPO, "scripts", "diff-beats.cjs"));
+  NODE_OK = true;
+} catch (bootErr) {
+  panelFatal("bootstrap", bootErr);
+}
 
 // ---------- tiny helpers ---------------------------------------------------
 const $id = (id) => document.getElementById(id);
@@ -26,7 +64,7 @@ const status = (msg, cls) => { const el = $id("status"); el.textContent = msg; e
 const esc = (s) => String(s == null ? "" : s).replace(/[&<>]/g, (c) => ({ "&": "&amp;", "<": "&lt;", ">": "&gt;" }[c]));
 
 function evalJSX(code) {
-  return new Promise((resolve) => cep.evalScript(code, resolve));
+  return new Promise((resolve) => adobeCep.evalScript(code, resolve));
 }
 async function host(fnName, args) {
   let argsPath = "";
@@ -57,16 +95,8 @@ const store = {
 
 // ---------- init -----------------------------------------------------------
 (async function init() {
+  if (!NODE_OK) return; // bootstrap already painted the error
   store.load();
-  document.querySelectorAll(".tab").forEach((b) =>
-    b.addEventListener("click", () => {
-      document.querySelectorAll(".tab").forEach((x) => x.classList.remove("active"));
-      document.querySelectorAll(".pane").forEach((x) => x.classList.remove("active"));
-      b.classList.add("active");
-      $id("tab-" + b.dataset.tab).classList.add("active");
-      if (b.dataset.tab === "claude") renderJobs();
-    })
-  );
   const init = await evalJSX('apInit("' + REPO.replace(/\\/g, "\\\\") + '")');
   try {
     const r = JSON.parse(init);

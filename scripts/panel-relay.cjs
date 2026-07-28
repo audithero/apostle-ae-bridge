@@ -25,6 +25,30 @@ const PORT = Number(opt("--port", "8471"));
 const CWD = opt("--cwd", path.join(__dirname, ".."));
 const GUID = "258EAFA5-E914-47DA-95CA-C5AB0DC85B11";
 
+// Resolve the claude binary explicitly: the user's PATH entry for it often
+// comes from .zshrc, which non-interactive login shells (and therefore the
+// pty's zsh -lc) never source — first field failure was "command not
+// found: claude" inside the panel terminal.
+function resolveClaude() {
+  const fs = require("fs");
+  const os = require("os");
+  if (process.env.CLAUDE_BIN && fs.existsSync(process.env.CLAUDE_BIN)) return process.env.CLAUDE_BIN;
+  const home = os.homedir();
+  const candidates = [
+    path.join(home, ".local", "bin", "claude"),
+    path.join(home, ".claude", "local", "claude"),
+    "/opt/homebrew/bin/claude",
+    "/usr/local/bin/claude"
+  ];
+  for (const c of candidates) { try { if (fs.existsSync(c)) return c; } catch (e) {} }
+  try {
+    const out = require("child_process").execSync("/bin/zsh -lc 'command -v claude' 2>/dev/null", { timeout: 10000 }).toString().trim();
+    if (out) return out;
+  } catch (e) {}
+  return "claude"; // last resort: let the shell try
+}
+const CLAUDE_BIN = resolveClaude();
+
 // python pty bridge: stdin -> pty master, pty master -> stdout. Control
 // line on fd 3 would be cleaner but pipes beyond stdio are awkward with
 // spawn; instead resize commands arrive on stdin as \x00resize:COLS,ROWS\n
@@ -38,7 +62,7 @@ def setsize(c, r):
 setsize(cols, rows)
 env = dict(os.environ)
 env["TERM"] = "xterm-256color"
-p = subprocess.Popen(["/bin/zsh", "-lc", "exec claude"], stdin=slave, stdout=slave,
+p = subprocess.Popen(["/bin/zsh", "-lc", "exec " + "'" + sys.argv[2] + "'"], stdin=slave, stdout=slave,
                      stderr=slave, preexec_fn=os.setsid, env=env, cwd=sys.argv[1])
 os.close(slave)
 buf = b""
@@ -127,7 +151,7 @@ const server = net.createServer((sock) => {
       upgraded = true;
       acc = acc.slice(headEnd + 4);
       clients++;
-      pty = spawn("python3", ["-c", PY, CWD], { cwd: CWD });
+      pty = spawn("python3", ["-c", PY, CWD, CLAUDE_BIN], { cwd: CWD });
       pty.stdout.on("data", (d) => { try { sock.write(encodeFrame(d, 0x2)); } catch (e) {} });
       pty.stderr.on("data", (d) => { try { sock.write(encodeFrame(d, 0x2)); } catch (e) {} });
       pty.on("exit", () => { try { sock.write(encodeFrame(Buffer.from("\r\n[claude session ended]\r\n"), 0x2)); sock.end(encodeFrame(Buffer.alloc(0), 0x8)); } catch (e) {} });
