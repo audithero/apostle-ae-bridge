@@ -80,6 +80,20 @@ Hardening after the live restart incident (AE restart rolled the project back to
 - **Second production script end-to-end**: `apostle/demo-beats-redeem.json` — 6 beats + endcard, **gallery layout** (lateral +x stations, first non-corridor build), full transit vocabulary (lateralTruck, crane, whipOrbit, dollyZoom), `rig: "auto"` (verified it resolves to expression post-Phase-3). Result: all checks green on pass 1 (4,902 props, 8 text layers, 7 stations within 3 px at 1700 z-gap), 6 sampled frames all visually correct. Total 41.4 s world.
 - Known limitation recorded: `stylePreset: "listBuild"` currently renders through the titleCard branch (super + accent bar) — no per-item list build yet. Timing/enum paths are exercised; the dedicated visual is future work.
 
+## v2.2.0 — animation quality, project organization, master font control (2026-07-28)
+
+User feedback after reviewing the Phase 1–4 builds in motion: animations had visible bugs, comps were dumped loose at the project root, and fonts weren't controllable from one place. A 6-frame diagnostic strip across a transit confirmed three motion defects that still-frame verification had never caught:
+
+1. **Empty frames mid-transit** — the camera crossed transparent void between stations (rendered white, with an ugly gray plane-edge streak). Fix: full-frame 2D `MASTER BG` solid on the master comp, brand background color, expression-linked to CONTROL — plus gallery spacing tightened 2700 → 2400 so lateral trucks keep content on screen.
+2. **Ghost arrivals** — text entrances started before the camera arrived (scene starts at arrive − 0.45; reveals fired at scene-time 0.3–0.5), so arrival frames caught half-played, semi-transparent entrances. Fix: reveals moved to scene-time 0.55+ — entrances now begin ~0.1 s *after* the camera lands.
+3. **Indistinguishable transits** — the expression rig differentiated transit types by duration only. Fix: crane gets a vertical mid-arc (−260 px), whipOrbit gets a rig-yaw swing (0→26°→0), dollyZoom gets a camera-zoom ramp (1.18× easing to base). All keyed alongside the existing position keys, all eased.
+
+**Project organization**: every build now creates `APOSTLE/<masterName>_vNNN/` with `01_MASTER`, `02_SCENES`, `03_ASSETS` (solid/null sources are re-filed out of the root Solids folder via build-time source tracking). Builds are auto-versioned — `_v001`, `_v002`, … scanning existing items; nothing is overwritten and nothing lands loose at the project root. The 25 flat test comps from Phases 1–4 were removed from the working project.
+
+**Master font control**: two guide text layers on the master comp — `FONT Heading` and `FONT Body` (guide, video off) — hold PostScript font names as their text. Every linked text layer's style expression reads its font from the matching guide layer (and size/color from the CONTROL sliders as before). Changing every font in a build = retyping one layer. Verified live: heading swapped to AvenirNext-Bold via one text edit, rendered, reverted. The old 3-item font dropdown is gone (dropdowns can't hold arbitrary PS names); the safe-margin check skips guide/disabled layers.
+
+Verified on `YELLO_REDEEM_v001` (demo-beats-redeem, gallery, rig auto→expression): checks green (8 text layers, 7 stations), 8-frame strip confirms the streak is gone, arrivals land crisp, and each transit flavor reads distinctly.
+
 ## Phase 0 gate results (2026-07-27, AE 26.2.1, bridge v1.10.0)
 
 - **Gate A — PASS (disk-file path)**: `seeFrame` bridge command rendered MASTER at 800×450 (21 KB PNG, in-AE temp-comp downscale) in 0.45 s; Claude Code read it from disk as a native inline image at negligible token cost. The MCP-native `see-frame` tool path (ImageContent over stdio) still needs verification in a session where the AfterEffectsMCP tools are loaded (server was registered mid-session); the disk-file path is the brief's approved fallback and is fully working.

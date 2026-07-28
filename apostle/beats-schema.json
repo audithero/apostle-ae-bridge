@@ -26,7 +26,7 @@
         },
         "masterName": {
           "type": "string", "default": "MASTER",
-          "description": "Name for the master comp. Scene precomps are prefixed with it. Build fails if a comp with this name already exists."
+          "description": "Base name for the build. Every build is versioned: the actual master comp is <masterName>_vNNN (auto-incremented, never overwrites), filed under project folder APOSTLE/<masterName>_vNNN/{01_MASTER, 02_SCENES, 03_ASSETS}. Scene precomps are prefixed with the versioned name."
         },
         "rig": {
           "type": "string",
@@ -39,8 +39,8 @@
     "brand": {
       "type": "object",
       "properties": {
-        "fontHeadingPS": { "type": "string", "default": "HelveticaNeue-Bold", "description": "PostScript name" },
-        "fontBodyPS": { "type": "string", "default": "HelveticaNeue" },
+        "fontHeadingPS": { "type": "string", "default": "HelveticaNeue-Bold", "description": "PostScript name. Seeds the master comp's FONT Heading guide layer — after build, retype that layer's text to change every heading font in the build." },
+        "fontBodyPS": { "type": "string", "default": "HelveticaNeue", "description": "PostScript name. Seeds the FONT Body guide layer (same master-control mechanism)." },
         "headingSize": { "type": "number", "default": 84 },
         "bodySize": { "type": "number", "default": 42 },
         "safeMarginPct": { "type": "number", "default": 10 },

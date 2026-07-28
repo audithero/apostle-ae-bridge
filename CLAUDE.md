@@ -2,6 +2,13 @@
 
 Closed-loop system: Claude Code drives a live After Effects instance on macOS via this MCP server (fork of `a-y-ibrahim/after-effects-mcp`) and a watched-folder file bridge. Apostle additions live in `apostle/`, `.claude/`, `scripts/`, `docs/` — never modify upstream `src/` beyond thin tool wiring, so upstream merges stay clean.
 
+## Build conventions (v2.2.0)
+
+- Every build is **versioned and foldered**: master comp `<base>_vNNN` under project folder `APOSTLE/<base>_vNNN/{01_MASTER, 02_SCENES, 03_ASSETS}`. Never create loose comps at the project root; never overwrite an existing version.
+- **Fonts are master-controlled**: guide text layers `FONT Heading` / `FONT Body` on the master comp hold PostScript names; linked text styles read from them. To change fonts, edit those layers' text — do not touch per-layer fonts.
+- **Verify motion, not just stills**: after any animation-affecting change, render a short strip across at least one transit and one entrance (still frames alone missed every v2.1 motion bug — empty transits, ghost arrivals).
+- The master comp has a full-frame 2D `MASTER BG` solid (color-linked to CONTROL). Do not delete it — without it, transits cross white void with visible plane edges.
+
 ## Commands
 
 - Build server: `npm run build` (output: `build/index.js`)

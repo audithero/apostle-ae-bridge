@@ -19,7 +19,7 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.1.0";
+  var LIB_VERSION = "2.2.0";
 
   // Captured at load time; locates the repo for crash-recovery run snapshots
   var LIB_FILE = null;
@@ -88,6 +88,14 @@ var APOSTLE = (function () {
       f.close();
       return f.fsName;
     } catch (e) { return null; }
+  }
+
+  // Solid/null source items created during a build, so buildFromBeats can
+  // file them into the build's 03_ASSETS folder instead of littering the
+  // project-root Solids folder.
+  var BUILD_SOURCES = [];
+  function regSource(layer) {
+    try { if (layer && layer.source) BUILD_SOURCES.push(layer.source); } catch (e) {}
   }
 
   function applyEase(prop, keyIndex, inInfluence, outInfluence) {
@@ -255,6 +263,7 @@ var APOSTLE = (function () {
   function buildControl(master, data, report) {
     var ctrl = master.layers.addNull(master.duration);
     ctrl.startTime = 0; // AE creates layers at the playhead; pin to comp start
+    regSource(ctrl);
     ctrl.name = "CONTROL";
     ctrl.label = 9;
     ctrl.guideLayer = true;
@@ -266,29 +275,68 @@ var APOSTLE = (function () {
     addSlider(ctrl, "Body Size", data.brand.bodySize || 42);
     addSlider(ctrl, "Safe Margin %", data.brand.safeMarginPct || 10);
     addCheckbox(ctrl, "Logo Visible", true);
-    try {
-      var dd = ctrl.property("ADBE Effect Parade").addProperty("ADBE Dropdown Control");
-      dd.name = "Heading Font";
-      dd.property(1).setPropertyParameters(["Brand Heading", "Brand Body", "Fallback Arial"]);
-    } catch (e) {
-      report.warnings.push("Dropdown items could not be scripted on this AE version. Edit items manually on the Heading Font control.");
-    }
+    // fonts are controlled by the FONT Heading / FONT Body guide layers
+    // (buildFontLayers), not an effect dropdown — dropdowns can't hold
+    // arbitrary PostScript names
     return ctrl;
+  }
+
+  // Full-frame 2D background on the master comp, brand background color.
+  // Without it, transits between stations cross transparent void (renders
+  // white) with visible scene-plane edges — the worst visual bug of v2.1.
+  // Same color as the scene BG solids, so plane edges vanish entirely.
+  function buildMasterBG(master, data, masterName) {
+    var bg = master.layers.addSolid([1, 1, 1], "MASTER BG", master.width, master.height, 1, master.duration);
+    bg.startTime = 0;
+    bg.label = 8;
+    var fill = bg.property("ADBE Effect Parade").addProperty("ADBE Fill");
+    fill.property("ADBE Fill-0002").setValue(hexToRGB(data.brand.colors.background));
+    try {
+      fill.property("ADBE Fill-0002").expression =
+        'comp("' + masterName + '").layer("CONTROL").effect("Background")("Color")';
+    } catch (e) {}
+    bg.moveToEnd();
+    regSource(bg);
+    return bg;
   }
 
   // ---------------------------------------------------------------
   // SCENE BUILD (ported; masterName threaded through for expressions)
   // ---------------------------------------------------------------
 
-  function styleExpr(masterName, sliderName, headingPS, bodyPS) {
+  // Master font control: every linked text layer reads its font's PostScript
+  // name from a guide text layer on the master comp ("FONT Heading" /
+  // "FONT Body" — guide, video off, never renders). Changing every font in
+  // the build = retyping the PS name in that one layer.
+  function styleExpr(masterName, role) {
+    var fontLayer = (role === "body") ? "FONT Body" : "FONT Heading";
+    var slider = (role === "body") ? "Body Size" : "Heading Size";
     return 'var c = comp("' + masterName + '").layer("CONTROL");\n' +
-      'var sel = 1;\n' +
-      'try { sel = c.effect("Heading Font")("Menu").value; } catch (e) { sel = 1; }\n' +
-      'var f = sel == 1 ? "' + headingPS + '" : sel == 2 ? "' + bodyPS + '" : "Arial-BoldMT";\n' +
-      'text.sourceText.style\n' +
-      '  .setFont(f)\n' +
-      '  .setFontSize(c.effect("' + sliderName + '")("Slider"))\n' +
+      'var f = "";\n' +
+      'try { f = comp("' + masterName + '").layer("' + fontLayer + '").text.sourceText.toString().replace(/^\\s+|\\s+$/g, ""); } catch (e) { f = ""; }\n' +
+      'var st = text.sourceText.style;\n' +
+      'if (f != "") { try { st = st.setFont(f); } catch (e2) {} }\n' +
+      'st.setFontSize(c.effect("' + slider + '")("Slider"))\n' +
       '  .setFillColor(c.effect("Text Color")("Color"));';
+  }
+
+  function buildFontLayers(master, data) {
+    function fontGuide(name, ps, y) {
+      var tl = master.layers.addText(ps);
+      tl.startTime = 0;
+      tl.name = name;
+      tl.guideLayer = true;
+      tl.enabled = false;
+      tl.label = 9;
+      var doc = tl.property("ADBE Text Properties").property("ADBE Text Document").value;
+      doc.resetCharStyle();
+      doc.fontSize = 24;
+      tl.property("ADBE Text Properties").property("ADBE Text Document").setValue(doc);
+      tl.property("ADBE Transform Group").property("ADBE Position").setValue([230, y]);
+      return tl;
+    }
+    fontGuide("FONT Heading", data.brand.fontHeadingPS || "HelveticaNeue-Bold", 60);
+    fontGuide("FONT Body", data.brand.fontBodyPS || "HelveticaNeue", 100);
   }
 
   function autoFitExpr(masterName) {
@@ -323,7 +371,7 @@ var APOSTLE = (function () {
     if (report.styleExpressions && opts.linkStyle) {
       try {
         tl.property("ADBE Text Properties").property("ADBE Text Document").expression =
-          styleExpr(masterName, opts.sliderName || "Heading Size", data.brand.fontHeadingPS, data.brand.fontBodyPS);
+          styleExpr(masterName, opts.role || "heading");
       } catch (e) {
         report.warnings.push("Style expression failed on layer " + tl.name + ": " + e.toString());
       }
@@ -358,6 +406,7 @@ var APOSTLE = (function () {
         'comp("' + masterName + '").layer("CONTROL").effect("Background")("Color")';
     } catch (e) {}
     bg.moveToEnd();
+    regSource(bg);
     return bg;
   }
 
@@ -389,12 +438,16 @@ var APOSTLE = (function () {
     var superText = beat.superText || beat["super"] || "";
     var preset = beat.stylePreset || "titleCard";
 
+    // Reveal timing contract: the scene layer starts at arrive - 0.45 in the
+    // master, so a reveal at scene-time 0.55 begins 0.1 s AFTER the camera
+    // arrives. v2.1 revealed at 0.3-0.5 — half the entrance played out while
+    // the camera was still in transit, so arrivals looked washed-out/empty.
     if (preset == "endcard") {
       var url = makeText(c, superText, { name: "Endcard Headline", size: 72, pos: [w / 2, h * 0.44], linkStyle: true, autoFit: true }, data, report, masterName);
-      slideUpReveal(url, 0.3);
+      slideUpReveal(url, 0.55);
       if (beat.url) {
-        var u = makeText(c, beat.url, { name: "URL", size: 40, font: data.brand.fontBodyPS, pos: [w / 2, h * 0.58], linkStyle: false, autoFit: true }, data, report, masterName);
-        slideUpReveal(u, 0.55);
+        var u = makeText(c, beat.url, { name: "URL", size: 40, font: data.brand.fontBodyPS, pos: [w / 2, h * 0.58], linkStyle: true, role: "body", autoFit: true }, data, report, masterName);
+        slideUpReveal(u, 0.8);
       }
       accentBar(c, data, h * 0.66, masterName);
     } else if (preset == "uiWalkthrough") {
@@ -410,13 +463,13 @@ var APOSTLE = (function () {
       fstr.property("ADBE Vector Stroke Width").setValue(6);
       frame.property("ADBE Transform Group").property("ADBE Position").setValue([w * 0.68, h / 2]);
       var head = makeText(c, superText, { name: "Super", size: 64, pos: [w * 0.32, h / 2], linkStyle: true, autoFit: true }, data, report, masterName);
-      slideUpReveal(head, 0.35);
-      slideUpReveal(frame, 0.5);
+      slideUpReveal(head, 0.55);
+      slideUpReveal(frame, 0.7);
     } else {
       var main = makeText(c, superText, { name: "Super", size: 84, pos: [w / 2, h * 0.48], linkStyle: true, autoFit: true }, data, report, masterName);
-      slideUpReveal(main, 0.35);
+      slideUpReveal(main, 0.55);
       accentBar(c, data, h * 0.58, masterName);
-      slideUpReveal(findLayer(c, "Accent Bar"), 0.5);
+      slideUpReveal(findLayer(c, "Accent Bar"), 0.75);
     }
     return c;
   }
@@ -432,6 +485,9 @@ var APOSTLE = (function () {
     var spacing;
     if (layout == "corridor") { spacing = 3200; }
     else if (layout == "stack") { spacing = 2300; }
+    else if (layout == "gallery") { spacing = 2400; } // < visible width at rest
+    // distance (~2186px + plane 1920), so lateral trucks always keep some
+    // content on screen instead of flashing a fully empty frame mid-transit
     else { spacing = 2700; }
     var i, s, ang;
     for (i = 0; i < count; i++) {
@@ -464,6 +520,7 @@ var APOSTLE = (function () {
   // through stations, camera parented with PoI at rig origin, wiggle drift.
   function buildRigExpression(master) {
     var rig = master.layers.addNull(master.duration);
+    regSource(rig);
     rig.startTime = 0; // pin: AE creates layers at the playhead, which silently
     rig.name = "APOSTLE RIG";
     rig.threeDLayer = true;
@@ -492,6 +549,7 @@ var APOSTLE = (function () {
   // HandyCam_Camera_N is created; find the rig by effect, not by name.
   function buildRigHandyCam(master, report) {
     var rig = master.layers.addNull(master.duration);
+    regSource(rig);
     rig.startTime = 0; // pin to comp start (see buildRigExpression)
     rig.name = "APOSTLE HC RIG";
     rig.threeDLayer = true;
@@ -515,7 +573,14 @@ var APOSTLE = (function () {
 
   function keyframeTransitExpression(rigInfo, stations, beats) {
     var pos = rigInfo.rig.property("ADBE Transform Group").property("ADBE Position");
-    var i, b, arrive, transit;
+    var yrot = rigInfo.rig.property("ADBE Transform Group").property("ADBE Rotate Y");
+    var zoomProp = null;
+    var baseZoom = 0;
+    try {
+      zoomProp = rigInfo.cam.property("ADBE Camera Options Group").property("ADBE Camera Zoom");
+      baseZoom = zoomProp.value;
+    } catch (eZoom) { zoomProp = null; }
+    var i, b, arrive, transit, tt, mid;
     for (i = 0; i < beats.length; i++) {
       b = beats[i];
       arrive = b._arrive;
@@ -525,10 +590,36 @@ var APOSTLE = (function () {
       } else {
         pos.setValueAtTime(arrive - transit, stations[i - 1].pos);
         pos.setValueAtTime(arrive, stations[i].pos);
+        // transit flavor — v2.1 differentiated transits by duration only,
+        // which read as "every move looks the same"
+        tt = b.transitIn || "dollyPush";
+        if (tt === "crane") {
+          // vertical arc: rise at the midpoint, settle into the station
+          mid = [
+            (stations[i - 1].pos[0] + stations[i].pos[0]) / 2,
+            Math.min(stations[i - 1].pos[1], stations[i].pos[1]) - 260,
+            (stations[i - 1].pos[2] + stations[i].pos[2]) / 2
+          ];
+          pos.setValueAtTime(arrive - transit * 0.5, mid);
+        } else if (tt === "whipOrbit") {
+          // lateral whip: rig yaw swings out and back across the move
+          yrot.setValueAtTime(arrive - transit, 0);
+          yrot.setValueAtTime(arrive - transit * 0.5, 26);
+          yrot.setValueAtTime(arrive, 0);
+        } else if (tt === "dollyZoom" && zoomProp) {
+          // vertigo push: tight zoom at departure easing to base on arrival;
+          // first key = baseZoom*1.18 only from the transit start, and the
+          // start-of-transit anchor keeps earlier times at base
+          zoomProp.setValueAtTime(arrive - transit, baseZoom);
+          zoomProp.setValueAtTime(arrive - transit * 0.85, baseZoom * 1.18);
+          zoomProp.setValueAtTime(arrive, baseZoom);
+        }
       }
       addStationMarker(rigInfo.rig, arrive, i, b);
     }
     easeAllKeys(pos, 92, 78);
+    if (yrot.numKeys > 0) easeAllKeys(yrot, 85, 85);
+    if (zoomProp && zoomProp.numKeys > 0) easeAllKeys(zoomProp, 80, 80);
   }
 
   function keyframeTransitHandyCam(rigInfo, stations, beats, master, report) {
@@ -601,11 +692,21 @@ var APOSTLE = (function () {
     if (!data.brand.fontHeadingPS) data.brand.fontHeadingPS = "HelveticaNeue-Bold";
     if (!data.brand.fontBodyPS) data.brand.fontBodyPS = "HelveticaNeue";
 
-    var masterName = data.meta.masterName || "MASTER";
-    report.masterName = masterName;
-    if (findComp(masterName)) {
-      return toJSON({ status: "error", error: "A comp named '" + masterName + "' already exists. Pass meta.masterName to build under a different name." });
+    var baseName = data.meta.masterName || "MASTER";
+    // Versioned builds: every build creates <base>_vNNN, scanning existing
+    // items for the highest version — never overwrites, never collides.
+    // Old versions stay until deliberately deleted.
+    function pad3(n) { var s = String(n); while (s.length < 3) s = "0" + s; return s; }
+    var vmax = 0;
+    for (var vi = 1; vi <= app.project.numItems; vi++) {
+      var vnm = String(app.project.item(vi).name);
+      if (vnm.indexOf(baseName + "_v") === 0) {
+        var vrest = vnm.substring(baseName.length + 2);
+        if (/^\d+$/.test(vrest) && parseInt(vrest, 10) > vmax) vmax = parseInt(vrest, 10);
+      }
     }
+    var masterName = baseName + "_v" + pad3(vmax + 1);
+    report.masterName = masterName;
 
     if (data.endcard) {
       data.beats.push({
@@ -627,7 +728,23 @@ var APOSTLE = (function () {
       var fps = data.meta.fps;
       var w = data.meta.resolution[0];
       var h = data.meta.resolution[1];
+      // Project organization: APOSTLE/<masterName>/01_MASTER + 02_SCENES +
+      // 03_ASSETS. Nothing from a build lands loose at the project root.
+      var rootFolder = null;
+      for (var rf = 1; rf <= app.project.numItems; rf++) {
+        var rit = app.project.item(rf);
+        if (rit instanceof FolderItem && rit.name === "APOSTLE" && rit.parentFolder === app.project.rootFolder) { rootFolder = rit; break; }
+      }
+      if (!rootFolder) rootFolder = app.project.items.addFolder("APOSTLE");
+      var buildFolder = app.project.items.addFolder(masterName);
+      buildFolder.parentFolder = rootFolder;
+      var fMaster = app.project.items.addFolder("01_MASTER"); fMaster.parentFolder = buildFolder;
+      var fScenes = app.project.items.addFolder("02_SCENES"); fScenes.parentFolder = buildFolder;
+      var fAssets = app.project.items.addFolder("03_ASSETS"); fAssets.parentFolder = buildFolder;
+      BUILD_SOURCES = [];
+
       var master = app.project.items.addComp(masterName, w, h, 1, report.totalDuration, fps);
+      master.parentFolder = fMaster;
       master.motionBlur = true;
 
       var rigMode = data.meta.rig || "expression";
@@ -640,12 +757,15 @@ var APOSTLE = (function () {
       if (rigMode === "auto") rigMode = "expression";
 
       var ctrl = buildControl(master, data, report);
+      buildFontLayers(master, data);
+      buildMasterBG(master, data, masterName);
 
       var beats = data.beats;
       var stations = buildStations(data.meta.layout || "corridor", beats.length, w, h);
       var i, sceneComp, sceneLayer;
       for (i = beats.length - 1; i >= 0; i--) {
         sceneComp = buildBeatComp(app.project, data, beats[i], i, fps, report, masterName);
+        sceneComp.parentFolder = fScenes;
         sceneLayer = master.layers.add(sceneComp);
         sceneLayer.threeDLayer = true;
         // collapseTransformation stays OFF: collapsed 3D precomps composite in
@@ -673,6 +793,10 @@ var APOSTLE = (function () {
         keyframeTransitHandyCam(rigInfo, stations, beats, master, report);
       } else {
         keyframeTransitExpression(rigInfo, stations, beats);
+      }
+
+      for (var si = 0; si < BUILD_SOURCES.length; si++) {
+        try { BUILD_SOURCES[si].parentFolder = fAssets; } catch (eSrc) {}
       }
 
       ctrl.moveToBeginning();
@@ -1019,6 +1143,7 @@ var APOSTLE = (function () {
           var layer = c.layer(i);
           if (layer.source instanceof CompItem && !seen[layer.source.name]) queue.push(layer.source);
           if (!(layer instanceof TextLayer)) continue;
+          if (layer.guideLayer || !layer.enabled) continue; // FONT config guides never render
           checked++;
           var t = textHoldTime(layer);
           var rect = layer.sourceRectAtTime(t, false);
