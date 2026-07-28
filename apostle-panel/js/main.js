@@ -300,7 +300,9 @@ $id("btnRetime").addEventListener("click", async () => {
 });
 
 // ---------- 03 BRAND -------------------------------------------------------
-$id("btnBrandLoad").addEventListener("click", async () => {
+$id("brandMaster").addEventListener("change", loadBrandTypography); // picking a comp loads it
+$id("btnBrandLoad").addEventListener("click", loadBrandTypography);
+async function loadBrandTypography() {
   const master = $id("brandMaster").value;
   if (!master) return;
   const r = await host("readTypography", [master]);
@@ -311,11 +313,18 @@ $id("btnBrandLoad").addEventListener("click", async () => {
   $id("hTrack").value = t.headingTracking ?? ""; $id("bTrack").value = t.bodyTracking ?? "";
   for (const [pre, ps] of [["h", t.headingFont], ["b", t.bodyFont]]) {
     state.fonts.forEach((f, i) => f.styles.forEach((s, j) => {
-      if (s.ps === ps) { $id(pre + "Fam").value = i; $id(pre + "Fam").dispatchEvent(new Event("change")); $id(pre + "Style").value = j; }
+      if (s.ps === ps) {
+        $id(pre + "Fam").value = i;
+        $id(pre + "Fam").dispatchEvent(new Event("change")); // rebuilds style list, resets PS to style[0]…
+        $id(pre + "Style").value = j;
+        $id(pre + "Style").dispatchEvent(new Event("change")); // …so re-fire to land on the true style
+      }
     }));
+    // the comp's value is the truth even when no dropdown entry matches it
+    $id(pre + "PS").value = ps || "";
   }
   status("Typography loaded from " + master);
-});
+}
 $id("btnBrandSync").addEventListener("click", async () => {
   const master = $id("brandMaster").value;
   if (!master) return;

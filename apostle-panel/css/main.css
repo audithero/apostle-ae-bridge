@@ -74,9 +74,14 @@ textarea { resize: vertical; user-select: text; }
 textarea:focus, input:focus, select:focus { border-color: var(--dim); }
 
 .row { display: flex; gap: 8px; margin: 8px 0; align-items: flex-end; }
-.field { flex: 1; }
-.grow { flex: 2; }
+.field { flex: 1; min-width: 0; }
+.grow { flex: 2; min-width: 0; }
 .num { width: 52px; flex: none; }
+/* selects must be allowed to shrink below intrinsic width — long font
+   names otherwise squeeze their siblings to unusable slivers */
+.row select, .row input { min-width: 0; }
+#hStyle, #bStyle { flex: 1.2; min-width: 84px; }
+#hFam, #bFam { flex: 2; }
 
 button {
   background: none; color: var(--text);
