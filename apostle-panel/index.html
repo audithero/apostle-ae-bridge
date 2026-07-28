@@ -4,6 +4,7 @@
 <meta charset="utf-8">
 <title>Apostle</title>
 <link rel="stylesheet" href="css/main.css">
+<link rel="stylesheet" href="vendor/xterm.css">
 </head>
 <body>
 <header id="masthead">
@@ -104,8 +105,15 @@
 
   <!-- 06 CLAUDE -->
   <section id="tab-claude" class="pane">
+    <div class="row">
+      <button id="btnTermStart" class="primary">START SESSION</button>
+      <button id="btnTermStop" disabled>END</button>
+      <span id="termStatus" class="dim small"></span>
+    </div>
+    <div id="terminal"></div>
+    <hr>
     <label class="lbl">ASK CLAUDE (one-shot, via claude -p)</label>
-    <textarea id="claudePrompt" rows="4" placeholder="e.g. Parse this messy brief into beats JSON&hellip;"></textarea>
+    <textarea id="claudePrompt" rows="3" placeholder="e.g. Parse this messy brief into beats JSON&hellip;"></textarea>
     <button id="btnAsk" class="primary">ASK</button>
     <div id="claudeOut" class="out mono"></div>
     <hr>
@@ -114,6 +122,8 @@
   </section>
 </main>
 <footer id="status" class="dim"></footer>
+<script src="vendor/xterm.js"></script>
+<script src="vendor/xterm-addon-fit.js"></script>
 <script src="js/main.js"></script>
 </body>
 </html>

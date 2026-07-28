@@ -121,3 +121,19 @@ hr { border: none; border-top: 1px solid var(--line); margin: 16px 0 4px; }
   border-top: 1px solid var(--line);
   padding: 6px 14px; font-size: 10px; min-height: 24px;
 }
+
+#terminal {
+  margin-top: 10px;
+  height: 380px;
+  border: 1px solid var(--line);
+  background: #000;
+  padding: 4px;
+}
+#terminal:empty::before {
+  content: "NO SESSION — START SESSION runs Claude Code inside this panel, in the repo, on your Claude account.";
+  color: var(--dim);
+  font-size: 10px;
+  letter-spacing: 0.08em;
+  display: block;
+  padding: 12px;
+}

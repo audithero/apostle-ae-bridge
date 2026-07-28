@@ -359,7 +359,85 @@ $id("btnClaudeReview").addEventListener("click", () => {
   status("Job queued for Claude.", "ok");
 });
 
-// ---------- 06 CLAUDE ------------------------------------------------------
+// ---------- 06 CLAUDE: embedded terminal -----------------------------------
+const RELAY_PORT = 8471;
+const term = { xterm: null, ws: null, fit: null };
+
+function relayEnsure() {
+  // idempotent: relay exits 0 immediately if the port is already served.
+  // process.execPath inside CEP is the CEF binary, NOT node — go through a
+  // login shell so the user's node (homebrew/nvm) is found.
+  const { spawn } = require("child_process");
+  const cmd = "node '" + path.join(REPO, "scripts", "panel-relay.cjs") + "' --port " + RELAY_PORT + " --cwd '" + REPO + "'";
+  const child = spawn("/bin/zsh", ["-lc", cmd], { detached: true, stdio: "ignore" });
+  child.unref();
+}
+
+function termStatus(msg, cls) { const el = $id("termStatus"); el.textContent = msg; el.className = "small " + (cls || "dim"); }
+
+function termConnect(attempt) {
+  const ws = new WebSocket("ws://127.0.0.1:" + RELAY_PORT);
+  ws.binaryType = "arraybuffer";
+  ws.onopen = () => {
+    termStatus("LIVE", "ok");
+    $id("btnTermStop").disabled = false;
+    $id("btnTermStart").disabled = true;
+    term.ws = ws;
+    sendResize();
+  };
+  ws.onmessage = (ev) => {
+    if (term.xterm) term.xterm.write(typeof ev.data === "string" ? ev.data : new Uint8Array(ev.data));
+  };
+  ws.onclose = () => {
+    if (term.ws === ws) {
+      termStatus("session ended");
+      $id("btnTermStop").disabled = true;
+      $id("btnTermStart").disabled = false;
+      term.ws = null;
+    } else if ((attempt || 0) < 20) {
+      // relay may still be starting — retry
+      setTimeout(() => termConnect((attempt || 0) + 1), 250);
+    } else {
+      termStatus("relay unreachable — is node on PATH?", "err");
+      $id("btnTermStart").disabled = false;
+    }
+  };
+  ws.onerror = () => {};
+}
+
+function sendResize() {
+  if (term.ws && term.ws.readyState === 1 && term.xterm) {
+    term.ws.send("\x00resize:" + term.xterm.cols + "," + term.xterm.rows + "\n");
+  }
+}
+
+$id("btnTermStart").addEventListener("click", () => {
+  $id("btnTermStart").disabled = true;
+  termStatus("starting relay…");
+  if (!term.xterm) {
+    term.xterm = new window.Terminal({
+      fontSize: 11,
+      fontFamily: '"SF Mono", Menlo, monospace',
+      theme: { background: "#000000", foreground: "#f2f2f0", cursor: "#f2f2f0" },
+      cursorBlink: true,
+      scrollback: 5000
+    });
+    term.fit = new window.FitAddon.FitAddon();
+    term.xterm.loadAddon(term.fit);
+    term.xterm.open($id("terminal"));
+    term.xterm.onData((d) => { if (term.ws && term.ws.readyState === 1) term.ws.send(d); });
+    window.addEventListener("resize", () => { if (term.fit) { term.fit.fit(); sendResize(); } });
+  }
+  term.fit.fit();
+  relayEnsure();
+  setTimeout(() => termConnect(0), 300);
+});
+
+$id("btnTermStop").addEventListener("click", () => {
+  if (term.ws) { try { term.ws.close(); } catch (e) {} }
+});
+
+// ---------- 06 CLAUDE: one-shot + jobs -------------------------------------
 $id("btnAsk").addEventListener("click", () => {
   const prompt = $id("claudePrompt").value.trim();
   if (!prompt) return;
