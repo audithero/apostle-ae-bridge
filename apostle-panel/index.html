@@ -1,0 +1,119 @@
+<!DOCTYPE html>
+<html>
+<head>
+<meta charset="utf-8">
+<title>Apostle</title>
+<link rel="stylesheet" href="css/main.css">
+</head>
+<body>
+<header id="masthead">
+  <div id="wordmark">APOSTLE<span class="reg">&reg;</span></div>
+  <div id="libver" class="dim">connecting&hellip;</div>
+</header>
+
+<nav id="tabs">
+  <button class="tab active" data-tab="brief"><span class="no">NO. /01</span>BRIEF</button>
+  <button class="tab" data-tab="timing"><span class="no">NO. /02</span>TIMING</button>
+  <button class="tab" data-tab="brand"><span class="no">NO. /03</span>BRAND</button>
+  <button class="tab" data-tab="motion"><span class="no">NO. /04</span>MOTION</button>
+  <button class="tab" data-tab="review"><span class="no">NO. /05</span>REVIEW</button>
+  <button class="tab" data-tab="claude"><span class="no">NO. /06</span>CLAUDE</button>
+</nav>
+
+<main>
+  <!-- 01 BRIEF -->
+  <section id="tab-brief" class="pane active">
+    <label class="lbl">CLIENT SCRIPT</label>
+    <textarea id="briefText" rows="9" placeholder="Paste the client script (SUPER: / VO: lines)&hellip;"></textarea>
+    <div class="row">
+      <div class="field"><label class="lbl">BRAND KIT</label><select id="brandKit"></select></div>
+      <div class="field"><label class="lbl">MASTER NAME</label><input id="masterName" value="MASTER"></div>
+    </div>
+    <div class="row">
+      <button id="btnParse" class="primary">PARSE</button>
+      <button id="btnBuild" disabled>BUILD IN AE</button>
+    </div>
+    <div id="parseOut" class="out"></div>
+    <hr>
+    <label class="lbl">SCRIPT SYNC — PASTE REVISED SCRIPT</label>
+    <textarea id="revText" rows="6" placeholder="Paste the client's revised script&hellip;"></textarea>
+    <div class="row">
+      <button id="btnDiff" disabled>DIFF</button>
+      <button id="btnApply" class="primary" disabled>APPLY SYNC</button>
+    </div>
+    <div id="diffOut" class="out"></div>
+  </section>
+
+  <!-- 02 TIMING -->
+  <section id="tab-timing" class="pane">
+    <div class="row"><div class="field grow"><label class="lbl">MASTER</label><select id="timingMaster"></select></div>
+    <button id="btnTimingLoad">LOAD</button></div>
+    <div id="timingList" class="out"></div>
+    <button id="btnRetime" class="primary" disabled>APPLY RETIME</button>
+  </section>
+
+  <!-- 03 BRAND -->
+  <section id="tab-brand" class="pane">
+    <div class="row"><div class="field grow"><label class="lbl">MASTER</label><select id="brandMaster"></select></div>
+    <button id="btnBrandLoad">LOAD</button></div>
+    <div class="role">
+      <label class="lbl">HEADING</label>
+      <div class="row"><select id="hFam" class="grow"></select><select id="hStyle"></select></div>
+      <div class="row"><input id="hPS" class="grow" placeholder="PostScript name">
+        <input id="hSize" class="num" placeholder="size"><input id="hTrack" class="num" placeholder="trk"></div>
+    </div>
+    <div class="role">
+      <label class="lbl">BODY</label>
+      <div class="row"><select id="bFam" class="grow"></select><select id="bStyle"></select></div>
+      <div class="row"><input id="bPS" class="grow" placeholder="PostScript name">
+        <input id="bSize" class="num" placeholder="size"><input id="bTrack" class="num" placeholder="trk"></div>
+    </div>
+    <button id="btnBrandSync" class="primary">SYNC TO COMP</button>
+    <div id="brandOut" class="out"></div>
+  </section>
+
+  <!-- 04 MOTION -->
+  <section id="tab-motion" class="pane">
+    <div class="field"><label class="lbl">EASE PROFILE</label>
+      <select id="easeProfile">
+        <option value="corporate-smooth">CORPORATE SMOOTH</option>
+        <option value="snappy">SNAPPY</option>
+        <option value="playful">PLAYFUL</option>
+      </select></div>
+    <div class="field"><label class="lbl">HANDHELD (HANDYCAM)</label>
+      <select id="handheld">
+        <option value="subtle" selected>SUBTLE — client default</option>
+        <option value="energetic">ENERGETIC</option>
+        <option value="off">OFF</option>
+      </select></div>
+    <p class="dim small">Ease profile applies on next build or retime. Handheld applies live to the selected master. The HandyCam plugin itself remains the opt-in path for static rigs only (it cannot do station transport).</p>
+    <button id="btnMotionApply" class="primary">APPLY TO MASTER</button>
+    <div id="motionOut" class="out"></div>
+  </section>
+
+  <!-- 05 REVIEW -->
+  <section id="tab-review" class="pane">
+    <div class="row"><div class="field grow"><label class="lbl">MASTER</label><select id="reviewMaster"></select></div></div>
+    <div class="row">
+      <button id="btnChecks">RUN CHECKS</button>
+      <button id="btnRender">RENDER PREVIEW</button>
+    </div>
+    <button id="btnClaudeReview" class="primary">FULL CLAUDE REVIEW (JOB)</button>
+    <div id="reviewOut" class="out"></div>
+  </section>
+
+  <!-- 06 CLAUDE -->
+  <section id="tab-claude" class="pane">
+    <label class="lbl">ASK CLAUDE (one-shot, via claude -p)</label>
+    <textarea id="claudePrompt" rows="4" placeholder="e.g. Parse this messy brief into beats JSON&hellip;"></textarea>
+    <button id="btnAsk" class="primary">ASK</button>
+    <div id="claudeOut" class="out mono"></div>
+    <hr>
+    <label class="lbl">JOBS (watched by a Claude Code session)</label>
+    <div id="jobsList" class="out"></div>
+  </section>
+</main>
+<footer id="status" class="dim"></footer>
+<script src="js/main.js"></script>
+</body>
+</html>

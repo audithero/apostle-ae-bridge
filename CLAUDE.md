@@ -18,6 +18,14 @@ Closed-loop system: Claude Code drives a live After Effects instance on macOS vi
 - Beats are found by the `apostle beatId=<id>` comment tag on scene precomps, never by name or index.
 - Verification of any build/sync must include rendered pixels before reporting success (Tim, 2026-07-28): sampled frames today, aerender in Phase 8.
 
+## Apostle CEP panel (v2.7.0, Phase 7)
+
+- `apostle-panel/` is a CEP extension (CSXS 11, AE 24+): Apostle-branded UI with tabs BRIEF (paste → parse → build; script sync with diff + apply), TIMING (per-beat duration overrides + retime), BRAND (typography via the same API as the retired ScriptUI fonts panel), MOTION (ease profile + handheld level), REVIEW (checks, self-render, queue a Claude review job), CLAUDE (one-shot `claude -p` + job list).
+- Install: `scripts/install-panel.sh` (user-level symlink + PlayerDebugMode; **no sudo**). Uninstall with `--uninstall`. After install: restart AE, Window > Extensions > Apostle.
+- Architecture rule: `jsx/host.jsx` is a thin JSON marshal (`apInit`/`apCallFile`, args passed via temp file — never inline evalScript strings). ALL logic lives in `apostle.jsx` and `scripts/*.cjs` (which export libs; the CLI and panel share them). Never fork logic into the panel.
+- Claude connection: panel writes job files to `~/Documents/ae-mcp-bridge/jobs/<id>.json` (answer as `<id>.result.json`); a running Claude Code session should watch that folder. One-shot questions go through `claude -p` in a login shell. Embedded interactive terminal (xterm + pty relay, MotionAmigo-style) is the planned v2.
+- Verification of any build/sync must include rendered pixels before reporting success (Tim, 2026-07-28): the review-export skill is the loop; sampled frames or `renderMovie` + `scripts/extract-frames.sh`.
+
 ## Commands
 
 - Build server: `npm run build` (output: `build/index.js`)
