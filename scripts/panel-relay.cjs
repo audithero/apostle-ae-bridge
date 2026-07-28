@@ -62,7 +62,8 @@ def setsize(c, r):
 setsize(cols, rows)
 env = dict(os.environ)
 env["TERM"] = "xterm-256color"
-p = subprocess.Popen(["/bin/zsh", "-lc", "exec " + "'" + sys.argv[2] + "'"], stdin=slave, stdout=slave,
+extra = sys.argv[3] if len(sys.argv) > 3 else ""
+p = subprocess.Popen(["/bin/zsh", "-lc", "exec " + "'" + sys.argv[2] + "' " + extra], stdin=slave, stdout=slave,
                      stderr=slave, preexec_fn=os.setsid, env=env, cwd=sys.argv[1])
 os.close(slave)
 buf = b""
@@ -147,11 +148,21 @@ const server = net.createServer((sock) => {
       const head = acc.slice(0, headEnd).toString();
       const keyMatch = head.match(/Sec-WebSocket-Key:\s*(\S+)/i);
       if (!keyMatch || !/GET/.test(head)) { sock.end("HTTP/1.1 400 Bad Request\r\n\r\n"); return; }
+      // per-session claude flags via query string (?args=...), whitelisted —
+      // the panel's SKIP PERMISSIONS toggle rides in here
+      const ALLOWED_FLAGS = new Set(["--dangerously-skip-permissions", "--continue", "--resume"]);
+      let extraArgs = [];
+      try {
+        const q = ((head.split("\r\n")[0].split(" ")[1] || "").split("?")[1] || "");
+        for (const kv of q.split("&")) {
+          if (kv.indexOf("args=") === 0) extraArgs = decodeURIComponent(kv.slice(5)).split(" ").filter((a) => ALLOWED_FLAGS.has(a));
+        }
+      } catch (e) {}
       sock.write("HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: " + wsAccept(keyMatch[1]) + "\r\n\r\n");
       upgraded = true;
       acc = acc.slice(headEnd + 4);
       clients++;
-      pty = spawn("python3", ["-c", PY, CWD, CLAUDE_BIN], { cwd: CWD });
+      pty = spawn("python3", ["-c", PY, CWD, CLAUDE_BIN, extraArgs.join(" ")], { cwd: CWD });
       pty.stdout.on("data", (d) => { try { sock.write(encodeFrame(d, 0x2)); } catch (e) {} });
       pty.stderr.on("data", (d) => { try { sock.write(encodeFrame(d, 0x2)); } catch (e) {} });
       pty.on("exit", () => { try { sock.write(encodeFrame(Buffer.from("\r\n[claude session ended]\r\n"), 0x2)); sock.end(encodeFrame(Buffer.alloc(0), 0x8)); } catch (e) {} });

@@ -414,13 +414,18 @@ function relayEnsure() {
 
 function termStatus(msg, cls) { const el = $id("termStatus"); el.textContent = msg; el.className = "small " + (cls || "dim"); }
 
+function claudeArgs() {
+  return $id("skipPerms").checked ? "--dangerously-skip-permissions" : "";
+}
+
 function termConnect(attempt) {
-  const ws = new WebSocket("ws://127.0.0.1:" + RELAY_PORT);
+  const ws = new WebSocket("ws://127.0.0.1:" + RELAY_PORT + "/?args=" + encodeURIComponent(claudeArgs()));
   ws.binaryType = "arraybuffer";
   ws.onopen = () => {
-    termStatus("LIVE", "ok");
+    termStatus($id("skipPerms").checked ? "LIVE — permissions bypassed" : "LIVE", "ok");
     $id("btnTermStop").disabled = false;
-    $id("btnTermStart").disabled = true;
+    $id("btnTermStart").textContent = "RESTART SESSION";
+    $id("btnTermStart").disabled = false;
     term.ws = ws;
     sendResize();
   };
@@ -429,10 +434,18 @@ function termConnect(attempt) {
   };
   ws.onclose = () => {
     if (term.ws === ws) {
-      termStatus("session ended");
-      $id("btnTermStop").disabled = true;
-      $id("btnTermStart").disabled = false;
       term.ws = null;
+      $id("btnTermStop").disabled = true;
+      $id("btnTermStart").textContent = "START SESSION";
+      $id("btnTermStart").disabled = false;
+      if (term.restartPending) {
+        term.restartPending = false;
+        if (term.xterm) term.xterm.clear();
+        termStatus("restarting…");
+        setTimeout(() => startSession(), 400);
+      } else {
+        termStatus("session ended");
+      }
     } else if ((attempt || 0) < 20) {
       // relay may still be starting — retry
       setTimeout(() => termConnect((attempt || 0) + 1), 250);
@@ -450,7 +463,24 @@ function sendResize() {
   }
 }
 
+// toggle persists; changing it mid-session hints at RESTART
+try { $id("skipPerms").checked = localStorage.getItem("apostleSkipPerms") !== "0"; } catch (e) {}
+$id("skipPerms").addEventListener("change", () => {
+  try { localStorage.setItem("apostleSkipPerms", $id("skipPerms").checked ? "1" : "0"); } catch (e) {}
+  if (term.ws) termStatus("toggle applies on RESTART SESSION", "warn");
+});
+
 $id("btnTermStart").addEventListener("click", () => {
+  if (term.ws) {
+    // live session: restart with the current toggle state
+    term.restartPending = true;
+    try { term.ws.close(); } catch (e) {}
+    return;
+  }
+  startSession();
+});
+
+function startSession() {
   $id("btnTermStart").disabled = true;
   termStatus("starting relay…");
   if (!term.xterm) {
@@ -470,7 +500,7 @@ $id("btnTermStart").addEventListener("click", () => {
   term.fit.fit();
   relayEnsure();
   setTimeout(() => termConnect(0), 300);
-});
+}
 
 $id("btnTermStop").addEventListener("click", () => {
   if (term.ws) { try { term.ws.close(); } catch (e) {} }

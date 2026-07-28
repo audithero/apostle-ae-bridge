@@ -127,6 +127,15 @@ hr { border: none; border-top: 1px solid var(--line); margin: 16px 0 4px; }
   padding: 6px 14px; font-size: 10px; min-height: 24px;
 }
 
+.chk {
+  display: flex; align-items: center; gap: 7px;
+  font-size: 9px; font-weight: 700; letter-spacing: 0.14em;
+  margin: 2px 0 0;
+  cursor: pointer;
+}
+.chk input[type="checkbox"] { width: auto; accent-color: var(--text); }
+.chk .dim { font-weight: 400; letter-spacing: 0.04em; }
+
 #terminal {
   margin-top: 10px;
   height: 380px;
