@@ -122,7 +122,7 @@ async function analyze({ comp, time, runDir, aeCall, log }) {
   let project = null;
   try {
     const pi = await callAE("getProjectInfo", [], 30, aeCall);
-    project = { file: pi.file, name: pi.name };
+    project = { file: pi.file, name: pi.name, pid: pi.pid || null };
   } catch (e) { log && log("analyze: project info unavailable (" + e.message + ")"); }
   const run = { comp, project, createdAt: new Date().toISOString(), sampledAt: capRes.time, spec: "spec.json", reference: "reference.png" };
   writeRun(dir, run);
@@ -321,12 +321,18 @@ async function applyPlan({ runDir, aeCall, log }) {
   const run = readRun(runDir);
   const planPath = path.join(runDir, "plan.json");
   if (!fs.existsSync(planPath)) throw new Error("no plan.json in run — reconstruct first");
-  // refuse to apply into a different project than the run was analyzed in
-  if (run.project && run.project.file) {
+  // refuse to apply into a different project than the run was analyzed in.
+  // Match on file path OR the XMP pid token (the pid lets a run made in an
+  // untitled project still apply after that project is saved); an unsaved
+  // current project never matches a saved run's file path.
+  if (run.project && (run.project.file || run.project.pid)) {
     try {
       const pi = await callAE("getProjectInfo", [], 30, aeCall);
-      if (pi.file && pi.file !== run.project.file) {
-        throw new Error("wrong project open: run belongs to " + run.project.name + " but AE has " + pi.name + " — open the right project or re-analyze");
+      const sameFile = !!(run.project.file && pi.file && pi.file === run.project.file);
+      const samePid = !!(run.project.pid && pi.pid && pi.pid === run.project.pid);
+      if (!sameFile && !samePid) {
+        const cur = pi.file ? pi.name : pi.name + " (unsaved)";
+        throw new Error("wrong project open: run belongs to " + (run.project.name || run.project.file) + " but AE has " + cur + " — open the right project or re-analyze");
       }
     } catch (e) {
       if (/wrong project open/.test(e.message)) throw e;

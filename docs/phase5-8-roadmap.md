@@ -242,3 +242,13 @@ Deferred: a real two-project switch soak (needs a session where closing the open
 ### v2.9.2 — font pickers rebuilt as search combos (2026-07-29)
 
 Field report (Tim): BRAND tab heading/body font dropdowns "don't work". Data layer was fine (296 families listed, change chain OK when driven programmatically) — the failure is the native `<select>` popup itself: CEP on macOS silently fails to open very long native dropdowns, while short ones (kits, styles, comps) keep working. Replaced the family pickers with search-as-you-type combos in plain panel DOM (type to filter, click or Enter to pick; heading defaults to Bold weight, body to Regular/Medium; style select + PS field unchanged, PS stays the truth for uninstalled fonts). `setFontByPS` now drives comp-typography load and kit load through one path.
+
+### v2.9.3 — Codex review fixes: project identity transitions (2026-07-30)
+
+Codex review of 5f14569..b229429 flagged three identity-transition gaps; all fixed:
+
+- **[P1] `applyPlan` null-file bypass**: a saved run applied into an unsaved project passed the guard (`pi.file` null short-circuited the mismatch test). Guard now matches on file path OR pid and rejects when neither matches — an unsaved current project never matches a saved run.
+- **[P1] Untitled projects indistinguishable**: every unsaved project shared the ID `untitled:Untitled Project`, so opening a second untitled project leaked panel state. `getProjectInfo` now stamps an `apostle:pid` token into the project's XMP packet (create only while untitled — reading never dirties a saved project; token survives save and travels with the file). Panel keys untitled identity by pid; name remains the fallback if XMP stamping fails.
+- **[P2] Save wiped panel state**: untitled → saved changed the identity and the unconditional `store.load()` cleared the in-RAM doc into an empty persisted slot. `applyProject` now detects same-pid identity changes (save / Save As) and migrates: keeps RAM state, persists it under the new file-backed key.
+
+Verified: 6/6 node unit tests on the `applyPlan` guard (mocked AE, incl. the exact bypass case); live `getProjectInfo` v2.9.3 against the open CBA project (pid read-only on saved project, stamp dry-run injects cleanly into the real 4.7k XMP packet); CDP panel simulations — untitled pidA→pidB clears state, untitled→saved same-pid migrates doc+master and persists, pid-less fallback keys by name. Tim's live 7-beat VIDEO_007 doc survived the panel reload and re-poll untouched. Not live-tested: a real untitled→untitled switch (needs a session where closing the open project is safe).

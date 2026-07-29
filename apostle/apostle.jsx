@@ -19,7 +19,7 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.9.0";
+  var LIB_VERSION = "2.9.3";
 
   // Captured at load time; locates the repo for crash-recovery run snapshots
   var LIB_FILE = null;
@@ -2079,6 +2079,30 @@ var APOSTLE = (function () {
     } catch (e) { return errJSON("listComps", e); }
   }
 
+  // Per-project identity token stamped into the project's XMP metadata.
+  // Unsaved projects all report file=null and the same display name, so
+  // without this token two different untitled projects are indistinguishable
+  // and panel state leaks between them. The token survives save, so the
+  // panel can also recognize "same project, now file-backed" and migrate
+  // its memory instead of clearing it. create=false only reads (a clean
+  // saved project must not be dirtied by a metadata write).
+  function projectPidToken(create) {
+    try {
+      var xp = String(app.project.xmpPacket || "");
+      var m = xp.match(/apostle:pid="([^"]+)"/);
+      if (m) return m[1];
+      if (!create) return null;
+      var pid = "p" + new Date().getTime().toString(36) + Math.floor(Math.random() * 1679616).toString(36);
+      var marker = "<rdf:Description ";
+      if (xp.indexOf(marker) === -1) return null;
+      var nxp = xp.replace(marker, marker + 'xmlns:apostle="https://apostle.io/ns/1.0/" apostle:pid="' + pid + '" ');
+      app.project.xmpPacket = nxp;
+      var chk = String(app.project.xmpPacket || "");
+      if (chk.indexOf('apostle:pid="' + pid + '"') === -1) return null;
+      return pid;
+    } catch (e) { return null; }
+  }
+
   // Identity of the open project, so panel and CLI can detect project
   // switches and stamp artifacts. file is null for unsaved projects.
   function getProjectInfo() {
@@ -2090,7 +2114,8 @@ var APOSTLE = (function () {
         file: f ? f.fsName : null,
         name: f ? decodeURI(String(f.name)) : "Untitled Project",
         dirty: false,
-        numItems: app.project.numItems
+        numItems: app.project.numItems,
+        pid: projectPidToken(!f)
       };
       try { info.dirty = (app.project.dirty === true); } catch (e1) {}
       return toJSON(info);

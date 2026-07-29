@@ -89,7 +89,8 @@ const state = {
   fonts: [],        // [{family, styles:[{style, ps}]}]
   plan: null,       // last diff plan
   revDoc: null,     // canonicalized revision doc
-  projectId: null,  // identity of the open AE project (file path, or untitled:<name>)
+  projectId: null,  // identity of the open AE project (file path, or untitled:<pid>)
+  projectPid: null, // XMP-stamped token — stable across save, unique per project
   projectInfo: null // last getProjectInfo result
 };
 // Panel memory is scoped per AE project: the master/doc you built in one
@@ -137,13 +138,26 @@ async function checkProject() {
 }
 
 function applyProject(info) {
-  const id = info.file || ("untitled:" + info.name);
+  // untitled projects are told apart by the XMP pid token (all of them share
+  // the display name "Untitled Project"); name is the fallback when the
+  // token can't be stamped
+  const id = info.file || ("untitled:" + (info.pid || info.name));
   state.projectInfo = info;
   $id("projName").textContent = String(info.name).replace(/\.aep$/i, "");
-  $id("projName").classList.toggle("warn", !info.file); // unsaved project — memory keyed by name only
-  if (id === state.projectId) return;
+  $id("projName").classList.toggle("warn", !info.file); // unsaved — RAM-only memory
+  if (id === state.projectId) { state.projectPid = info.pid || state.projectPid; return; }
   const first = state.projectId === null;
+  // same pid under a new id = the same project was saved (or Saved As):
+  // migrate the in-RAM state to the new identity instead of clearing it,
+  // and persist it now that a file-backed key exists
+  const migrated = !first && info.pid && info.pid === state.projectPid;
   state.projectId = id;
+  state.projectPid = info.pid || null;
+  if (migrated) {
+    store.save();
+    status("Project saved as " + info.name + " — panel memory now persists with it.", "ok");
+    return;
+  }
   store.load();
   // repaint BRIEF from this project's own memory
   if (state.doc) {
@@ -770,7 +784,7 @@ $id("btnClaudeReview").addEventListener("click", () => {
     id: "job-" + Date.now(),
     type: "review-export",
     master,
-    project: state.projectInfo ? { file: state.projectInfo.file, name: state.projectInfo.name } : null,
+    project: state.projectInfo ? { file: state.projectInfo.file, name: state.projectInfo.name, pid: state.projectInfo.pid || null } : null,
     beats: state.doc,
     note: "Self-render via renderMovie, extract frames per review-export skill, score vs docs/qa-rubric.md, fix surgically, re-render. Report findings.",
     createdAt: new Date().toISOString()
