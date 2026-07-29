@@ -19,7 +19,7 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.8.0";
+  var LIB_VERSION = "2.9.0";
 
   // Captured at load time; locates the repo for crash-recovery run snapshots
   var LIB_FILE = null;
@@ -84,7 +84,9 @@ var APOSTLE = (function () {
       var f = new File(runsDir.fsName + "/" + report.masterName + "-" + ts + ".json");
       f.encoding = "UTF-8";
       f.open("w");
-      f.write(JSON.stringify({ savedAt: ts, beats: beatsData, report: report }, null, 1));
+      var projPath = null;
+      try { projPath = app.project.file ? app.project.file.fsName : "Untitled Project"; } catch (ep) {}
+      f.write(JSON.stringify({ savedAt: ts, project: projPath, beats: beatsData, report: report }, null, 1));
       f.close();
       return f.fsName;
     } catch (e) { return null; }
@@ -2077,6 +2079,24 @@ var APOSTLE = (function () {
     } catch (e) { return errJSON("listComps", e); }
   }
 
+  // Identity of the open project, so panel and CLI can detect project
+  // switches and stamp artifacts. file is null for unsaved projects.
+  function getProjectInfo() {
+    try {
+      var f = null;
+      try { f = app.project.file; } catch (e0) {}
+      var info = {
+        status: "success",
+        file: f ? f.fsName : null,
+        name: f ? decodeURI(String(f.name)) : "Untitled Project",
+        dirty: false,
+        numItems: app.project.numItems
+      };
+      try { info.dirty = (app.project.dirty === true); } catch (e1) {}
+      return toJSON(info);
+    } catch (e) { return errJSON("getProjectInfo", e); }
+  }
+
   function layerCompBounds(layer, t) {
     // comp-space bounds for the common case (2D, unparented or static
     // parent, rotation reported separately). Good enough for a design spec.
@@ -2513,6 +2533,7 @@ var APOSTLE = (function () {
 
   return {
     version: LIB_VERSION,
+    getProjectInfo: getProjectInfo,
     listComps: listComps,
     extractDesignSpec: extractDesignSpec,
     captureCompReference: captureCompReference,

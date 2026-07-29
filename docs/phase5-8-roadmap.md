@@ -216,3 +216,19 @@ Bugs found by pixel verification (now guarded in `applyRebuildPlan`):
 - `saveFrameToPng` returns before write completes → wait for stable file size.
 
 Deferred: multi-comp batch redesign; concept upscale pass; reconstruction diff overlay (concept vs result) for auto-scoring in the QA loop.
+
+## Phase 10 — project-aware panel + brand kit editor (v2.9.0, shipped 2026-07-29)
+
+Field report (Tim): opening a new AE project left the panel's TARGET COMP dropdowns showing the previous project's comps.
+
+Root cause: comp lists were queried once at panel init; localStorage memory (doc/master) was global, so one project's master leaked into another. The AE queries themselves were always live-truth — pure staleness/scoping.
+
+Shipped:
+- `APOSTLE.getProjectInfo()` — identity of the open project (file path, name, dirty, numItems).
+- Panel watcher: polls every 5s + on tab switch; on project change → rescope per-project localStorage (`apostle:<projectPath>`, one-time migration of the old global blob), refresh all comp dropdowns, clear stale panes (timing list, redesign run, outputs). BRIEF textarea is never cleared — drafts belong to the user. Masthead shows the open project (warn tint when unsaved).
+- Claude linkage is verify-at-action-time, not static: redesign runs stamp `run.project` at analyze; `applyPlan` refuses cleanly when a different project is open; review jobs and one-shot `claude -p` asks carry project identity. Crash snapshots stamp the project path.
+- Brand kits stay global by design (`brands/*.json` — CommBank Yello one click away in any project). BRAND tab kit editor: LOAD (fills typography + 4 brand colors), SAVE (writes back, preserves unknown fields), SAVE AS (new kit file, instantly available in the BRIEF parse dropdown and every project).
+
+E2E (CDP, live AE with fresh untitled project): masthead "Untitled Project" + empty comp lists (the original bug scenario, fixed); simulated switch rescoped store key + cleared panes; the 5s poll snapped back to the real project unaided; kit load/save-as/save round-tripped to disk with both dropdowns updating.
+
+Deferred: a real two-project switch soak (needs a session where closing the open project is safe); per-project recent-runs list in the REDESIGN tab.

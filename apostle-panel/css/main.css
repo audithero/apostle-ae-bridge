@@ -34,7 +34,18 @@ body {
   font-size: 17px; font-weight: 700; letter-spacing: 0.34em;
 }
 #wordmark .reg { font-size: 8px; vertical-align: super; letter-spacing: 0; }
+#mastmeta { text-align: right; min-width: 0; }
 #libver { font-size: 10px; }
+#projName {
+  font-size: 9px; letter-spacing: 0.08em;
+  max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+}
+#projName.warn { color: var(--warn); }
+
+.kitcolors input[type="color"] {
+  padding: 0; height: 26px; cursor: pointer;
+  background: var(--surface); border: 1px solid var(--line);
+}
 
 #tabs {
   display: flex; flex-wrap: wrap;

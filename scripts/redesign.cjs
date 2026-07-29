@@ -117,7 +117,14 @@ async function analyze({ comp, time, runDir, aeCall, log }) {
   const refPng = path.join(dir, "reference.png");
   log && log("analyze: capturing reference frame");
   const capRes = await callAE("captureCompReference", [comp, t, refPng], 180, aeCall);
-  const run = { comp, createdAt: new Date().toISOString(), sampledAt: capRes.time, spec: "spec.json", reference: "reference.png" };
+  // stamp which project this run belongs to, so cross-session pickups can
+  // verify the right project is open before applying anything
+  let project = null;
+  try {
+    const pi = await callAE("getProjectInfo", [], 30, aeCall);
+    project = { file: pi.file, name: pi.name };
+  } catch (e) { log && log("analyze: project info unavailable (" + e.message + ")"); }
+  const run = { comp, project, createdAt: new Date().toISOString(), sampledAt: capRes.time, spec: "spec.json", reference: "reference.png" };
   writeRun(dir, run);
   return { runDir: dir, spec: specRes.spec, reference: refPng, time: capRes.time };
 }
@@ -314,6 +321,18 @@ async function applyPlan({ runDir, aeCall, log }) {
   const run = readRun(runDir);
   const planPath = path.join(runDir, "plan.json");
   if (!fs.existsSync(planPath)) throw new Error("no plan.json in run — reconstruct first");
+  // refuse to apply into a different project than the run was analyzed in
+  if (run.project && run.project.file) {
+    try {
+      const pi = await callAE("getProjectInfo", [], 30, aeCall);
+      if (pi.file && pi.file !== run.project.file) {
+        throw new Error("wrong project open: run belongs to " + run.project.name + " but AE has " + pi.name + " — open the right project or re-analyze");
+      }
+    } catch (e) {
+      if (/wrong project open/.test(e.message)) throw e;
+      log && log("apply: project check skipped (" + e.message + ")");
+    }
+  }
   log && log("apply: duplicating " + run.comp);
   const dup = await callAE("duplicateForRedesign", [run.comp], 60, aeCall);
   log && log("apply: applying plan to " + dup.comp);

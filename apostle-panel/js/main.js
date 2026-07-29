@@ -88,29 +88,91 @@ const state = {
   master: null,     // last built master comp name
   fonts: [],        // [{family, styles:[{style, ps}]}]
   plan: null,       // last diff plan
-  revDoc: null      // canonicalized revision doc
+  revDoc: null,     // canonicalized revision doc
+  projectId: null,  // identity of the open AE project (file path, or untitled:<name>)
+  projectInfo: null // last getProjectInfo result
 };
+// Panel memory is scoped per AE project: the master/doc you built in one
+// project must never leak into another. Keyed by project file path.
 const store = {
-  save() { try { localStorage.setItem("apostle", JSON.stringify({ doc: state.doc, master: state.master })); } catch (e) {} },
-  load() { try { const s = JSON.parse(localStorage.getItem("apostle")); if (s) { state.doc = s.doc; state.master = s.master; } } catch (e) {} }
+  key() { return "apostle:" + (state.projectId || "noproject"); },
+  save() { try { localStorage.setItem(this.key(), JSON.stringify({ doc: state.doc, master: state.master })); } catch (e) {} },
+  load() {
+    state.doc = null; state.master = null; state.plan = null; state.revDoc = null;
+    try {
+      let s = JSON.parse(localStorage.getItem(this.key()));
+      if (!s) {
+        // one-time migration: adopt the old global blob into the first
+        // project seen, then retire it
+        s = JSON.parse(localStorage.getItem("apostle"));
+        if (s) { localStorage.setItem(this.key(), JSON.stringify(s)); localStorage.removeItem("apostle"); }
+      }
+      if (s) { state.doc = s.doc; state.master = s.master; }
+    } catch (e) {}
+  }
 };
+
+// ---------- project watcher ------------------------------------------------
+// The panel outlives any one AE project. Poll the open project's identity
+// (cheap DOM read) and on change: rescope memory, refresh every comp list,
+// clear panes that referenced the old project. BRIEF text is never cleared —
+// a draft belongs to the user, not to a project.
+let projPolling = false;
+async function checkProject() {
+  if (projPolling || !NODE_OK) return;
+  projPolling = true;
+  try {
+    const r = await host("getProjectInfo", []);
+    if (r.ok && r.result && r.result.status === "success") applyProject(r.result);
+  } catch (e) {} finally { projPolling = false; }
+}
+
+function applyProject(info) {
+  const id = info.file || ("untitled:" + info.name);
+  state.projectInfo = info;
+  $id("projName").textContent = String(info.name).replace(/\.aep$/i, "");
+  $id("projName").classList.toggle("warn", !info.file); // unsaved project — memory keyed by name only
+  if (id === state.projectId) return;
+  const first = state.projectId === null;
+  state.projectId = id;
+  store.load();
+  // repaint BRIEF from this project's own memory
+  if (state.doc) { $id("btnBuild").disabled = false; $id("btnDiff").disabled = false; renderParse(state.doc, null); }
+  else { $id("btnBuild").disabled = true; $id("btnDiff").disabled = true; $id("parseOut").innerHTML = ""; }
+  $id("btnApply").disabled = true;
+  $id("diffOut").innerHTML = "";
+  // comp lists always mirror the live project
+  refreshMasters();
+  loadRdComps();
+  if (!first) {
+    $id("timingList").innerHTML = ""; $id("btnRetime").disabled = true;
+    $id("brandOut").innerHTML = ""; $id("motionOut").innerHTML = ""; $id("reviewOut").innerHTML = "";
+    rdReset();
+    status("Project changed: " + info.name + " — comp lists refreshed.", "ok");
+  }
+}
+
+function rdReset() {
+  rd.runDir = null; rd.selected = null; rd.comp = null;
+  $id("rdAnalysis").innerHTML = ""; $id("rdGallery").innerHTML = ""; $id("rdResult").innerHTML = "";
+  $id("btnRdRefs").disabled = true; $id("btnRdGenerate").disabled = true; $id("btnRdReconstruct").disabled = true;
+}
 
 // ---------- init -----------------------------------------------------------
 (async function init() {
   if (!NODE_OK) return; // bootstrap already painted the error
-  store.load();
   const init = await evalJSX('apInit("' + REPO.replace(/\\/g, "\\\\") + '")');
   try {
     const r = JSON.parse(init);
     $id("libver").textContent = r.ok ? "apostle.jsx v" + r.version : "LIBRARY ERROR";
     if (!r.ok) status(r.error, "err");
   } catch (e) { $id("libver").textContent = "HOST ERROR"; }
-  loadBrandKits();
-  refreshMasters();
+  loadKitSelectors();
   loadFonts();
-  loadRdComps();
   rdProviderNote();
-  if (state.doc) { $id("btnBuild").disabled = false; $id("btnDiff").disabled = false; renderParse(state.doc, null); }
+  await checkProject(); // scopes memory + fills comp lists for the open project
+  setInterval(checkProject, 5000); // follow project switches automatically
+  document.querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => checkProject()));
   [JOBS_DIR, RENDER_DIR].forEach((d) => { try { fs.mkdirSync(d, { recursive: true }); } catch (e) {} });
 })();
 
@@ -123,6 +185,22 @@ function loadBrandKits() {
     }
   } catch (e) {}
   sel.add(new Option("— NONE —", ""));
+}
+
+// Kits are deliberately global (repo brands/, not per-project) so CommBank
+// Yello etc. are one click away in any project. Both dropdowns — the BRIEF
+// parse kit and the BRAND editor kit — read the same folder.
+function loadKitSelectors(selectPath) {
+  loadBrandKits();
+  const sel = $id("kitSel");
+  const keep = selectPath || sel.value;
+  sel.innerHTML = "";
+  try {
+    for (const f of fs.readdirSync(path.join(REPO, "brands"))) {
+      if (f.endsWith(".json")) sel.add(new Option(f.replace(".json", "").toUpperCase(), path.join(REPO, "brands", f)));
+    }
+  } catch (e) {}
+  if (keep) sel.value = keep;
 }
 
 async function refreshMasters() {
@@ -344,6 +422,77 @@ $id("btnBrandSync").addEventListener("click", async () => {
     : '<p class="err">' + esc(r.error || rep.error) + "</p>";
 });
 
+// ---------- 03 BRAND: kit editor -------------------------------------------
+// LOAD fills the typography fields + colors from a kit JSON; SAVE writes the
+// fields back to that kit; SAVE AS creates a new kit file (instantly usable
+// in BRIEF parsing and every project). Unknown kit fields are preserved.
+const kitEd = { path: null, data: null };
+const hexOr = (c, fb) => (/^#[0-9a-fA-F]{6}$/.test(c || "") ? c : fb);
+
+$id("btnKitLoad").addEventListener("click", () => {
+  const p = $id("kitSel").value;
+  if (!p) return status("No kit selected.", "warn");
+  let data;
+  try { data = JSON.parse(fs.readFileSync(p, "utf8")); } catch (e) { return status("Kit unreadable: " + e.message, "err"); }
+  kitEd.path = p; kitEd.data = data;
+  $id("hPS").value = data.fontHeadingPS || ""; $id("bPS").value = data.fontBodyPS || "";
+  $id("hSize").value = data.headingSize ?? ""; $id("bSize").value = data.bodySize ?? "";
+  $id("hTrack").value = data.headingTracking ?? ""; $id("bTrack").value = data.bodyTracking ?? "";
+  const c = data.colors || {};
+  $id("kitPrimary").value = hexOr(c.primary, "#ffcc00");
+  $id("kitSecondary").value = hexOr(c.secondary, "#1e1e1e");
+  $id("kitBackground").value = hexOr(c.background, "#ffffff");
+  $id("kitText").value = hexOr(c.text, "#111111");
+  $id("kitName").value = "";
+  $id("kitOut").innerHTML = '<p><span class="ok">LOADED</span> ' + esc(data.client || data.kitId || path.basename(p)) +
+    ' <span class="dim">— edit fields below, SAVE writes back to the kit; SYNC TO COMP applies to the selected comp</span></p>';
+});
+
+function kitFromFields(base) {
+  const num = (id) => { const v = parseFloat($id(id).value); return isNaN(v) ? null : v; };
+  const out = Object.assign({}, base || {});
+  if ($id("hPS").value) out.fontHeadingPS = $id("hPS").value;
+  if ($id("bPS").value) out.fontBodyPS = $id("bPS").value;
+  if (num("hSize") !== null) out.headingSize = num("hSize");
+  if (num("bSize") !== null) out.bodySize = num("bSize");
+  if (num("hTrack") !== null) out.headingTracking = num("hTrack");
+  if (num("bTrack") !== null) out.bodyTracking = num("bTrack");
+  out.colors = Object.assign({}, (base && base.colors) || {}, {
+    primary: $id("kitPrimary").value,
+    secondary: $id("kitSecondary").value,
+    background: $id("kitBackground").value,
+    text: $id("kitText").value
+  });
+  return out;
+}
+
+$id("btnKitSave").addEventListener("click", () => {
+  if (!kitEd.path) return status("LOAD a kit first (or use SAVE AS for a new one).", "warn");
+  const data = kitFromFields(kitEd.data);
+  try { fs.writeFileSync(kitEd.path, JSON.stringify(data, null, 2)); } catch (e) { return status("Save failed: " + e.message, "err"); }
+  kitEd.data = data;
+  loadKitSelectors(kitEd.path);
+  $id("kitOut").innerHTML = '<p><span class="ok">SAVED</span> ' + esc(path.basename(kitEd.path)) + "</p>";
+  status("Kit saved.", "ok");
+});
+
+$id("btnKitSaveAs").addEventListener("click", () => {
+  const name = $id("kitName").value.trim();
+  if (!name) return status("Type a kit name first.", "warn");
+  const slug = name.toLowerCase().replace(/[^a-z0-9]+/g, "-").replace(/^-|-$/g, "");
+  if (!slug) return status("Kit name needs at least one letter or digit.", "warn");
+  const p = path.join(REPO, "brands", slug + ".json");
+  if (fs.existsSync(p)) return status("Kit '" + slug + "' already exists — LOAD it and SAVE, or pick another name.", "warn");
+  const data = kitFromFields(kitEd.data);
+  data.kitId = slug;
+  data.client = name;
+  try { fs.writeFileSync(p, JSON.stringify(data, null, 2)); } catch (e) { return status("Save failed: " + e.message, "err"); }
+  kitEd.path = p; kitEd.data = data;
+  loadKitSelectors(p);
+  $id("kitOut").innerHTML = '<p><span class="ok">CREATED</span> ' + esc(slug + ".json") + ' <span class="dim">— now available in BRIEF parsing and every project</span></p>';
+  status("Kit created: " + slug, "ok");
+});
+
 // ---------- 04 MOTION ------------------------------------------------------
 $id("btnMotionApply").addEventListener("click", async () => {
   const master = $id("brandMaster").value || state.master;
@@ -532,6 +681,7 @@ $id("btnClaudeReview").addEventListener("click", () => {
     id: "job-" + Date.now(),
     type: "review-export",
     master,
+    project: state.projectInfo ? { file: state.projectInfo.file, name: state.projectInfo.name } : null,
     beats: state.doc,
     note: "Self-render via renderMovie, extract frames per review-export skill, score vs docs/qa-rubric.md, fix surgically, re-render. Report findings.",
     createdAt: new Date().toISOString()
@@ -654,8 +804,13 @@ $id("btnAsk").addEventListener("click", () => {
   const prompt = $id("claudePrompt").value.trim();
   if (!prompt) return;
   $id("claudeOut").textContent = "thinking…";
+  // tell Claude which project is open — the bridge acts on the live project,
+  // so the question should be grounded in the same one the user sees
+  const projCtx = state.projectInfo
+    ? "AE project currently open: " + state.projectInfo.name + (state.projectInfo.file ? " (" + state.projectInfo.file + ")" : " (unsaved)") + ".\n\n"
+    : "";
   // login shell so PATH finds the claude CLI
-  execFile("/bin/zsh", ["-lc", "claude -p " + JSON.stringify(prompt)], { timeout: 120000, cwd: REPO, maxBuffer: 4 * 1024 * 1024 },
+  execFile("/bin/zsh", ["-lc", "claude -p " + JSON.stringify(projCtx + prompt)], { timeout: 120000, cwd: REPO, maxBuffer: 4 * 1024 * 1024 },
     (err, stdout, stderr) => {
       $id("claudeOut").textContent = err ? ("ERROR: " + (stderr || err.message)) : stdout;
     });

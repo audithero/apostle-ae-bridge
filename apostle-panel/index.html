@@ -9,7 +9,10 @@
 <body>
 <header id="masthead">
   <div id="wordmark">APOSTLE<span class="reg">&reg;</span></div>
-  <div id="libver" class="dim">connecting&hellip;</div>
+  <div id="mastmeta">
+    <div id="projName" class="dim" title="Open AE project — the panel follows it automatically"></div>
+    <div id="libver" class="dim">connecting&hellip;</div>
+  </div>
 </header>
 
 <nav id="tabs">
@@ -56,6 +59,22 @@
 
   <!-- 03 BRAND -->
   <section id="tab-brand" class="pane">
+    <div class="role">
+      <label class="lbl">BRAND KIT (global — available in every project)</label>
+      <div class="row"><select id="kitSel" class="grow"></select><button id="btnKitLoad">LOAD KIT</button></div>
+      <div class="row kitcolors">
+        <div class="field"><label class="lbl">PRIMARY</label><input type="color" id="kitPrimary"></div>
+        <div class="field"><label class="lbl">SECONDARY</label><input type="color" id="kitSecondary"></div>
+        <div class="field"><label class="lbl">BACKGROUND</label><input type="color" id="kitBackground"></div>
+        <div class="field"><label class="lbl">TEXT</label><input type="color" id="kitText"></div>
+      </div>
+      <div class="row">
+        <input id="kitName" class="grow" placeholder="new kit name (for SAVE AS)">
+        <button id="btnKitSave">SAVE</button>
+        <button id="btnKitSaveAs">SAVE AS</button>
+      </div>
+      <div id="kitOut" class="out"></div>
+    </div>
     <div class="row"><div class="field grow"><label class="lbl">TARGET COMP</label><select id="brandMaster"></select></div>
     <button id="btnBrandLoad">RELOAD</button></div>
     <div class="role">
