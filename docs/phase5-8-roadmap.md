@@ -232,3 +232,9 @@ Shipped:
 E2E (CDP, live AE with fresh untitled project): masthead "Untitled Project" + empty comp lists (the original bug scenario, fixed); simulated switch rescoped store key + cleared panes; the 5s poll snapped back to the real project unaided; kit load/save-as/save round-tripped to disk with both dropdowns updating.
 
 Deferred: a real two-project switch soak (needs a session where closing the open project is safe); per-project recent-runs list in the REDESIGN tab.
+
+### v2.9.1 field fixes (2026-07-29)
+
+- **MASTER NAME honored at build time** (Tim: typed `video001_INTRO`, got `MASTER_v001`): the beats doc captures the name at parse; renaming the field after parse was silently ignored. BUILD now re-reads the field and overrides `meta.masterName`/`title` before building. Verified live: parse under default name → rename → build → `video001_INTRO_v001`.
+- **Fresh projects start clean**: the v2.9.0 legacy-blob migration adopted old global memory into the first project seen (his fresh untitled project — exactly the reported ghost brief). Migration removed; untitled projects never persist memory at all (`store.key()` is null until the project is saved); init purges the legacy blob and any `apostle:untitled:*` keys.
+- **CommBank Yello is the default kit** in both dropdowns and auto-loads into the BRAND editor at panel start; SAVE AS renamed SAVE AS NEW. (The stray E2E test kit file was already deleted; the stale listing died with the reload.)
