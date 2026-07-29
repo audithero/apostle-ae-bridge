@@ -3,7 +3,11 @@
   "image": {
     "provider": "fal",
     "model": "fal-ai/gpt-image-1/edit-image",
-    "params": { "image_size": "landscape_16_9", "quality": "high", "num_images": 1 },
+    "params": {
+      "image_size": { "landscape": "1536x1024", "portrait": "1024x1536", "square": "1024x1024" },
+      "quality": "high",
+      "num_images": 1
+    },
     "timeoutSec": 240,
     "retries": 1
   },

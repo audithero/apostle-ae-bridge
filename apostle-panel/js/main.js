@@ -391,7 +391,7 @@ function rdProviderNote() {
   try {
     $id("rdProviderNote").textContent = provLib.falKey()
       ? "image model: OpenAI via fal.ai"
-      : "NO FAL KEY — write it to ~/.apostle/fal.key";
+      : "NO FAL KEY — add FAL_API_KEY to the repo .env or ~/.apostle/fal.key";
   } catch (e) {}
 }
 

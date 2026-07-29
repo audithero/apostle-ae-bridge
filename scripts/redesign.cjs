@@ -162,6 +162,15 @@ async function generateConcepts({ runDir, n, provider, notes, refs, regen, log }
 
   const prompt = buildConceptPrompt(spec, savedNotes, allRefs.length > 0, cfg);
   const images = [path.join(runDir, "reference.png")].concat(allRefs);
+  // params.image_size may be an orientation map ({landscape, portrait, square})
+  // so the model's size vocabulary stays in config; resolve it from the comp.
+  const params = Object.assign({}, cfg.image.params);
+  if (params.image_size && typeof params.image_size === "object") {
+    const ar = spec.width / spec.height;
+    params.image_size = ar > 1.05 ? params.image_size.landscape
+      : ar < 0.95 ? params.image_size.portrait
+      : params.image_size.square;
+  }
   const count = regen !== undefined && regen !== null ? 1 : (n || cfg.conceptsPerRun);
   const indices = [];
   if (regen !== undefined && regen !== null) { indices.push(regen); }
@@ -181,7 +190,7 @@ async function generateConcepts({ runDir, n, provider, notes, refs, regen, log }
         const t0 = Date.now();
         const r = await prov.generate({
           prompt, images, outPath,
-          model: cfg.image.model, params: cfg.image.params,
+          model: cfg.image.model, params: params,
           timeoutSec: cfg.image.timeoutSec || 240, log
         });
         results.push({ index: idx, file: outPath, ms: Date.now() - t0, meta: r.meta });

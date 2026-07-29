@@ -23,8 +23,23 @@ const { spawn, execSync } = require("child_process");
 
 function falKey() {
   if (process.env.FAL_KEY && process.env.FAL_KEY.trim()) return process.env.FAL_KEY.trim();
-  const f = path.join(os.homedir(), ".apostle", "fal.key");
-  try { if (fs.existsSync(f)) return fs.readFileSync(f, "utf8").trim(); } catch (e) {}
+  if (process.env.FAL_API_KEY && process.env.FAL_API_KEY.trim()) return process.env.FAL_API_KEY.trim();
+  const files = [
+    path.join(os.homedir(), ".apostle", "fal.key"),
+    path.join(__dirname, "..", "..", ".env"),
+  ];
+  for (const f of files) {
+    try {
+      if (!fs.existsSync(f)) continue;
+      const txt = fs.readFileSync(f, "utf8");
+      if (f.endsWith(".env")) {
+        const m = txt.match(/^FAL(?:_API)?_KEY\s*=\s*["']?([^"'\r\n]+)/m);
+        if (m && m[1].trim()) return m[1].trim();
+      } else if (txt.trim()) {
+        return txt.trim();
+      }
+    } catch (e) {}
+  }
   return null;
 }
 
@@ -73,7 +88,7 @@ const falImageProvider = {
   // model like "fal-ai/gpt-image-1/edit-image"; params passed through verbatim
   async generate({ prompt, images, outPath, model, params, timeoutSec, log }) {
     const key = falKey();
-    if (!key) throw new Error("No fal.ai key. Set FAL_KEY or write it to ~/.apostle/fal.key");
+    if (!key) throw new Error("No fal.ai key. Set FAL_KEY, add FAL_API_KEY to <repo>/.env, or write it to ~/.apostle/fal.key");
     const headers = { "Authorization": "Key " + key, "Content-Type": "application/json" };
     const body = JSON.stringify(Object.assign(
       { prompt, image_urls: images.map(toDataUri) },
