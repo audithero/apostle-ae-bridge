@@ -92,7 +92,19 @@ textarea:focus, input:focus, select:focus { border-color: var(--dim); }
    names otherwise squeeze their siblings to unusable slivers */
 .row select, .row input { min-width: 0; }
 #hStyle, #bStyle { flex: 1.2; min-width: 84px; }
-#hFam, #bFam { flex: 2; }
+
+/* font search combo — pure-DOM dropdown; native <select> popups are
+   unreliable in CEP on macOS once the list gets long (296 fonts) */
+.combo { flex: 2; min-width: 0; position: relative; }
+.combo input { width: 100%; }
+.combolist {
+  display: none; position: absolute; top: 100%; left: 0; right: 0; z-index: 40;
+  max-height: 210px; overflow-y: auto;
+  background: var(--surface); border: 1px solid var(--dim); border-top: none;
+}
+.combo.open .combolist { display: block; }
+.comboitem { padding: 5px 8px; cursor: pointer; font-size: 11px; }
+.comboitem:hover, .comboitem.hot { background: var(--line); }
 
 button {
   background: none; color: var(--text);

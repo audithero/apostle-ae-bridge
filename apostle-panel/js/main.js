@@ -185,9 +185,9 @@ function rdReset() {
   } catch (e) { $id("libver").textContent = "HOST ERROR"; }
   store.cleanup();
   loadKitSelectors();
+  await loadFonts(); // before kit load, so the font combos can resolve PS names
   const dflt = path.join(REPO, "brands", DEFAULT_KIT);
   if (fs.existsSync(dflt)) loadKitIntoEditor(dflt); // CommBank Yello is the house default
-  loadFonts();
   rdProviderNote();
   await checkProject(); // scopes memory + fills comp lists for the open project
   setInterval(checkProject, 5000); // follow project switches automatically
@@ -238,26 +238,91 @@ async function refreshMasters() {
   }
 }
 
+// Font pickers are search-as-you-type combos in plain panel DOM. Native
+// <select> popups silently fail to open in CEP on macOS once the list is
+// long (296 font families) — short selects (styles, kits, comps) are fine.
 async function loadFonts() {
   const r = await host("listFonts", []);
   state.fonts = r.ok && Array.isArray(r.result) ? r.result : [];
-  for (const pre of ["h", "b"]) {
-    const fam = $id(pre + "Fam");
-    fam.innerHTML = "";
-    state.fonts.forEach((f, i) => fam.add(new Option(f.family, i)));
-    fam.addEventListener("change", () => {
-      const styles = state.fonts[fam.value]?.styles || [];
-      const st = $id(pre + "Style");
-      st.innerHTML = "";
-      styles.forEach((s, j) => st.add(new Option(s.style, j)));
-      st.dispatchEvent(new Event("change"));
-    });
-    $id(pre + "Style").addEventListener("change", () => {
-      const f = state.fonts[fam.value];
-      const s = f?.styles[$id(pre + "Style").value];
-      if (s) $id(pre + "PS").value = s.ps;
-    });
+  for (const pre of ["h", "b"]) fontCombo(pre);
+}
+
+function setStyles(pre, famIndex, styleIndex) {
+  const f = state.fonts[famIndex];
+  const st = $id(pre + "Style");
+  st.innerHTML = "";
+  (f ? f.styles : []).forEach((s, j) => st.add(new Option(s.style, j)));
+  if (f) {
+    st.value = styleIndex;
+    const s = f.styles[styleIndex];
+    if (s) $id(pre + "PS").value = s.ps;
   }
+}
+
+function fontCombo(pre) {
+  const inp = $id(pre + "Fam");
+  const box = inp.parentElement;
+  const listEl = $id(pre + "FamList");
+
+  function matches() {
+    const q = inp.value.trim().toLowerCase();
+    const out = [];
+    state.fonts.forEach((f, i) => { if (!q || f.family.toLowerCase().indexOf(q) !== -1) out.push(i); });
+    return out;
+  }
+  function render() {
+    const m = matches().slice(0, 80);
+    listEl.innerHTML = m.length
+      ? m.map((i) => '<div class="comboitem" data-i="' + i + '">' + esc(state.fonts[i].family) + "</div>").join("")
+      : '<div class="comboitem dim">no matching font</div>';
+    listEl.querySelectorAll(".comboitem[data-i]").forEach((el) =>
+      // mousedown (not click) so the input's blur doesn't close the list first
+      el.addEventListener("mousedown", (ev) => { ev.preventDefault(); choose(Number(el.dataset.i)); }));
+  }
+  function choose(i) {
+    const f = state.fonts[i];
+    if (!f) return;
+    inp.value = f.family;
+    inp.dataset.i = i;
+    // sensible default weight: Bold for heading, Regular for body, else first
+    const want = pre === "h" ? /bold/i : /^(regular|roman|book|medium)$/i;
+    let j = f.styles.findIndex((s) => want.test(s.style));
+    if (j === -1) j = 0;
+    setStyles(pre, i, j);
+    box.classList.remove("open");
+  }
+  inp.addEventListener("focus", () => { inp.select(); render(); box.classList.add("open"); });
+  inp.addEventListener("input", () => { render(); box.classList.add("open"); });
+  inp.addEventListener("blur", () => setTimeout(() => box.classList.remove("open"), 150));
+  inp.addEventListener("keydown", (ev) => {
+    if (ev.key === "Enter") { const m = matches(); if (m.length) choose(m[0]); }
+    if (ev.key === "Escape") box.classList.remove("open");
+  });
+  $id(pre + "Style").addEventListener("change", () => {
+    const f = state.fonts[inp.dataset.i];
+    const s = f && f.styles[$id(pre + "Style").value];
+    if (s) $id(pre + "PS").value = s.ps;
+  });
+}
+
+// point the combo + style select + PS field at a PostScript name (from a
+// comp's typography or a brand kit); the PS field keeps the truth even when
+// no installed font matches
+function setFontByPS(pre, ps) {
+  $id(pre + "PS").value = ps || "";
+  if (!ps) return false;
+  for (let i = 0; i < state.fonts.length; i++) {
+    const f = state.fonts[i];
+    for (let j = 0; j < f.styles.length; j++) {
+      if (f.styles[j].ps === ps) {
+        $id(pre + "Fam").value = f.family;
+        $id(pre + "Fam").dataset.i = i;
+        setStyles(pre, i, j);
+        return true;
+      }
+    }
+  }
+  return false;
 }
 
 // ---------- 01 BRIEF -------------------------------------------------------
@@ -420,21 +485,10 @@ async function loadBrandTypography() {
   const r = await host("readTypography", [master]);
   if (!r.ok || r.result.status !== "success") return status("Load failed: " + (r.error || r.result.error), "err");
   const t = r.result;
-  $id("hPS").value = t.headingFont || ""; $id("bPS").value = t.bodyFont || "";
   $id("hSize").value = t.headingSize ?? ""; $id("bSize").value = t.bodySize ?? "";
   $id("hTrack").value = t.headingTracking ?? ""; $id("bTrack").value = t.bodyTracking ?? "";
-  for (const [pre, ps] of [["h", t.headingFont], ["b", t.bodyFont]]) {
-    state.fonts.forEach((f, i) => f.styles.forEach((s, j) => {
-      if (s.ps === ps) {
-        $id(pre + "Fam").value = i;
-        $id(pre + "Fam").dispatchEvent(new Event("change")); // rebuilds style list, resets PS to style[0]…
-        $id(pre + "Style").value = j;
-        $id(pre + "Style").dispatchEvent(new Event("change")); // …so re-fire to land on the true style
-      }
-    }));
-    // the comp's value is the truth even when no dropdown entry matches it
-    $id(pre + "PS").value = ps || "";
-  }
+  setFontByPS("h", t.headingFont);
+  setFontByPS("b", t.bodyFont);
   status("Typography loaded from " + master);
 }
 $id("btnBrandSync").addEventListener("click", async () => {
@@ -469,7 +523,8 @@ function loadKitIntoEditor(p) {
   let data;
   try { data = JSON.parse(fs.readFileSync(p, "utf8")); } catch (e) { return status("Kit unreadable: " + e.message, "err"); }
   kitEd.path = p; kitEd.data = data;
-  $id("hPS").value = data.fontHeadingPS || ""; $id("bPS").value = data.fontBodyPS || "";
+  setFontByPS("h", data.fontHeadingPS);
+  setFontByPS("b", data.fontBodyPS);
   $id("hSize").value = data.headingSize ?? ""; $id("bSize").value = data.bodySize ?? "";
   $id("hTrack").value = data.headingTracking ?? ""; $id("bTrack").value = data.bodyTracking ?? "";
   const c = data.colors || {};

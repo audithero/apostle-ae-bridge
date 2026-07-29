@@ -79,13 +79,19 @@
     <button id="btnBrandLoad">RELOAD</button></div>
     <div class="role">
       <label class="lbl">HEADING</label>
-      <div class="row"><select id="hFam" class="grow"></select><select id="hStyle"></select></div>
+      <div class="row">
+        <div class="combo"><input id="hFam" placeholder="search fonts&hellip;" autocomplete="off" spellcheck="false"><div id="hFamList" class="combolist"></div></div>
+        <select id="hStyle"></select>
+      </div>
       <div class="row"><input id="hPS" class="grow" placeholder="PostScript name">
         <input id="hSize" class="num" placeholder="size"><input id="hTrack" class="num" placeholder="trk"></div>
     </div>
     <div class="role">
       <label class="lbl">BODY</label>
-      <div class="row"><select id="bFam" class="grow"></select><select id="bStyle"></select></div>
+      <div class="row">
+        <div class="combo"><input id="bFam" placeholder="search fonts&hellip;" autocomplete="off" spellcheck="false"><div id="bFamList" class="combolist"></div></div>
+        <select id="bStyle"></select>
+      </div>
       <div class="row"><input id="bPS" class="grow" placeholder="PostScript name">
         <input id="bSize" class="num" placeholder="size"><input id="bTrack" class="num" placeholder="trk"></div>
     </div>
