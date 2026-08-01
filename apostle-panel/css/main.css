@@ -46,6 +46,9 @@ body {
   padding: 0; height: 26px; cursor: pointer;
   background: var(--surface); border: 1px solid var(--line);
 }
+/* five swatches in a narrow CEP panel — let them wrap rather than crush */
+.row.kitcolors { flex-wrap: wrap; }
+.row.kitcolors .field { flex: 1 1 56px; }
 
 #tabs {
   display: flex; flex-wrap: wrap;
@@ -199,3 +202,7 @@ hr { border: none; border-top: 1px solid var(--line); margin: 16px 0 4px; }
   display: block;
   padding: 12px;
 }
+
+/* a family typed into the combo that matches no installed font — SYNC refuses
+   rather than silently re-applying the previous PostScript name */
+.combo input.bad { border-color: var(--err); color: var(--err); }

@@ -53,7 +53,9 @@
   <section id="tab-timing" class="pane">
     <div class="row"><div class="field grow"><label class="lbl">MASTER</label><select id="timingMaster"></select></div>
     <button id="btnTimingLoad">LOAD</button></div>
+    <div id="timingSrc" class="dim small"></div>
     <div id="timingList" class="out"></div>
+    <label class="chk"><input type="checkbox" id="timingMoments" checked> RE-APPLY MOMENTS AFTER RETIME <span class="dim">(moment windows are fractions of the VO window — they must be recomputed)</span></label>
     <button id="btnRetime" class="primary" disabled>APPLY RETIME</button>
   </section>
 
@@ -67,6 +69,7 @@
         <div class="field"><label class="lbl">SECONDARY</label><input type="color" id="kitSecondary"></div>
         <div class="field"><label class="lbl">BACKGROUND</label><input type="color" id="kitBackground"></div>
         <div class="field"><label class="lbl">TEXT</label><input type="color" id="kitText"></div>
+        <div class="field"><label class="lbl">SURFACE</label><input type="color" id="kitSurface"></div>
       </div>
       <div class="row">
         <input id="kitName" class="grow" placeholder="new kit name&hellip;">
@@ -77,6 +80,7 @@
     </div>
     <div class="row"><div class="field grow"><label class="lbl">TARGET COMP</label><select id="brandMaster"></select></div>
     <button id="btnBrandLoad">RELOAD</button></div>
+    <div id="brandSrc" class="dim small"></div>
     <div class="role">
       <label class="lbl">HEADING</label>
       <div class="row">
@@ -95,12 +99,21 @@
       <div class="row"><input id="bPS" class="grow" placeholder="PostScript name">
         <input id="bSize" class="num" placeholder="size"><input id="bTrack" class="num" placeholder="trk"></div>
     </div>
+    <div class="role">
+      <label class="lbl">LAYOUT</label>
+      <div class="row"><span class="dim small grow">SAFE MARGIN %</span><input id="safeMargin" class="num" placeholder="10"></div>
+    </div>
+    <label class="chk"><input type="checkbox" id="brandColors" checked> INCLUDE COLOURS <span class="dim">(CONTROL swatches — repaints master BG, scene BGs and brand-role moment art)</span></label>
+    <label class="chk"><input type="checkbox" id="brandBackdrop"> REBUILD BACKDROP FROM KIT <span class="dim">(the gradient/beacon/confetti plane is baked at build time, so it only changes here — needs a loaded kit; rebuilds the BACKDROP and CONFETTI comps)</span></label>
+    <label class="chk"><input type="checkbox" id="brandAll"> APPLY TO ALL MASTER COMPS <span class="dim">(house style across every video in this project)</span></label>
     <button id="btnBrandSync" class="primary">SYNC TO COMP</button>
     <div id="brandOut" class="out"></div>
   </section>
 
   <!-- 04 MOTION -->
   <section id="tab-motion" class="pane">
+    <div class="row"><div class="field grow"><label class="lbl">MASTER</label><select id="motionMaster"></select></div></div>
+    <div id="motionSrc" class="dim small"></div>
     <div class="field"><label class="lbl">EASE PROFILE</label>
       <select id="easeProfile">
         <option value="corporate-smooth">CORPORATE SMOOTH</option>

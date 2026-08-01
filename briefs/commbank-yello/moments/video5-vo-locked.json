@@ -232,9 +232,9 @@
      "layout": "chipRow",
      "super": "How points are earned.",
      "chips": [
-      "5x per $1 — hotels",
-      "5x per $1 — car rental",
-      "2x per $1 — flights"
+      "5x per $1 \u2014 hotels",
+      "5x per $1 \u2014 car rental",
+      "2x per $1 \u2014 flights"
      ],
      "from": 0.4346,
      "to": 1,
@@ -252,7 +252,7 @@
     {
      "id": "m1",
      "layout": "placeholder",
-     "super": "From 1 Oct: $25 Monthly Travel Credit.",
+     "super": "From 1 Oct: $25 Monthly Travel Credit",
      "sub": "For CommBank Ultimate credit card customers.",
      "asset": "CBA Ultimate card art",
      "from": 0,
@@ -265,7 +265,7 @@
     {
      "id": "m2",
      "layout": "placeholder",
-     "super": "From 1 Oct: $10 Monthly Travel Credit.",
+     "super": "From 1 Oct: $10 Monthly Travel Credit",
      "sub": "For CommBank Smart credit card customers.",
      "asset": "CBA Smart card art",
      "from": 0.546,

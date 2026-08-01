@@ -31,7 +31,7 @@ document.querySelectorAll(".tab").forEach((b) =>
 // ---------- Node bootstrap -------------------------------------------------
 // NB: never name a top-level binding `cep` — CEP predefines window.cep and
 // the collision is a page-killing SyntaxError (found via CDP, 2026-07-28)
-let fs, path, os, execFile, adobeCep, REPO, BRIDGE_DIR, JOBS_DIR, RENDER_DIR, parseLib, diffLib, redesignLib, provLib;
+let fs, path, os, execFile, adobeCep, REPO, BRIDGE_DIR, JOBS_DIR, RENDER_DIR, parseLib, diffLib, redesignLib, provLib, beatsStore;
 let NODE_OK = false;
 try {
   if (typeof require !== "function") {
@@ -55,6 +55,7 @@ try {
   diffLib = require(path.join(REPO, "scripts", "diff-beats.cjs"));
   redesignLib = require(path.join(REPO, "scripts", "redesign.cjs"));
   provLib = require(path.join(REPO, "scripts", "lib", "redesign-providers.cjs"));
+  beatsStore = require(path.join(REPO, "scripts", "beats-store.cjs"));
   NODE_OK = true;
 } catch (bootErr) {
   panelFatal("bootstrap", bootErr);
@@ -84,7 +85,8 @@ async function host(fnName, args) {
 
 // ---------- state ----------------------------------------------------------
 const state = {
-  doc: null,        // last parsed/built beats doc
+  doc: null,        // BRIEF tab working doc (may not be built yet)
+  docs: {},         // beats doc per master comp name — what TIMING/MOTION act on
   master: null,     // last built master comp name
   fonts: [],        // [{family, styles:[{style, ps}]}]
   plan: null,       // last diff plan
@@ -99,14 +101,20 @@ const state = {
 // (Tim, 2026-07-29); state lives in RAM only until the project is saved.
 const store = {
   key() { return state.projectId && state.projectId.indexOf("untitled:") !== 0 ? "apostle:" + state.projectId : null; },
-  save() { const k = this.key(); if (k) try { localStorage.setItem(k, JSON.stringify({ doc: state.doc, master: state.master })); } catch (e) {} },
+  save() { const k = this.key(); if (k) try { localStorage.setItem(k, JSON.stringify({ doc: state.doc, docs: state.docs, master: state.master })); } catch (e) {} },
   load() {
-    state.doc = null; state.master = null; state.plan = null; state.revDoc = null;
+    state.doc = null; state.docs = {}; state.master = null; state.plan = null; state.revDoc = null;
     const k = this.key();
     if (!k) return;
     try {
       const s = JSON.parse(localStorage.getItem(k));
-      if (s) { state.doc = s.doc; state.master = s.master; }
+      if (s) {
+        state.doc = s.doc; state.master = s.master;
+        state.docs = s.docs || {};
+        // pre-2.11 memory held one unlabelled doc — attribute it to the
+        // master it was built into rather than throwing it away
+        if (!s.docs && s.doc && s.master) state.docs[s.master] = s.doc;
+      }
     } catch (e) {}
   },
   cleanup() {
@@ -171,15 +179,18 @@ function applyProject(info) {
   }
   $id("btnApply").disabled = true;
   $id("diffOut").innerHTML = "";
-  // comp lists always mirror the live project
-  refreshMasters();
-  loadRdComps();
+  // clear stale panes BEFORE refreshing, so the refresh's own output (brand
+  // fields read off the new project's comp) is not wiped by the cleanup
   if (!first) {
     $id("timingList").innerHTML = ""; $id("btnRetime").disabled = true;
     $id("brandOut").innerHTML = ""; $id("motionOut").innerHTML = ""; $id("reviewOut").innerHTML = "";
+    $id("timingSrc").innerHTML = ""; $id("motionSrc").innerHTML = ""; $id("brandSrc").innerHTML = "";
     rdReset();
     status("Project changed: " + info.name + " — comp lists refreshed.", "ok");
   }
+  // comp lists always mirror the live project
+  refreshMasters();
+  loadRdComps();
 }
 
 function rdReset() {
@@ -201,7 +212,9 @@ function rdReset() {
   loadKitSelectors();
   await loadFonts(); // before kit load, so the font combos can resolve PS names
   const dflt = path.join(REPO, "brands", DEFAULT_KIT);
-  if (fs.existsSync(dflt)) loadKitIntoEditor(dflt); // CommBank Yello is the house default
+  // arm SAVE with the house default, but leave the fields alone — checkProject
+  // fills them from the target comp, which is what SYNC will overwrite
+  if (fs.existsSync(dflt)) selectKitSilently(dflt);
   rdProviderNote();
   await checkProject(); // scopes memory + fills comp lists for the open project
   setInterval(checkProject, 5000); // follow project switches automatically
@@ -239,10 +252,12 @@ function loadKitSelectors(selectPath) {
   else if (fs.existsSync(dflt)) { sel.value = dflt; $id("brandKit").value = dflt; }
 }
 
+let MASTERS = [];
 async function refreshMasters() {
   const r = await host("findMasterComps", []);
   const names = r.ok ? r.result : [];
-  for (const id of ["timingMaster", "brandMaster", "reviewMaster"]) {
+  MASTERS = names;
+  for (const id of ["timingMaster", "brandMaster", "motionMaster", "reviewMaster"]) {
     const sel = $id(id);
     const keep = sel.value;
     sel.innerHTML = "";
@@ -250,6 +265,51 @@ async function refreshMasters() {
     if (keep && names.includes(keep)) sel.value = keep;
     else if (state.master && names.includes(state.master)) sel.value = state.master;
   }
+  // setting .value in code does not fire `change`, so the dependent panes
+  // would keep showing whatever was there before — refresh them explicitly.
+  // Otherwise BRAND's fields silently describe a comp you are not targeting.
+  await loadBrandTypography();
+  noteDocSource("timingMaster", "timingSrc");
+  noteDocSource("motionMaster", "motionSrc");
+}
+
+// ---------- beats doc resolution ------------------------------------------
+// A master comp built by the CLI or by Claude has no doc in panel memory, and
+// before 2.11 that made TIMING and MOTION permanently dead ("Build a brief
+// first") for every real job. Comps are disposable, beats JSON is the source
+// of truth — so fall back to the build snapshots apostle.jsx writes on every
+// successful build. Resolution is ALWAYS per selected comp: acting on a doc
+// belonging to a different master would retime the wrong beats into it.
+function resolveDoc(master) {
+  if (!master) return null;
+  if (state.docs[master]) return { doc: state.docs[master], source: "panel memory" };
+  // the BRIEF tab's working doc, if it names this comp (meta.masterName omits
+  // the _vNNN suffix the build appends)
+  const mn = state.doc && state.doc.meta && state.doc.meta.masterName;
+  if (mn && (mn === master || master.indexOf(mn + "_v") === 0)) {
+    state.docs[master] = state.doc;
+    store.save();
+    return { doc: state.doc, source: "current brief" };
+  }
+  let snap = null;
+  try {
+    snap = beatsStore.findSnapshot(master, { repo: REPO, project: state.projectInfo && state.projectInfo.file });
+  } catch (e) { return null; }
+  if (!snap) return null;
+  state.docs[master] = snap.doc;
+  store.save();
+  return { doc: snap.doc, source: "build snapshot " + snap.savedAt, file: snap.file };
+}
+
+function noteDocSource(selId, outId) {
+  const el = $id(outId);
+  if (!el) return;
+  const master = $id(selId).value;
+  const r = resolveDoc(master);
+  el.innerHTML = r
+    ? "beats: " + esc(r.source) + " &middot; " + r.doc.beats.length + " beats"
+    : '<span class="warn">no beats doc for ' + esc(master || "(no comp)") +
+      " — build it from BRIEF, or drop its beats JSON in .apostle-runs/</span>";
 }
 
 // Font pickers are search-as-you-type combos in plain panel DOM. Native
@@ -258,7 +318,75 @@ async function refreshMasters() {
 async function loadFonts() {
   const r = await host("listFonts", []);
   state.fonts = r.ok && Array.isArray(r.result) ? r.result : [];
+  // AE splits some families across several entries under the SAME family name
+  // (CBA Beacon Sans arrives twice: Regular..ExtraBold, then Black). Two
+  // identical rows in the picker are a coin flip, so label the duplicates with
+  // the styles they actually carry.
+  const seen = {};
+  state.fonts.forEach((f) => { seen[f.family] = (seen[f.family] || 0) + 1; });
+  state.fonts.forEach((f) => {
+    f.label = seen[f.family] > 1
+      ? f.family + "  ·  " + f.styles.map((s) => s.style).join(" / ")
+      : f.family;
+  });
   for (const pre of ["h", "b"]) fontCombo(pre);
+}
+
+/* The PS field is what SYNC actually sends. A family TYPED into the combo but
+ * never picked from the list left that field stale, so SYNC reported success
+ * while re-applying the old font — the exact "I changed the font and nothing
+ * happened" symptom. Resolve the typed text before every sync, and refuse
+ * rather than silently write something the user did not choose. */
+function commitFamily(pre) {
+  const inp = $id(pre + "Fam");
+  const psEl = $id(pre + "PS");
+  const typed = inp.value.trim();
+  inp.classList.remove("bad");
+  if (!typed) return { ok: true, ps: psEl.value }; // PS typed straight in is valid
+
+  const cur = state.fonts[inp.dataset.i];
+  // already on this family (possibly one of two same-named ones) — keep the
+  // user's exact choice, including which style they selected
+  if (cur && cur.family.toLowerCase() === typed.toLowerCase()) {
+    const s = cur.styles[$id(pre + "Style").value];
+    if (s) psEl.value = s.ps;
+    return { ok: true, ps: psEl.value, family: cur.family };
+  }
+
+  const lower = typed.toLowerCase();
+  let matches = [];
+  state.fonts.forEach((f, i) => { if (f.family.toLowerCase() === lower) matches.push(i); });
+  if (!matches.length) {
+    // a raw PostScript name pasted into the family box is a legitimate answer
+    for (let i = 0; i < state.fonts.length; i++) {
+      for (let j = 0; j < state.fonts[i].styles.length; j++) {
+        if (state.fonts[i].styles[j].ps === typed) {
+          setFontByPS(pre, typed);
+          return { ok: true, ps: typed, family: state.fonts[i].family };
+        }
+      }
+    }
+    // an unambiguous partial ("georgi") is what the list was already showing
+    const partial = [];
+    state.fonts.forEach((f, i) => { if (f.family.toLowerCase().indexOf(lower) !== -1) partial.push(i); });
+    const fams = {};
+    partial.forEach((i) => { fams[state.fonts[i].family] = 1; });
+    if (partial.length && Object.keys(fams).length === 1) matches = partial;
+    else { inp.classList.add("bad"); return { ok: false, typed }; }
+  }
+
+  // same-named families: prefer the one carrying the style already selected
+  const styleEl = $id(pre + "Style");
+  const wantStyle = styleEl.selectedOptions[0] ? styleEl.selectedOptions[0].text : "";
+  let pick = matches[0], pickStyle = 0;
+  for (const i of matches) {
+    const j = state.fonts[i].styles.findIndex((s) => s.style === wantStyle);
+    if (j !== -1) { pick = i; pickStyle = j; break; }
+  }
+  inp.value = state.fonts[pick].family;
+  inp.dataset.i = pick;
+  setStyles(pre, pick, pickStyle);
+  return { ok: true, ps: psEl.value, family: state.fonts[pick].family };
 }
 
 function setStyles(pre, famIndex, styleIndex) {
@@ -287,7 +415,7 @@ function fontCombo(pre) {
   function render() {
     const m = matches().slice(0, 80);
     listEl.innerHTML = m.length
-      ? m.map((i) => '<div class="comboitem" data-i="' + i + '">' + esc(state.fonts[i].family) + "</div>").join("")
+      ? m.map((i) => '<div class="comboitem" data-i="' + i + '">' + esc(state.fonts[i].label || state.fonts[i].family) + "</div>").join("")
       : '<div class="comboitem dim">no matching font</div>';
     listEl.querySelectorAll(".comboitem[data-i]").forEach((el) =>
       // mousedown (not click) so the input's blur doesn't close the list first
@@ -307,7 +435,10 @@ function fontCombo(pre) {
   }
   inp.addEventListener("focus", () => { inp.select(); render(); box.classList.add("open"); });
   inp.addEventListener("input", () => { render(); box.classList.add("open"); });
-  inp.addEventListener("blur", () => setTimeout(() => box.classList.remove("open"), 150));
+  // resolve whatever was typed once the list has had its chance to handle a
+  // mousedown — leaving the box showing one family and the PS field another is
+  // what silently synced the wrong font
+  inp.addEventListener("blur", () => setTimeout(() => { box.classList.remove("open"); commitFamily(pre); }, 160));
   inp.addEventListener("keydown", (ev) => {
     if (ev.key === "Enter") { const m = matches(); if (m.length) choose(m[0]); }
     if (ev.key === "Escape") box.classList.remove("open");
@@ -396,6 +527,7 @@ $id("btnBuild").addEventListener("click", async () => {
   const rep = r.result;
   if (!r.ok || rep.status !== "success") return status("Build failed: " + (r.error || rep.error), "err");
   state.master = rep.masterName;
+  state.docs[rep.masterName] = state.doc; // TIMING/MOTION resolve per comp
   store.save();
   refreshMasters();
   const warn = rep.warnings.length ? ' &middot; <span class="warn">' + rep.warnings.length + " warnings</span>" : "";
@@ -451,6 +583,7 @@ $id("btnApply").addEventListener("click", async () => {
     results.push("retime: " + (r.ok && r.result.status === "success" ? "ok, " + r.result.totalDuration + "s" : (r.error || r.result.error)));
   }
   state.doc = revDoc;
+  state.docs[state.master] = revDoc; // the comp now holds the revised beats
   state.plan = null;
   store.save();
   $id("diffOut").innerHTML = "<p>" + results.map(esc).join("<br>") + "</p>";
@@ -460,14 +593,23 @@ $id("btnApply").addEventListener("click", async () => {
 
 // ---------- 02 TIMING ------------------------------------------------------
 $id("btnTimingLoad").addEventListener("click", loadTiming);
+$id("timingMaster").addEventListener("change", () => { noteDocSource("timingMaster", "timingSrc"); loadTiming(); });
 async function loadTiming() {
   const master = $id("timingMaster").value;
-  if (!master || !state.doc) return status("Build a brief first.", "warn");
-  const r = await host("retimeBeats", [master, JSON.stringify(state.doc)]); // idempotent — returns the map
+  if (!master) return status("No master comp in this project.", "warn");
+  const res = resolveDoc(master);
+  noteDocSource("timingMaster", "timingSrc");
+  if (!res) {
+    $id("timingList").innerHTML = "";
+    $id("btnRetime").disabled = true;
+    return status("No beats doc for " + master + " — nothing to retime against.", "warn");
+  }
+  const doc = res.doc;
+  const r = await host("retimeBeats", [master, JSON.stringify(doc)]); // idempotent — returns the map
   if (!r.ok || r.result.status !== "success") return status("Timing load failed: " + (r.error || r.result.error), "err");
   let html = "";
   for (const b of r.result.beats) {
-    const beat = state.doc.beats.find((x) => x.beatId === b.beatId);
+    const beat = doc.beats.find((x) => x.beatId === b.beatId);
     html += '<div class="beat"><span class="idx">' + b.arrive.toFixed(1) + "s</span>" +
       '<span class="sup">' + esc(beat ? beat.superText : b.beatId) + "</span>" +
       '<span class="meta"><input class="num durIn" data-beat="' + esc(b.beatId) + '" value="' + b.duration.toFixed(1) + '"></span></div>';
@@ -475,49 +617,169 @@ async function loadTiming() {
   html += '<p class="dim small">Total ' + r.result.totalDuration.toFixed(1) + "s &middot; edit any duration, then APPLY RETIME (blank = auto from VO)</p>";
   $id("timingList").innerHTML = html;
   $id("btnRetime").disabled = false;
+  status("Timing loaded from " + master + " (" + res.source + ").");
 }
 $id("btnRetime").addEventListener("click", async () => {
   const master = $id("timingMaster").value;
+  const res = resolveDoc(master);
+  if (!res) return status("No beats doc for " + master + ".", "warn");
+  const doc = res.doc;
   document.querySelectorAll(".durIn").forEach((inp) => {
-    const beat = state.doc.beats.find((x) => x.beatId === inp.dataset.beat);
+    const beat = doc.beats.find((x) => x.beatId === inp.dataset.beat);
     if (!beat) return;
     const v = parseFloat(inp.value);
     beat.durationSec = isNaN(v) ? null : v;
   });
+  state.docs[master] = doc;
   store.save();
-  const r = await host("retimeBeats", [master, JSON.stringify(state.doc)]);
-  status(r.ok && r.result.status === "success" ? "Retimed: " + r.result.totalDuration.toFixed(1) + "s" : "Retime failed", r.ok ? "ok" : "err");
+  const r = await host("retimeBeats", [master, JSON.stringify(doc)]);
+  if (!r.ok || r.result.status !== "success") return status("Retime failed: " + (r.error || (r.result && r.result.error)), "err");
+  let msg = "Retimed: " + r.result.totalDuration.toFixed(1) + "s";
+  // A retime moves every scene boundary, and moment windows are fractions of
+  // the beat's VO window — leaving them un-recomputed is what makes supers
+  // drift off their illustration after a timing change.
+  if ($id("timingMoments").checked) {
+    let mom = null;
+    try { mom = beatsStore.findMomentsFile(master, { repo: REPO }); } catch (e) {}
+    if (mom) {
+      const mr = await host("applyMoments", [JSON.stringify(mom.data)]);
+      msg += mr.ok && mr.result.status === "success"
+        ? " &middot; moments recomputed (" + path.basename(mom.file) + ")"
+        : ' &middot; <span class="warn">moments re-apply failed: ' + esc(mr.error || mr.result.error) + "</span>";
+    } else {
+      msg += " &middot; no moments file for this master";
+    }
+  }
+  $id("timingList").innerHTML = "<p>" + msg + "</p>" + $id("timingList").innerHTML;
+  status("Retime applied — verify rendered pixels before delivery (REVIEW).", "ok");
   loadTiming();
 });
 
 // ---------- 03 BRAND -------------------------------------------------------
 $id("brandMaster").addEventListener("change", loadBrandTypography); // picking a comp loads it
 $id("btnBrandLoad").addEventListener("click", loadBrandTypography);
+
+// Read the comp's OWN brand state into the fields, so what you see always
+// describes the comp you are about to write to. Colours come from the CONTROL
+// swatches — the same ones every fill expression reads.
 async function loadBrandTypography() {
   const master = $id("brandMaster").value;
-  if (!master) return;
+  if (!master) { $id("brandSrc").innerHTML = ""; return; }
   const r = await host("readTypography", [master]);
-  if (!r.ok || r.result.status !== "success") return status("Load failed: " + (r.error || r.result.error), "err");
+  if (!r.ok || r.result.status !== "success") return status("Load failed: " + (r.error || (r.result && r.result.error)), "err");
   const t = r.result;
   $id("hSize").value = t.headingSize ?? ""; $id("bSize").value = t.bodySize ?? "";
   $id("hTrack").value = t.headingTracking ?? ""; $id("bTrack").value = t.bodyTracking ?? "";
+  $id("safeMargin").value = t.safeMarginPct ?? "";
   setFontByPS("h", t.headingFont);
   setFontByPS("b", t.bodyFont);
-  status("Typography loaded from " + master);
+  const c = await host("readBrandColors", [master]);
+  if (c.ok && c.result && c.result.status === "success") {
+    const col = c.result.colors || {};
+    $id("kitPrimary").value = hexOr(col.primary, $id("kitPrimary").value || "#ffcc00");
+    $id("kitSecondary").value = hexOr(col.secondary, $id("kitSecondary").value || "#1e1e1e");
+    $id("kitBackground").value = hexOr(col.background, $id("kitBackground").value || "#ffffff");
+    $id("kitText").value = hexOr(col.text, $id("kitText").value || "#111111");
+    $id("kitSurface").value = hexOr(col.surface, $id("kitSurface").value || "#ffffff");
+  }
+  $id("brandSrc").innerHTML = "fields now show <b>" + esc(master) + "</b>'s own brand state";
+  status("Brand state loaded from " + master);
 }
-$id("btnBrandSync").addEventListener("click", async () => {
-  const master = $id("brandMaster").value;
-  if (!master) return;
+
+// Typography lives on the FONT guide layers + CONTROL sliders; colours live on
+// the CONTROL swatches and only applySkin writes those. Sending typography
+// alone (the pre-2.11 behaviour) is why editing the colour pickers appeared to
+// do nothing to the comp.
+async function syncBrandTo(master) {
   const num = (id) => { const v = parseFloat($id(id).value); return isNaN(v) ? null : v; };
-  const r = await host("applyTypography", [master, {
+  const applied = [];
+  const warnings = [];
+  const t = await host("applyTypography", [master, {
     headingFont: $id("hPS").value, bodyFont: $id("bPS").value,
     headingSize: num("hSize"), bodySize: num("bSize"),
-    headingTracking: num("hTrack"), bodyTracking: num("bTrack")
+    headingTracking: num("hTrack"), bodyTracking: num("bTrack"),
+    safeMarginPct: num("safeMargin")
   }]);
-  const rep = r.result;
-  $id("brandOut").innerHTML = r.ok && rep.status === "success"
-    ? '<p><span class="ok">SYNCED</span> ' + rep.applied.length + " properties" + (rep.warnings.length ? ' &middot; <span class="warn">' + esc(rep.warnings[0]) + "</span>" : "") + "</p>"
-    : '<p class="err">' + esc(r.error || rep.error) + "</p>";
+  if (t.ok && t.result.status === "success") {
+    applied.push(...t.result.applied);
+    warnings.push(...t.result.warnings);
+  } else {
+    return { master, error: t.error || (t.result && t.result.error) || "applyTypography failed" };
+  }
+  const wantBackdrop = $id("brandBackdrop").checked && kitEd.data && kitEd.data.backdrop;
+  if ($id("brandColors").checked || wantBackdrop) {
+    // Without a `backdrop` key applySkin only rewrites CONTROL and leaves the
+    // BACKDROP/CONFETTI comps alone. The gradient plane's colours are BAKED at
+    // build time, so it is the one thing a CONTROL swatch cannot repaint —
+    // rebuilding it is opt-in because it recreates those comps.
+    const skin = {};
+    if ($id("brandColors").checked) {
+      skin.colors = {
+        primary: $id("kitPrimary").value,
+        secondary: $id("kitSecondary").value,
+        background: $id("kitBackground").value,
+        text: $id("kitText").value,
+        surface: $id("kitSurface").value
+      };
+    }
+    if (wantBackdrop) skin.backdrop = kitEd.data.backdrop;
+    const s = await host("applySkin", [master, JSON.stringify(skin)]);
+    if (s.ok && s.result.status === "success") {
+      applied.push(...(s.result.comps || []));
+      warnings.push(...(s.result.warnings || []));
+    } else {
+      warnings.push("colours: " + (s.error || (s.result && s.result.error) || "applySkin failed"));
+    }
+  }
+  // Read the comp back and prove the fonts landed. The style expression does
+  // `try { st = st.setFont(f) } catch {}`, so an unusable PostScript name is
+  // swallowed in silence — without this check a no-op still reports SYNCED.
+  const back = await host("readTypography", [master]);
+  const got = back.ok && back.result.status === "success" ? back.result : null;
+  const wantH = $id("hPS").value.trim(), wantB = $id("bPS").value.trim();
+  const mismatch = [];
+  if (got) {
+    if (wantH && got.headingFont !== wantH) mismatch.push("heading is still " + got.headingFont + ", not " + wantH);
+    if (wantB && got.bodyFont !== wantB) mismatch.push("body is still " + got.bodyFont + ", not " + wantB);
+  }
+  return { master, applied, warnings, mismatch, fonts: got ? got.headingFont + " / " + got.bodyFont : "?" };
+}
+
+$id("btnBrandSync").addEventListener("click", async () => {
+  const one = $id("brandMaster").value;
+  if (!one) return status("No master comp in this project.", "warn");
+  // resolve the pickers BEFORE sending anything: a family typed but never
+  // picked would otherwise sync the previous font and still report success
+  const hf = commitFamily("h"), bf = commitFamily("b");
+  if (!hf.ok || !bf.ok) {
+    const bad = [!hf.ok ? "HEADING (“" + hf.typed + "”)" : "", !bf.ok ? "BODY (“" + bf.typed + "”)" : ""].filter(Boolean).join(" and ");
+    return status("No installed font matches " + bad + " — pick one from the dropdown. Nothing was synced.", "err");
+  }
+  if (!$id("hPS").value.trim() || !$id("bPS").value.trim()) {
+    return status("Heading and body PostScript names must both be set — RELOAD to read them off the comp.", "warn");
+  }
+  const targets = $id("brandAll").checked ? MASTERS.slice() : [one];
+  $id("btnBrandSync").disabled = true;
+  status("Syncing brand to " + targets.length + " comp" + (targets.length > 1 ? "s" : "") + "…");
+  let html = "";
+  let bad = 0;
+  for (const m of targets) {
+    const res = await syncBrandTo(m);
+    if (res.error) { bad++; html += '<div class="beat"><span class="idx err">FAIL</span><span class="sup">' + esc(m) + " — " + esc(res.error) + "</span></div>"; continue; }
+    const off = res.mismatch && res.mismatch.length;
+    if (off) bad++;
+    html += '<div class="beat"><span class="idx ' + (off ? "err" : "ok") + '">' + (off ? "NOT APPLIED" : "SYNCED") + '</span><span class="sup">' + esc(m) +
+      '</span><span class="meta">' + res.applied.length + " props" +
+      (res.warnings.length ? ' &middot; <span class="warn">' + res.warnings.length + " warn</span>" : "") + "</span></div>" +
+      '<p class="dim small">fonts now: ' + esc(res.fonts) + "</p>" +
+      (off ? '<p class="err small">' + res.mismatch.map(esc).join("<br>") + "</p>" : "") +
+      (res.warnings.length ? '<p class="dim small">' + res.warnings.map(esc).join("<br>") + "</p>" : "");
+  }
+  $id("brandOut").innerHTML = html;
+  $id("btnBrandSync").disabled = false;
+  status(bad
+    ? bad + " of " + targets.length + " comp(s) did NOT take the change — see the panel above."
+    : "Brand synced to " + targets.length + " comp(s). Verify rendered pixels before delivery.", bad ? "err" : "ok");
 });
 
 // ---------- 03 BRAND: kit editor -------------------------------------------
@@ -541,14 +803,25 @@ function loadKitIntoEditor(p) {
   setFontByPS("b", data.fontBodyPS);
   $id("hSize").value = data.headingSize ?? ""; $id("bSize").value = data.bodySize ?? "";
   $id("hTrack").value = data.headingTracking ?? ""; $id("bTrack").value = data.bodyTracking ?? "";
+  $id("safeMargin").value = data.safeMarginPct ?? "";
   const c = data.colors || {};
   $id("kitPrimary").value = hexOr(c.primary, "#ffcc00");
   $id("kitSecondary").value = hexOr(c.secondary, "#1e1e1e");
   $id("kitBackground").value = hexOr(c.background, "#ffffff");
   $id("kitText").value = hexOr(c.text, "#111111");
+  $id("kitSurface").value = hexOr(c.surface, "#ffffff");
   $id("kitName").value = "";
+  $id("brandSrc").innerHTML = '<span class="warn">fields now show the KIT ' + esc(path.basename(p)) +
+    " — SYNC TO COMP writes them into the target comp, RELOAD discards them</span>";
   $id("kitOut").innerHTML = '<p><span class="ok">LOADED</span> ' + esc(data.client || data.kitId || path.basename(p)) +
     ' <span class="dim">— edit fields below, SAVE writes back to the kit; SYNC TO COMP applies to the selected comp</span></p>';
+}
+
+// Point the kit editor at a file WITHOUT touching the fields — so SAVE has a
+// target and the dropdown is pre-set, while the fields keep describing the
+// comp. Loading a kit into the fields is an explicit LOAD KIT click.
+function selectKitSilently(p) {
+  try { kitEd.data = JSON.parse(fs.readFileSync(p, "utf8")); kitEd.path = p; } catch (e) {}
 }
 
 function kitFromFields(base) {
@@ -560,11 +833,13 @@ function kitFromFields(base) {
   if (num("bSize") !== null) out.bodySize = num("bSize");
   if (num("hTrack") !== null) out.headingTracking = num("hTrack");
   if (num("bTrack") !== null) out.bodyTracking = num("bTrack");
+  if (num("safeMargin") !== null) out.safeMarginPct = num("safeMargin");
   out.colors = Object.assign({}, (base && base.colors) || {}, {
     primary: $id("kitPrimary").value,
     secondary: $id("kitSecondary").value,
     background: $id("kitBackground").value,
-    text: $id("kitText").value
+    text: $id("kitText").value,
+    surface: $id("kitSurface").value
   });
   return out;
 }
@@ -597,18 +872,31 @@ $id("btnKitSaveAs").addEventListener("click", () => {
 });
 
 // ---------- 04 MOTION ------------------------------------------------------
+$id("motionMaster").addEventListener("change", () => noteDocSource("motionMaster", "motionSrc"));
 $id("btnMotionApply").addEventListener("click", async () => {
-  const master = $id("brandMaster").value || state.master;
-  if (!master || !state.doc) return status("Build a brief first.", "warn");
-  state.doc.meta.easeProfile = $id("easeProfile").value;
+  // MOTION used to read BRAND's dropdown — it had no selector of its own, so
+  // it silently retargeted whenever you touched another tab.
+  const master = $id("motionMaster").value || state.master;
+  if (!master) return status("No master comp in this project.", "warn");
+  const res = resolveDoc(master);
+  if (!res) return status("No beats doc for " + master + " — nothing to re-ease against.", "warn");
+  const doc = res.doc;
+  const prof = $id("easeProfile").value;
   const hh = $id("handheld").value;
-  state.doc.beats.forEach((b) => { b.motion = b.motion || {}; b.motion.handycam = hh; b.motion.ease = $id("easeProfile").value; });
+  doc.meta.easeProfile = prof;
+  doc.beats.forEach((b) => { b.motion = b.motion || {}; b.motion.handycam = hh; b.motion.ease = prof; });
+  state.docs[master] = doc;
   store.save();
-  const r1 = await host("applyHandheldPolish", [master, JSON.stringify(state.doc)]);
-  const r2 = await host("retimeBeats", [master, JSON.stringify(state.doc)]); // re-ease transits with profile
+  status("Applying motion to " + master + "…");
+  const r1 = await host("applyHandheldPolish", [master, JSON.stringify(doc)]);
+  // beat durations are unchanged here, so scene comps keep their length and
+  // moment windows stay valid — only the master's transit easing is re-laid
+  const r2 = await host("retimeBeats", [master, JSON.stringify(doc)]);
   const ok = r1.ok && r1.result.status === "success" && r2.ok && r2.result.status === "success";
-  $id("motionOut").innerHTML = ok ? '<p><span class="ok">APPLIED</span> handheld ' + hh + " &middot; profile " + state.doc.meta.easeProfile + "</p>"
-    : '<p class="err">' + esc(r1.result?.error || r2.result?.error || "failed") + "</p>";
+  $id("motionOut").innerHTML = ok
+    ? '<p><span class="ok">APPLIED</span> ' + esc(master) + " &middot; handheld " + hh + " &middot; profile " + esc(prof) + "</p>"
+    : '<p class="err">' + esc((r1.result && r1.result.error) || (r2.result && r2.result.error) || r1.error || r2.error || "failed") + "</p>";
+  status(ok ? "Motion applied to " + master + "." : "Motion apply failed.", ok ? "ok" : "err");
 });
 
 // ---------- 05 REDESIGN ----------------------------------------------------
@@ -757,9 +1045,15 @@ $id("btnChecks").addEventListener("click", async () => {
   status("Running deterministic checks…");
   const m = await host("checkTextSafeMargins", [master]);
   const c = await host("checkCameraDistance", [master]);
-  const x = await host("checkExpressionErrors", []);
+  // must name the comp: with no argument the library falls back to AE's
+  // active item, which in a panel-driven session is usually nothing at all,
+  // so this line reported "?" forever instead of checking anything
+  const x = await host("checkExpressionErrors", [master]);
   const line = (name, obj, key) => {
-    const n = obj.ok ? (obj.result[key] || []).length : "?";
+    if (!obj.ok || !obj.result || obj.result.status === "error") {
+      return "<p>" + name + ': <span class="err">' + esc((obj.result && obj.result.error) || obj.error || "check failed") + "</span></p>";
+    }
+    const n = (obj.result[key] || []).length;
     return "<p>" + name + ": " + (n === 0 ? '<span class="ok">CLEAN</span>' : '<span class="err">' + n + "</span>") + "</p>";
   };
   $id("reviewOut").innerHTML =

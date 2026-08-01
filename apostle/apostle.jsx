@@ -462,7 +462,10 @@ var APOSTLE = (function () {
       'var c = comp("' + masterName + '").layer("CONTROL");\n' +
       'var m = c.effect("Safe Margin %")("Slider") / 100 * thisComp.width;\n' +
       'var x = transform.position[0];\n' +
-      'var half = Math.min(x - m, thisComp.width - m - x);\n' +
+      // 4px inset: sourceRectAtTime under-reports by the glyph side bearing on
+      // the last character, so fitting exactly to the margin lands the rendered
+      // right edge 2-3px past it and checkTextSafeMargins (rightly) flags it
+      'var half = Math.min(x - m, thisComp.width - m - x) - 4;\n' +
       'if (half < 1) half = 1;\n' +
       'var s = Math.min(100, (half * 2) / w * 100);\n' +
       '[s, s];';

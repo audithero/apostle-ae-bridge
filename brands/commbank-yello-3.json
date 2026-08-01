@@ -1,0 +1,54 @@
+{
+  "kitId": "commbank-yello-3",
+  "client": "Commonwealth Bank \u2014 CommBank Yello 3.0 (education videos)",
+  "note": "Colours and type sampled from 01.MEDIA/FOOTAGE/005.mp4 and the CB Agency approach deck (00.ADMIN/00.Brief/TINTIN). #FDFD3C is the Yello yellow \u2014 NOT #FFCC00, which is CommBank gold and reads off-brand against the reference. Text is pure black. Backdrop is a yellow gradient with a diagonal white beacon sweep and confetti; icon tiles are WHITE CIRCLES with black line art, not yellow rounded squares.",
+  "fontHeadingPS": "CBABeaconSans-Bold",
+  "fontBodyPS": "CBABeaconSans-Regular",
+  "headingSize": 84,
+  "bodySize": 42,
+  "headingTracking": 0,
+  "bodyTracking": 0,
+  "safeMarginPct": 10,
+  "colors": {
+    "primary": "#FDFD3C",
+    "secondary": "#000000",
+    "background": "#FDFD3C",
+    "text": "#000000",
+    "surface": "#FFFFFF"
+  },
+  "backdrop": {
+    "style": "gradient",
+    "from": "#FDFD3C",
+    "to": "#FDFDAD",
+    "angleDeg": 28,
+    "beacon": true,
+    "beaconColor": "#FFFFFF",
+    "confetti": true,
+    "confettiCount": 42
+  },
+  "moments": {
+    "tileShape": "circle",
+    "tileFill": "paper",
+    "palette": {
+      "ink": "#000000",
+      "brand": "#FDFD3C",
+      "paper": "#FFFFFF",
+      "hole": "#FFFFFF",
+      "muted": "#E8E8B0"
+    },
+    "plateFill": "paper",
+    "plateStroke": "ink"
+  },
+  "logo": null,
+  "defaults": {
+    "wpm": 150,
+    "fps": 25,
+    "resolution": [
+      1920,
+      1080
+    ],
+    "layout": "gallery",
+    "easeProfile": "corporate-smooth",
+    "handycam": "subtle"
+  }
+}
