@@ -1,0 +1,37 @@
+{
+"name":"VIDEO_004_REDEEMING_DEEP_DIVE","slug":"video4-vo-locked","briefId":"video_004_redeeming_deep_dive",
+"script":"briefs/commbank-yello/video4-redeeming-deep-dive.md",
+"voFiles":["01.MEDIA/AUDIO/VO/V4/VIDEO_004_A_AUDIO_VOICEOVER.mp3","01.MEDIA/AUDIO/VO/V4/VIDEO_004_B_AUDIO_VOICEOVER.mp3"],
+"end":136.77,
+"sections":[{"id":"intro","title":"Introducing points redemption"},{"id":"gift","title":"Using points for gift cards"},
+ {"id":"transfer","title":"Transferring points to loyalty programs"},{"id":"cash","title":"Using points for cash"},
+ {"id":"stores","title":"Using points with partner stores"},{"id":"travel","title":"Using points for travel"},
+ {"id":"grow","title":"Continuing to grow"},{"id":"takeaway","title":"Key takeaway"}],
+"beats":[
+ {"start":0.00,"section":"intro","vo":"One of the biggest benefits of CommBank Yello points is flexibility. Customers can choose from a growing range of ways to use their points, giving them more control over how they're rewarded. Whether they're looking for everyday value, travel experiences, or rewards from brands they already know and love, customers can choose the redemption option that works best for them.","moments":[
+  {"id":"m1","at":0.00,"layout":"hero","glyph":"sparkle","super":"Flexibility.","sub":"One of the biggest benefits of CommBank Yello points."},
+  {"id":"m2","at":4.67,"layout":"statement","super":"A growing range of ways to use points.","sub":"More control over how customers are rewarded."},
+  {"id":"m3","at":11.72,"layout":"iconRow","super":"Choose what works best.","tiles":[{"glyph":"home","label":"Everyday value"},{"glyph":"plane","label":"Travel"},{"glyph":"star","label":"Brands they love"}]}]},
+ {"start":22.12,"section":"gift","vo":"Customers can use their CommBank Yello points to purchase gift cards from a range of popular retailers and brands. This gives customers the flexibility to turn points into value that can be used on everyday purchases, special occasions, or future spending.","moments":[
+  {"id":"m1","at":22.12,"layout":"hero","glyph":"gift","super":"Points for gift cards.","sub":"From a range of popular retailers and brands."},
+  {"id":"m2","at":28.60,"layout":"iconRow","super":"Turn points into value.","tiles":[{"glyph":"basket","label":"Everyday\rpurchases"},{"glyph":"ticket","label":"Special\roccasions"},{"glyph":"coin","label":"Future spending"}]}]},
+ {"start":37.96,"section":"transfer","vo":"Customers can also transfer their CommBank Yello points to participating loyalty programs they already use. This gives customers more choice in how they use their rewards, and allows them to continue building value within their preferred loyalty programs.","moments":[
+  {"id":"m1","at":37.96,"layout":"hero","glyph":"transfer","super":"Transfer to loyalty programs.","sub":"Programs customers already use."},
+  {"id":"m2","at":44.83,"layout":"statement","super":"Keep building value where it counts.","sub":"Within their preferred loyalty programs."}]},
+ {"start":53.87,"section":"cash","vo":"Customers can choose to convert their CommBank Yello points into cash. This provides a simple way for customers to turn their rewards into everyday value when they need it most.","moments":[
+  {"id":"m1","at":53.87,"layout":"hero","glyph":"coin","super":"Convert points into cash.","sub":""},
+  {"id":"m2","at":58.86,"layout":"statement","super":"Everyday value, when it's needed most.","sub":""}]},
+ {"start":64.54,"section":"stores","vo":"Customers can also use their points with participating partner stores through the CommBank app. This creates more opportunities to redeem points directly with brands and retailers available through the CommBank Yello experience.","moments":[
+  {"id":"m1","at":64.54,"layout":"device","super":"Use points with partner stores.","sub":"Through the CommBank app.","screen":[{"glyph":"cart","label":"Partner stores"},{"glyph":"coin","label":"Use points"},{"glyph":"tag","label":"Offers"}]},
+  {"id":"m2","at":70.35,"layout":"hub","glyph":"star","super":"Redeem directly with brands and retailers.","spokes":[{"glyph":"cart"},{"glyph":"basket"},{"glyph":"gift"},{"glyph":"tag"},{"glyph":"percent"},{"glyph":"ticket"}]}]},
+ {"start":79.39,"section":"travel","vo":"Customers can use their points when booking travel through CommBank Travel, including flights, hotels, and car hire. Whether planning a weekend getaway or a larger trip, customers can use points to help fund their travel experiences.","moments":[
+  {"id":"m1","at":79.39,"layout":"iconRow","super":"Points for travel.","sub":"Booked through CommBank Travel.","tiles":[{"glyph":"plane","label":"Flights"},{"glyph":"home","label":"Hotels"},{"glyph":"card","label":"Car hire"}]},
+  {"id":"m2","at":86.24,"layout":"statement","super":"Help fund the trip.","sub":"From a weekend getaway to something larger."}]},
+ {"start":95.28,"section":"grow","vo":"This is just the beginning. We'll continue expanding the range of rewards, partners, and redemption opportunities available through CommBank Yello over time. This means customers can look forward to even more ways to get value from their CommBank Yello points in the future.","moments":[
+  {"id":"m1","at":95.28,"layout":"statement","super":"This is just the beginning.","sub":""},
+  {"id":"m2","at":96.20,"layout":"iconRow","super":"More to come, over time.","tiles":[{"glyph":"gift","label":"Rewards"},{"glyph":"hub","label":"Partners"},{"glyph":"coin","label":"Redemption"}]},
+  {"id":"m3","at":104.34,"layout":"statement","super":"Even more ways to get value.","sub":"From CommBank Yello points, in the future."}]},
+ {"start":110.81,"section":"takeaway","vo":"CommBank Yello points gives customers the flexibility to choose how they're rewarded, whether that's gift cards, cash, travel, partner offers, or transfers to participating loyalty programs. By giving customers more choice, we're creating a rewards experience that can be tailored to their individual needs and preferences.","moments":[
+  {"id":"m1","at":110.81,"layout":"iconRow","super":"Choose how you're rewarded.","tiles":[{"glyph":"gift","label":"Gift cards"},{"glyph":"coin","label":"Cash"},{"glyph":"plane","label":"Travel"},{"glyph":"tag","label":"Partner offers"},{"glyph":"transfer","label":"Transfers"}]},
+  {"id":"m2","at":127.43,"layout":"statement","super":"A rewards experience tailored to them.","sub":"By giving customers more choice."}]}
+]}

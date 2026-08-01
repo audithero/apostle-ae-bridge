@@ -1,0 +1,28 @@
+{
+"name":"VIDEO_006_DINE_IN_DEALS","slug":"video6-vo-locked","briefId":"video_006_dine_in_deals",
+"voFiles":["01.MEDIA/AUDIO/VO/V6/VIDEO_AUDIO_006_AUDIO_VOICEOVER.mp3"],"end":69.92,
+"titleCard":{"dur":3.5,"super":"Bank rewards like never before with CommBank Yello.","sub":"Dine In Deals in the CommBank app."},
+"sections":[{"id":"intro","title":"Dine In Deals"},{"id":"how","title":"How Dine In Deals work"},
+ {"id":"credit","title":"Monthly dining credit"},{"id":"learn","title":"Learn more"}],
+"beats":[
+ {"start":0.00,"section":"intro","vo":"Thanks to CommBank Yello, we're making it even easier for customers to find the best places to eat.","moments":[
+  {"id":"m1","at":0.00,"layout":"hero","glyph":"basket","super":"Easier to find the best places to eat.","sub":"Thanks to CommBank Yello."}]},
+ {"start":7.14,"section":"intro","vo":"With Dine In Deals, customers can discover and redeem exclusive offers at participating restaurants across Australia.","moments":[
+  {"id":"m1","at":7.14,"layout":"device","super":"Discover and redeem great restaurant offers.","sub":"At participating restaurants across Australia.","screen":[{"glyph":"tag","label":"Offers near you"},{"glyph":"percent","label":"Save instantly"},{"glyph":"star","label":"Participating\rrestaurants"}]}]},
+ {"start":17.62,"section":"how","vo":"Accessing Dine in Deals is easy.","moments":[
+  {"id":"m1","at":17.62,"layout":"statement","super":"How do Dine In Deals work?","sub":"Accessing Dine In Deals is easy."}]},
+ {"start":22.62,"section":"how","transit":"whipOrbit","vo":"First, customers can simply browse and redeem an offer they like.","moments":[
+  {"id":"m1","at":22.62,"layout":"chipRow","super":"1. Browse and redeem an offer.","chips":["Browse offers","Redeem"]}]},
+ {"start":26.62,"section":"how","transit":"whipOrbit","vo":"Then, they add their Dine In Deals card to their digital wallet.","moments":[
+  {"id":"m1","at":26.62,"layout":"chipRow","super":"2. Add the card to your digital wallet.","chips":["Dine In Deals card","Digital wallet"]}]},
+ {"start":30.62,"section":"how","transit":"whipOrbit","vo":"Then, customers pay with the Dine In Deals card and their savings are automatically applied.","moments":[
+  {"id":"m1","at":30.62,"layout":"chipRow","super":"3. Pay with the card and save.","chips":["Pay","Savings applied automatically"]}]},
+ {"start":36.62,"section":"how","transit":"whipOrbit","vo":"No codes, no vouchers, and no awkward redemption moments required.","moments":[
+  {"id":"m1","at":36.62,"layout":"iconRow","super":"No codes. No vouchers. No awkward moments.","tiles":[{"glyph":"cross","label":"No codes"},{"glyph":"cross","label":"No vouchers"},{"glyph":"check","label":"Just pay"}]}]},
+ {"start":43.79,"section":"credit","vo":"Plus, from October 1st, eligible credit card customers will receive a monthly $10 Dining Credit for Dine In Deals powered by Eat Club.","moments":[
+  {"id":"m1","at":43.79,"layout":"placeholder","super":"$10 monthly Dining Credit.","sub":"From 1 October, up to $120 in total. Eligible credit card customers.","asset":"Eat Club + Dine In Deals logos"}]},
+ {"start":54.72,"section":"credit","vo":"Bank dining rewards like never before with Dine In Deals in the CommBank app.","moments":[
+  {"id":"m1","at":54.72,"layout":"statement","super":"Helping customers enjoy more dining benefits than ever.","sub":"Dine In Deals in the CommBank app."}]},
+ {"start":60.53,"section":"learn","vo":"To find out more, visit commbank.com.au/commbankyello or search CommBank Yello on One.CBA.","moments":[
+  {"id":"m1","at":60.53,"layout":"endcard","super":"Find out more.","url":"commbank.com.au/commbankyello","sub":"Or search CommBank Yello on One.CBA"}]}
+]}

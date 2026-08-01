@@ -52,7 +52,17 @@ Trailing full stop on "One.CBA" differs. Not audible, not a super change.
 
 ## B. Super changes
 
-Legend: 🔴 = content gap, a fact in the VO or script that the build does not show. ⚪ = wording only.
+> **Correction (applied 2026-08-01).** An earlier pass of this report compared the script's SUPER
+> lines against each beat's `superText` and concluded there were nine content gaps. That comparison
+> was wrong: `superText` is only a beat's *opening* super, and the **moments layer already carries
+> the rest**. Checking the moments files directly, every fact flagged as missing is in fact already
+> on screen — the $10 Smart travel credit, the $120 dining cap, 24/7 support, the 5x/2x earn rates,
+> the 1 Jan 2027 waivers and the insurance-provider change all have their own moments.
+>
+> **There are no content gaps.** Script v2 changes no facts the build was not already showing.
+> Everything in this section is wording, and it has all been applied.
+
+Legend: ⚪ = wording only. (No 🔴 rows survived the correction above.)
 
 ### Video 5 — Cards + Travel
 
@@ -60,10 +70,10 @@ Legend: 🔴 = content gap, a fact in the VO or script that the build does not s
 |---|---|---|---|
 | 1 | Be rewarded like never before with CommBank Yello. | …CommBank Yello *(no period)* | ⚪ |
 | 3 | Search and book in the CommBank app. | Search + book flights, hotels, car rental via Travel Booking | ⚪ |
-| 5 | Exclusive travel offers. | Exclusive Travel Offers. **24/7 Customer Support.** | 🔴 24/7 support is in the VO but never shown |
-| 6 | Use and earn Yello points with Travel Booking. | …**5x points per $1 on hotel and car rental. 2x points per $1 on flights.** | 🔴 the earn rates are in the VO but never shown |
-| 7 | $25 monthly Travel Credit. | From 1 Oct: $25 Monthly Travel Credit for Ultimate. **$10 Monthly Travel Credit for Smart.** | 🔴 the $10 Smart credit is in the VO but never shown |
-| 8 | Enjoy more travel benefits than ever. | + **Travel. Dining. Memberships. Airport Lounge Passes\*** | 🔴 second super for this beat, missing |
+| 5 | Exclusive travel offers. | Exclusive Travel Offers. **24/7 Customer Support.** | ⚪ already a moment ("24/7 customer support") — capitalised to match |
+| 6 | Use and earn Yello points with Travel Booking. | …**5x points per $1 on hotel and car rental. 2x points per $1 on flights.** | ⚪ already a chipRow moment (5x hotels / 5x car / 2x flights) |
+| 7 | $25 monthly Travel Credit. | From 1 Oct: $25 Monthly Travel Credit for Ultimate. **$10 Monthly Travel Credit for Smart.** | ⚪ already a second moment — "From 1 Oct" stamp added |
+| 8 | Enjoy more travel benefits than ever. | + **Travel. Dining. Memberships. Airport Lounge Passes\*** | ⚪ beat split into two moments so both script supers land |
 
 Note: script super 3 reads "Search + book **fights**" — typo for "flights". Corrected on the way in.
 
@@ -75,16 +85,16 @@ Note: script super 3 reads "Search + book **fights**" — typo for "flights". Co
 | 6 | 2. Add the card to your digital wallet. | 2. Add Dine In Deals card directly to digital wallet | ⚪ |
 | 7 | 3. Pay with the card and save. | 3. Pay with the Dine In Deals card and save | ⚪ |
 | 8 | No codes. No vouchers. No awkward moments. | …No awkward **redemption** moments. | ⚪ |
-| 9 | $10 monthly Dining Credit. | From 1 Oct: $10 Monthly Dining Credit **(up to $120 in total)** | 🔴 the $120 cap appears nowhere in the build |
+| 9 | $10 monthly Dining Credit. | From 1 Oct: $10 Monthly Dining Credit **(up to $120 in total)** | ⚪ $120 cap was already in the sub — "From 1 Oct" stamp added |
 | 11 | Find out more. | To find out more, visit commbank.com.au/commbankyello or search CommBank Yello on One.CBA | ⚪ endcard already carries the URL as sub |
 
 ### Video 7 — Cards CVP
 
 | Beat | Built | Script v2 | |
 |---|---|---|---|
-| 6 | Up to 1.5 Yello points per $1 spent. | **CommBank Yello Tiers** + **2x Yello Points on International Spend** | 🔴 one recorded beat, two supers → needs two moments |
-| 7 | Travel. Dining. Memberships. | + **\*Eligibility criteria applies** | 🔴 required disclaimer missing |
-| 8 | 1 October 2026: international transaction fee waiver removed. | + **1 Jan 2027: spend-based fee waivers cease (Smart & Ultimate)** + **insurance provider detail changes** | 🔴 two of three regulatory items missing; all three are in the VO |
+| 6 | Up to 1.5 Yello points per $1 spent. | **CommBank Yello Tiers** + **2x Yello Points on International Spend** | ⚪ already two moments; heading + earn rate now split super/sub |
+| 7 | Travel. Dining. Memberships. | + **\*Eligibility criteria applies** | ⚪ disclaimer already present — reworded to the script's asterisked form |
+| 8 | 1 October 2026: international transaction fee waiver removed. | + **1 Jan 2027: spend-based fee waivers cease (Smart & Ultimate)** + **insurance provider detail changes** | ⚪ all three already exist as moments m1/m2/m3 — no change needed |
 | 9 | Find out more. | To find out more, visit commbank.com.au/card-updates… | ⚪ endcard sub already correct (card-updates, not commbankyello) |
 
 Beat 6 is the structurally interesting one: the new script splits tier earn and international earn
@@ -95,8 +105,8 @@ retime — it is one beat carrying two moments, which is exactly what the moment
 
 ## C. What this means for the build
 
-1. Only Video 1 needs new audio. Everything else is a supers-and-art pass on locked timing.
-2. Nine 🔴 content gaps, all of them facts the voiceover already speaks but the screen never shows.
-   These are the ones that matter — a frontline viewer hears "$10 Travel Credit with the CommBank
-   Smart credit card" and sees a super that only mentions $25.
-3. Every 🔴 gap gets a red guide layer in its scene comp naming the required change.
+1. **Only Video 1 needs new audio.** Everything else is a wording-and-art pass on locked timing.
+2. **No content gaps.** Every fact script v2 spells out was already on screen via the moments layer.
+   14 super/sub wording edits applied (`scripts/apply-super-updates-v2.cjs`), plus one beat split
+   (V5 beat 8) so that both of the script's supers for that beat land.
+3. The only red flag needed in AE is Video 1's unrecorded paragraph.

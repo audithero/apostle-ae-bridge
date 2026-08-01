@@ -1,0 +1,30 @@
+{
+"name":"VIDEO_007_CARDS_CVP","slug":"video7-vo-locked","briefId":"video_007_cards_cvp",
+"voFiles":["01.MEDIA/AUDIO/VO/V7/VIDEO_AUDIO_007_AUDIO_VOICEOVER.mp3"],"end":105.48,
+"titleCard":{"dur":3.5,"super":"Be rewarded like never before with CommBank Yello.","sub":"Credit cards and CommBank Yello points."},
+"sections":[{"id":"launch","title":"Launching CommBank Yello"},{"id":"earning","title":"Earning on your credit card"},
+ {"id":"tiers","title":"Tiers and international spend"},{"id":"benefits","title":"Added benefits"},
+ {"id":"fees","title":"Fee waiver and insurance changes"},{"id":"learn","title":"Learn more"}],
+"beats":[
+ {"start":0.00,"section":"launch","vo":"From October 1st, CommBank Yello is launching a rewards program like no other with CommBank Yello points and a whole new world of perks and redemption partners.","moments":[
+  {"id":"m1","at":0.00,"layout":"hero","glyph":"coin","super":"A rewards program like no other.","sub":"From 1 October."},
+  {"id":"m2","at":6.50,"layout":"iconRow","super":"More points. More perks. More partners.","tiles":[{"glyph":"coin","label":"Points"},{"glyph":"star","label":"Perks"},{"glyph":"hub","label":"Partners"}]}]},
+ {"start":12.88,"section":"earning","vo":"As part of this exciting change, the way customers earn points on their CommBank credit card and broader everyday banking activity will evolve too.","moments":[
+  {"id":"m1","at":12.88,"layout":"placeholder","super":"How you earn on your card is evolving.","sub":"Across credit cards and everyday banking.","asset":"CommBank credit card UI on mobile"}]},
+ {"start":24.19,"section":"earning","vo":"From October 1st 2026, customers will have more ways to earn and use Yello points across daily essentials, shopping and travel, plus access to a wide range of redemption partners.","moments":[
+  {"id":"m1","at":24.19,"layout":"iconRow","super":"Start earning Yello points from 1 October 2026.","tiles":[{"glyph":"home","label":"Daily essentials"},{"glyph":"basket","label":"Shopping"},{"glyph":"plane","label":"Travel"}]},
+  {"id":"m2","at":34.55,"layout":"hub","glyph":"star","super":"A wide range of redemption partners.","spokes":[{"glyph":"cart"},{"glyph":"gift"},{"glyph":"plane"},{"glyph":"ticket"},{"glyph":"basket"},{"glyph":"percent"}]}]},
+ {"start":38.28,"section":"tiers","vo":"Meet the CommBank Yello eligibility, and customers can earn unlimited points per year on their credit card.","moments":[
+  {"id":"m1","at":38.28,"layout":"hero","glyph":"sparkle","super":"Earn unlimited Yello points per year.","sub":"Meet the CommBank Yello eligibility."}]},
+ {"start":45.96,"section":"tiers","vo":"Depending on their tier, customers can earn up to 1.5 Yello points on every $1 spent, and regardless of their tier, they'll earn 2x the Yello points for every dollar spent on international transactions.","moments":[
+  {"id":"m1","at":45.96,"layout":"chipRow","super":"Up to 1.5 Yello points per $1 spent.","chips":["CommBank Yello","Plus","Gold","Diamond"]},
+  {"id":"m2","at":52.28,"layout":"hero","glyph":"percent","super":"2x Yello points on international spend.","sub":"Regardless of tier."}]},
+ {"start":58.52,"section":"benefits","vo":"Customers can also enjoy added benefits including travel credits, dining credits, DashPass membership, airport lounge passes, and more.","moments":[
+  {"id":"m1","at":58.52,"layout":"iconRow","super":"Travel. Dining. Memberships.","sub":"Eligibility criteria applies.","tiles":[{"glyph":"plane","label":"Travel credits"},{"glyph":"basket","label":"Dining credits"},{"glyph":"star","label":"DashPass"},{"glyph":"ticket","label":"Lounge passes"}]}]},
+ {"start":69.21,"section":"fees","vo":"There will also be some fee waiver changes, with the international transaction fee waiver for Smart credit card customers being removed from 1 October, and spend based fee waivers ceasing for Smart and Ultimate from 1 January 2027. Additionally, there will also be changes to the insurance provider details for all CommBank credit cards from 1 October 2026.","moments":[
+  {"id":"m1","at":69.21,"layout":"statement","super":"1 October 2026: international transaction fee waiver removed.","sub":"For Smart credit card customers."},
+  {"id":"m2","at":78.71,"layout":"statement","super":"1 January 2027: spend-based fee waivers cease.","sub":"For Smart and Ultimate cards."},
+  {"id":"m3","at":85.77,"layout":"statement","super":"1 October 2026: insurance provider details change.","sub":"For all CommBank credit cards."}]},
+ {"start":94.48,"section":"learn","vo":"To find out more, visit commbank.com.au/card-updates or search CommBank Yello on One.CBA.","moments":[
+  {"id":"m1","at":94.48,"layout":"endcard","super":"Find out more.","url":"commbank.com.au/card-updates","sub":"Or search CommBank Yello on One.CBA"}]}
+]}

@@ -1,0 +1,29 @@
+{
+"name":"VIDEO_005_CARDS_TRAVEL","slug":"video5-vo-locked","briefId":"video_005_cards_travel",
+"voFiles":["01.MEDIA/AUDIO/VO/V5/VIDEO_005_AUDIO_VOICEOVER.mp3"],"end":104.49,
+"titleCard":{"dur":3.5,"super":"Be rewarded like never before with CommBank Yello.","sub":"Travel Booking with CommBank."},
+"sections":[{"id":"intro","title":"Travel Booking"},{"id":"tools","title":"Smart travel tools"},
+ {"id":"offers","title":"Exclusive offers and support"},{"id":"points","title":"Use and earn Yello points"},
+ {"id":"credits","title":"Monthly travel credits"},{"id":"benefits","title":"More travel benefits"}],
+"beats":[
+ {"start":0.00,"section":"intro","vo":"For CommBank customers, finding the best place for travel has never been easier.","moments":[
+  {"id":"m1","at":0.00,"layout":"hero","glyph":"plane","super":"Finding travel has never been easier.","sub":"For CommBank customers."}]},
+ {"start":5.43,"section":"intro","vo":"Travel Booking lets customers search and book flights, hotels and car rentals, via Travel Booking in the CommBank app.","moments":[
+  {"id":"m1","at":5.43,"layout":"device","super":"Search and book in the CommBank app.","sub":"Home screen > Features > Travel Booking.","screen":[{"glyph":"plane","label":"Flights"},{"glyph":"home","label":"Hotels"},{"glyph":"card","label":"Car rental"}]}]},
+ {"start":13.40,"section":"tools","vo":"With smart tools like Best Price Guarantee, Price Prediction and Auto Price Drop, we're helping our customers save on travel too. With Best Price Guarantee, if the price of a booked flight drops within 24 hours of the customer booking, CommBank will provide the difference in travel credits. And with the AI powered Price Prediction, customers are shown what might be the best time to book to save. Also, Auto Price Drop helps customers by protecting their booking by providing up to $50 in travel credits if the price of the recommended flight drops within 10 days of booking.","moments":[
+  {"id":"m1","at":13.40,"layout":"iconRow","super":"Smart travel tools to help customers save.","tiles":[{"glyph":"shield","label":"Best Price\rGuarantee"},{"glyph":"sparkle","label":"Price\rPrediction"},{"glyph":"percent","label":"Auto Price\rDrop"}]},
+  {"id":"m2","at":22.61,"layout":"statement","super":"Best Price Guarantee.","sub":"Price drops within 24 hours come back as travel credits."},
+  {"id":"m3","at":31.32,"layout":"statement","super":"AI-powered Price Prediction.","sub":"Shows customers the best time to book."},
+  {"id":"m4","at":39.42,"layout":"statement","super":"Auto Price Drop.","sub":"Up to $50 in travel credits if the price drops within 10 days."}]},
+ {"start":52.31,"section":"offers","vo":"Travel Booking gives customers access to CommBank exclusive travel offers on flights, hotels and car hire, as well as 24/7 support.","moments":[
+  {"id":"m1","at":52.31,"layout":"iconRow","super":"Exclusive travel offers.","tiles":[{"glyph":"plane","label":"Flights"},{"glyph":"home","label":"Hotels"},{"glyph":"card","label":"Car hire"}]},
+  {"id":"m2","at":60.53,"layout":"statement","super":"24/7 customer support.","sub":""}]},
+ {"start":63.93,"section":"points","vo":"Plus, from October 1st, customers can use and earn CommBank Yello points with Travel Booking. Earn 5x points per $1 spent on hotel and car rental bookings, and 2x points for every $1 spent on flight bookings.","moments":[
+  {"id":"m1","at":63.93,"layout":"hero","glyph":"coin","super":"Use and earn Yello points with Travel Booking.","sub":"From 1 October."},
+  {"id":"m2","at":71.07,"layout":"chipRow","super":"How points are earned.","chips":["5x per $1 — hotels","5x per $1 — car rental","2x per $1 — flights"]}]},
+ {"start":80.36,"section":"credits","vo":"And eligible credit card customers will receive a monthly $25 Travel Credit with their CommBank Ultimate credit card, or a $10 Travel Credit with the CommBank Smart credit card to spend on Travel Booking too.","moments":[
+  {"id":"m1","at":80.36,"layout":"placeholder","super":"$25 monthly Travel Credit.","sub":"With the CommBank Ultimate credit card.","asset":"CBA Ultimate card art"},
+  {"id":"m2","at":88.43,"layout":"placeholder","super":"$10 monthly Travel Credit.","sub":"With the CommBank Smart credit card.","asset":"CBA Smart card art"}]},
+ {"start":95.14,"section":"benefits","vo":"You can even enjoy added benefits including travel credits, dining credits, DashPass membership, airport lounge passes, and more.","moments":[
+  {"id":"m1","at":95.14,"layout":"iconRow","super":"Enjoy more travel benefits than ever.","sub":"Eligibility criteria applies.","tiles":[{"glyph":"plane","label":"Travel credits"},{"glyph":"basket","label":"Dining credits"},{"glyph":"star","label":"Memberships"},{"glyph":"ticket","label":"Lounge passes"}]}]}
+]}

@@ -205,7 +205,7 @@
     {
      "id": "m1",
      "layout": "chipRow",
-     "super": "Up to 1.5 Yello points per $1 spent.",
+     "super": "CommBank Yello Tiers",
      "chips": [
       "CommBank Yello",
       "Plus",
@@ -217,13 +217,14 @@
      "voSec": [
       45.96,
       52.28
-     ]
+     ],
+     "sub": "Earn up to 1.5 Yello points on every $1 spent."
     },
     {
      "id": "m2",
      "layout": "hero",
      "glyph": "percent",
-     "super": "2x Yello points on international spend.",
+     "super": "2x Yello Points on International Spend",
      "sub": "Regardless of tier.",
      "from": 0.5032,
      "to": 1,
@@ -243,7 +244,7 @@
      "id": "m1",
      "layout": "iconRow",
      "super": "Travel. Dining. Memberships.",
-     "sub": "Eligibility criteria applies.",
+     "sub": "*Eligibility criteria applies",
      "tiles": [
       {
        "glyph": "plane",

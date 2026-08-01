@@ -46,8 +46,8 @@
      "id": "m1",
      "layout": "hero",
      "glyph": "basket",
-     "super": "Easier to find the best places to eat.",
-     "sub": "Thanks to CommBank Yello.",
+     "super": "Dine In Deals in the CommBank app.",
+     "sub": "Making it easier to find the best places to eat.",
      "from": 0,
      "to": 1,
      "voSec": [
@@ -139,7 +139,7 @@
     {
      "id": "m1",
      "layout": "chipRow",
-     "super": "2. Add the card to your digital wallet.",
+     "super": "2. Add Dine In Deals card directly to digital wallet.",
      "chips": [
       "Dine In Deals card",
       "Digital wallet"
@@ -160,7 +160,7 @@
     {
      "id": "m1",
      "layout": "chipRow",
-     "super": "3. Pay with the card and save.",
+     "super": "3. Pay with the Dine In Deals card and save.",
      "chips": [
       "Pay",
       "Savings applied automatically"
@@ -181,7 +181,7 @@
     {
      "id": "m1",
      "layout": "iconRow",
-     "super": "No codes. No vouchers. No awkward moments.",
+     "super": "No codes. No vouchers. No awkward redemption moments.",
      "tiles": [
       {
        "glyph": "cross",
@@ -215,8 +215,8 @@
     {
      "id": "m1",
      "layout": "placeholder",
-     "super": "$10 monthly Dining Credit.",
-     "sub": "From 1 October, up to $120 in total. Eligible credit card customers.",
+     "super": "From 1 Oct: $10 Monthly Dining Credit.",
+     "sub": "Up to $120 in total. For eligible credit card customers.",
      "asset": "Eat Club + Dine In Deals logos",
      "from": 0,
      "to": 1,

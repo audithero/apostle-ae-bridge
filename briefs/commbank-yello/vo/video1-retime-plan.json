@@ -1,0 +1,284 @@
+{
+ "plan": [
+  {
+   "beatId": "we-re-introducing-a-number-of-change",
+   "durationSec": 27.32
+  },
+  {
+   "beatId": "eligible-customers-can-earn-commbank",
+   "durationSec": 43.72
+  },
+  {
+   "beatId": "for-the-first-time-at-commbank-custo",
+   "durationSec": 10.12
+  },
+  {
+   "beatId": "in-addition-to-the-new-brand-digital",
+   "durationSec": 25.6
+  },
+  {
+   "beatId": "once-customers-have-generated-a-poin",
+   "durationSec": 20.4
+  },
+  {
+   "beatId": "customers-can-also-transfer-their-po",
+   "durationSec": 7.6
+  },
+  {
+   "beatId": "plus-they-ll-enjoy-exclusive-offers",
+   "durationSec": 10.2
+  },
+  {
+   "beatId": "to-find-out-more-visit-commbank-com",
+   "durationSec": 13.5
+  }
+ ],
+ "moments": {
+  "SC01": {
+   "beatId": "we-re-introducing-a-number-of-change",
+   "dur": 27.32,
+   "moments": [
+    {
+     "id": "m1",
+     "from": 0.0007,
+     "to": 0.3777,
+     "_sec": [
+      0.02,
+      10.32
+     ]
+    },
+    {
+     "id": "m2",
+     "from": 0.3777,
+     "to": 0.612,
+     "_sec": [
+      10.32,
+      16.72
+     ]
+    },
+    {
+     "id": "m5",
+     "from": 0.612,
+     "to": 0.8064,
+     "_sec": [
+      16.72,
+      22.03
+     ]
+    },
+    {
+     "id": "m6",
+     "from": 0.8064,
+     "to": 1.0,
+     "_sec": [
+      22.03,
+      27.32
+     ]
+    }
+   ]
+  },
+  "SC02": {
+   "beatId": "eligible-customers-can-earn-commbank",
+   "dur": 43.72,
+   "moments": [
+    {
+     "id": "m1",
+     "from": 0.0005,
+     "to": 0.1235,
+     "_sec": [
+      27.34,
+      32.72
+     ]
+    },
+    {
+     "id": "m2",
+     "from": 0.1235,
+     "to": 0.3769,
+     "_sec": [
+      32.72,
+      43.8
+     ]
+    },
+    {
+     "id": "m3",
+     "from": 0.3769,
+     "to": 0.5931,
+     "_sec": [
+      43.8,
+      53.25
+     ]
+    },
+    {
+     "id": "m4",
+     "from": 0.5931,
+     "to": 0.7868,
+     "_sec": [
+      53.25,
+      61.72
+     ]
+    },
+    {
+     "id": "m5",
+     "from": 0.7868,
+     "to": 1.0,
+     "_sec": [
+      61.72,
+      71.04
+     ]
+    }
+   ]
+  },
+  "SC03": {
+   "beatId": "for-the-first-time-at-commbank-custo",
+   "dur": 10.12,
+   "moments": [
+    {
+     "id": "m1",
+     "from": 0.0,
+     "to": 0.4051,
+     "_sec": [
+      71.04,
+      75.14
+     ]
+    },
+    {
+     "id": "m2",
+     "from": 0.4051,
+     "to": 0.6957,
+     "_sec": [
+      75.14,
+      78.08
+     ]
+    },
+    {
+     "id": "m3",
+     "from": 0.6957,
+     "to": 1.0,
+     "_sec": [
+      78.08,
+      80.84
+     ]
+    }
+   ]
+  },
+  "SC04": {
+   "beatId": "in-addition-to-the-new-brand-digital",
+   "dur": 25.6,
+   "moments": [
+    {
+     "id": "m1",
+     "from": 0.0008,
+     "to": 0.4219,
+     "_sec": [
+      81.18,
+      91.96
+     ]
+    },
+    {
+     "id": "m2",
+     "from": 0.4219,
+     "to": 0.5313,
+     "_sec": [
+      91.96,
+      94.76
+     ]
+    },
+    {
+     "id": "m3",
+     "from": 0.5313,
+     "to": 0.8188,
+     "_sec": [
+      94.76,
+      102.12
+     ]
+    },
+    {
+     "id": "m4",
+     "from": 0.8188,
+     "to": 1.0,
+     "_sec": [
+      102.12,
+      105.92
+     ]
+    }
+   ]
+  },
+  "SC05": {
+   "beatId": "once-customers-have-generated-a-poin",
+   "dur": 20.4,
+   "moments": [
+    {
+     "id": "m1",
+     "from": 0.0,
+     "to": 0.2868,
+     "_sec": [
+      106.76,
+      112.61
+     ]
+    },
+    {
+     "id": "m2",
+     "from": 0.2868,
+     "to": 0.6373,
+     "_sec": [
+      112.61,
+      119.76
+     ]
+    },
+    {
+     "id": "m3",
+     "from": 0.6373,
+     "to": 1.0,
+     "_sec": [
+      119.76,
+      126.76
+     ]
+    }
+   ]
+  },
+  "SC06": {
+   "beatId": "customers-can-also-transfer-their-po",
+   "dur": 7.6,
+   "moments": [
+    {
+     "id": "m1",
+     "from": 0.1342,
+     "to": 1.0,
+     "_sec": [
+      128.18,
+      134.16
+     ]
+    }
+   ]
+  },
+  "SC07": {
+   "beatId": "plus-they-ll-enjoy-exclusive-offers",
+   "dur": 10.2,
+   "moments": [
+    {
+     "id": "m1",
+     "from": 0.0,
+     "to": 1.0,
+     "_sec": [
+      134.76,
+      144.18
+     ]
+    }
+   ]
+  },
+  "SC08": {
+   "beatId": "to-find-out-more-visit-commbank-com",
+   "dur": 13.5,
+   "moments": [
+    {
+     "id": "m1",
+     "from": 0.0,
+     "to": 0.8148,
+     "_sec": [
+      144.96,
+      155.96
+     ]
+    }
+   ]
+  }
+ }
+}

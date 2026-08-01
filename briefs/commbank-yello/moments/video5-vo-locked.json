@@ -65,7 +65,7 @@
     {
      "id": "m1",
      "layout": "device",
-     "super": "Search and book in the CommBank app.",
+     "super": "Search + book flights, hotels, car rental via Travel Booking.",
      "sub": "Home screen > Features > Travel Booking.",
      "screen": [
       {
@@ -170,7 +170,7 @@
     {
      "id": "m1",
      "layout": "iconRow",
-     "super": "Exclusive travel offers.",
+     "super": "Exclusive Travel Offers.",
      "tiles": [
       {
        "glyph": "plane",
@@ -198,7 +198,7 @@
     {
      "id": "m2",
      "layout": "statement",
-     "super": "24/7 customer support.",
+     "super": "24/7 Customer Support.",
      "sub": "",
      "from": 0.7074,
      "to": 1,
@@ -252,8 +252,8 @@
     {
      "id": "m1",
      "layout": "placeholder",
-     "super": "$25 monthly Travel Credit.",
-     "sub": "With the CommBank Ultimate credit card.",
+     "super": "From 1 Oct: $25 Monthly Travel Credit.",
+     "sub": "For CommBank Ultimate credit card customers.",
      "asset": "CBA Ultimate card art",
      "from": 0,
      "to": 0.546,
@@ -265,8 +265,8 @@
     {
      "id": "m2",
      "layout": "placeholder",
-     "super": "$10 monthly Travel Credit.",
-     "sub": "With the CommBank Smart credit card.",
+     "super": "From 1 Oct: $10 Monthly Travel Credit.",
+     "sub": "For CommBank Smart credit card customers.",
      "asset": "CBA Smart card art",
      "from": 0.546,
      "to": 1,
@@ -283,9 +283,17 @@
    "moments": [
     {
      "id": "m1",
-     "layout": "iconRow",
+     "layout": "statement",
      "super": "Enjoy more travel benefits than ever.",
-     "sub": "Eligibility criteria applies.",
+     "sub": "",
+     "from": 0,
+     "to": 0.28
+    },
+    {
+     "id": "m2",
+     "layout": "iconRow",
+     "super": "Travel. Dining. Memberships. Airport Lounge Passes*",
+     "sub": "*Eligibility criteria applies",
      "tiles": [
       {
        "glyph": "plane",
@@ -308,7 +316,7 @@
        "picto": "keycard"
       }
      ],
-     "from": 0,
+     "from": 0.28,
      "to": 1,
      "voSec": [
       95.14,
