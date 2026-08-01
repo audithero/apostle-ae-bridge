@@ -1,0 +1,423 @@
+{
+ "meta": {
+  "briefId": "video_002_earning_redeeming",
+  "masterName": "VIDEO_002_EARNING_REDEEMING_v001",
+  "scriptVersion": 1,
+  "voLeadIn": 0.45,
+  "tailBuffer": 6,
+  "brandKit": "commbank-yello-3",
+  "note": "Windows are measured fractions of each beat's VO window."
+ },
+ "palette": {
+  "ink": "#000000",
+  "brand": "#FDFD3C",
+  "paper": "#FFFFFF",
+  "hole": "#FFFFFF",
+  "muted": "#E8E8B0",
+  "tileShape": "circle",
+  "tileFill": "paper",
+  "plateFill": "paper",
+  "plateStroke": "ink"
+ },
+ "scenes": [
+  {
+   "beatId": "from-1-october-eligible-customers-ca",
+   "beatDurationSec": 8.82,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "hero",
+     "glyph": "coin",
+     "super": "Earn and use CommBank Yello points.",
+     "sub": "From 1 October.",
+     "from": 0,
+     "to": 0.5442,
+     "voSec": [
+      0,
+      4.8
+     ],
+     "picto": "coin stack"
+    },
+    {
+     "id": "m2",
+     "layout": "statement",
+     "super": "More choice. More flexibility.",
+     "sub": "In how customers are rewarded.",
+     "from": 0.5442,
+     "to": 1,
+     "voSec": [
+      4.8,
+      8.82
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "at-the-heart-of-this-change-is-a-new",
+   "beatDurationSec": 9.34,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "statement",
+     "super": "A new approach to rewards.",
+     "sub": "At the heart of this change.",
+     "from": 0,
+     "to": 0.4336,
+     "voSec": [
+      8.82,
+      12.87
+     ]
+    },
+    {
+     "id": "m2",
+     "layout": "compare",
+     "super": "Not just transactions.",
+     "sub": "Recognising the broader banking relationship.",
+     "fromBox": {
+      "label": "Transactions only",
+      "strike": true
+     },
+     "toBox": {
+      "label": "Whole relationship"
+     },
+     "from": 0.4336,
+     "to": 1,
+     "voSec": [
+      12.87,
+      18.16
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "customers-can-earn-points-in-more-wa",
+   "beatDurationSec": 11.86,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "statement",
+     "super": "More ways to earn than ever before.",
+     "sub": "",
+     "from": 0,
+     "to": 0.339,
+     "voSec": [
+      18.16,
+      22.18
+     ]
+    },
+    {
+     "id": "m2",
+     "layout": "iconRow",
+     "super": "Four ways to earn.",
+     "tiles": [
+      {
+       "glyph": "doc",
+       "label": "New products",
+       "picto": "document"
+      },
+      {
+       "glyph": "renew",
+       "label": "Renewals",
+       "picto": "card cycle"
+      },
+      {
+       "glyph": "check",
+       "label": "Banking\rmilestones",
+       "picto": "trophy"
+      },
+      {
+       "glyph": "card",
+       "label": "Eligible card\rpurchases",
+       "picto": "CommBank Card"
+      }
+     ],
+     "from": 0.339,
+     "to": 1,
+     "voSec": [
+      22.18,
+      30.02
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "customers-who-currently-earn-points",
+   "beatDurationSec": 11.1,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "compare",
+     "super": "CommBank Awards points are changing.",
+     "sub": "Eligible customers will transition across.",
+     "fromBox": {
+      "label": "CommBank Awards points",
+      "strike": true
+     },
+     "toBox": {
+      "label": "CommBank Yello points"
+     },
+     "from": 0,
+     "to": 0.5405,
+     "voSec": [
+      30.02,
+      36.02
+     ]
+    },
+    {
+     "id": "m2",
+     "layout": "statement",
+     "super": "Plus the broader range of Yello benefits.",
+     "sub": "",
+     "from": 0.5405,
+     "to": 1,
+     "voSec": [
+      36.02,
+      41.12
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "customers-can-also-earn-points-when",
+   "beatDurationSec": 7.89,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "iconRow",
+     "super": "Shop with participating brands.",
+     "tiles": [
+      {
+       "glyph": "cart",
+       "label": "Brand digital\rstores",
+       "picto": "store"
+      },
+      {
+       "glyph": "coin",
+       "label": "Earn Yello points",
+       "picto": "coin stack"
+      }
+     ],
+     "from": 0,
+     "to": 0.6654,
+     "voSec": [
+      41.12,
+      46.37
+     ]
+    },
+    {
+     "id": "m2",
+     "layout": "device",
+     "super": "Through the CommBank Yello hub.",
+     "sub": "Available in the CommBank app.",
+     "screen": [
+      {
+       "glyph": "cart",
+       "label": "Brand stores",
+       "picto": "store"
+      },
+      {
+       "glyph": "tag",
+       "label": "Offers",
+       "picto": "offers"
+      },
+      {
+       "glyph": "coin",
+       "label": "Your points",
+       "picto": "coin stack"
+      }
+     ],
+     "from": 0.6654,
+     "to": 1,
+     "voSec": [
+      46.37,
+      49.01
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "in-addition-customers-can-boost-thei",
+   "beatDurationSec": 6.76,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "device",
+     "super": "Boost your points balance.",
+     "sub": "Activate bonus points offers in the CommBank app.",
+     "screen": [
+      {
+       "glyph": "tag",
+       "label": "Activate offer",
+       "picto": "offers"
+      },
+      {
+       "glyph": "tag",
+       "label": "Activate offer",
+       "picto": "offers"
+      },
+      {
+       "glyph": "coin",
+       "label": "Bonus points",
+       "picto": "coin stack"
+      }
+     ],
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      49.01,
+      55.77
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "once-customers-have-earned-points-th",
+   "beatDurationSec": 10.03,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "statement",
+     "super": "Once customers have earned points.",
+     "sub": "",
+     "from": 0,
+     "to": 0.2183,
+     "voSec": [
+      55.77,
+      57.96
+     ]
+    },
+    {
+     "id": "m2",
+     "layout": "iconRow",
+     "super": "Use points their way.",
+     "tiles": [
+      {
+       "glyph": "plane",
+       "label": "Travel",
+       "picto": "luggage"
+      },
+      {
+       "glyph": "basket",
+       "label": "Shopping",
+       "picto": "shopping trolley"
+      },
+      {
+       "glyph": "gift",
+       "label": "Gift cards",
+       "picto": "gift"
+      },
+      {
+       "glyph": "home",
+       "label": "Everyday\ressentials",
+       "picto": "bill"
+      }
+     ],
+     "from": 0.2183,
+     "to": 0.7976,
+     "voSec": [
+      57.96,
+      63.77
+     ]
+    },
+    {
+     "id": "m3",
+     "layout": "statement",
+     "super": "Through the new redemption portal.",
+     "sub": "",
+     "from": 0.7976,
+     "to": 1,
+     "voSec": [
+      63.77,
+      65.8
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "customers-can-also-transfer-their-po",
+   "beatDurationSec": 7.29,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "hero",
+     "glyph": "transfer",
+     "super": "Transfer points to loyalty programs.",
+     "sub": "Programs customers already use.",
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      65.8,
+      73.09
+     ],
+     "picto": "change"
+    }
+   ]
+  },
+  {
+   "beatId": "in-addition-to-points-customers-will",
+   "beatDurationSec": 7.86,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "iconRow",
+     "super": "More than just points.",
+     "sub": "Through CommBank Yello.",
+     "tiles": [
+      {
+       "glyph": "star",
+       "label": "Exclusive offers",
+       "picto": "star"
+      },
+      {
+       "glyph": "percent",
+       "label": "Discounts",
+       "picto": "percentage"
+      },
+      {
+       "glyph": "ticket",
+       "label": "Presale access",
+       "picto": "megaphone"
+      }
+     ],
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      73.09,
+      80.95
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "the-following-modules-will-take-a-de",
+   "beatDurationSec": 16.49,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "statement",
+     "super": "A deeper look is coming.",
+     "sub": "The following modules cover earning and using points.",
+     "from": 0,
+     "to": 0.3681,
+     "voSec": [
+      80.95,
+      87.02
+     ]
+    },
+    {
+     "id": "m2",
+     "layout": "endcard",
+     "super": "Learn more.",
+     "url": "commbank.com.au/commbankyello",
+     "sub": "Or search CommBank Yello on One.CBA",
+     "from": 0.3681,
+     "to": 1,
+     "voSec": [
+      87.02,
+      97.44
+     ]
+    }
+   ]
+  }
+ ]
+}

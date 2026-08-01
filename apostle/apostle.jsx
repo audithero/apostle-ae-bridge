@@ -19,7 +19,7 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.9.3";
+  var LIB_VERSION = "2.11.0";
 
   // Captured at load time; locates the repo for crash-recovery run snapshots
   var LIB_FILE = null;
@@ -372,6 +372,10 @@ var APOSTLE = (function () {
     addColor(ctrl, "Secondary", hexToRGB(data.brand.colors.secondary));
     addColor(ctrl, "Background", hexToRGB(data.brand.colors.background));
     addColor(ctrl, "Text Color", hexToRGB(data.brand.colors.text));
+    // Surface = the plate colour under icon art. Kept separate from
+    // Background: on a coloured backdrop, "paper" must stay white rather
+    // than inherit the backdrop and make every tile vanish.
+    addColor(ctrl, "Surface", hexToRGB((data.brand.colors.surface) || "#FFFFFF"));
     addSlider(ctrl, "Heading Size", data.brand.headingSize || 84);
     addSlider(ctrl, "Body Size", data.brand.bodySize || 42);
     addSlider(ctrl, "Heading Tracking", (data.brand.headingTracking !== undefined) ? data.brand.headingTracking : 10);
@@ -1251,9 +1255,13 @@ var APOSTLE = (function () {
           numLayers: c.numLayers, layers: []
         };
         for (var i = 1; i <= c.numLayers; i++) {
-          var layer = c.layer(i);
+          var layer = null;
+          try { layer = c.layer(i); } catch (eL) { layer = null; }
+          if (layer === null || layer === undefined) continue;
           C.layers.push(serializeLayer(layer, budget));
-          if (layer.source instanceof CompItem && !seen[layer.source.name]) queue.push(layer.source);
+          var lsrc = null;
+          try { lsrc = layer.source; } catch (eS) { lsrc = null; }
+          if (lsrc && lsrc instanceof CompItem && !seen[lsrc.name]) queue.push(lsrc);
           if (budget.spent > SERIALIZE_MAX_CHARS) { budget.truncated = true; break; }
         }
         comps.push(C);
@@ -1421,73 +1429,88 @@ var APOSTLE = (function () {
       if (!root) return toJSON({ status: "error", error: "Comp not found: " + compName });
       var marginPct = findControlSafeMargin(root.name);
       if (marginPct === null) marginPct = 10;
+
       var violations = [];
+      var unmeasured = [];   // layers/comps this sweep could not measure
       var checked = 0;
       var seen = {};
       var queue = [root];
+
+      // Every AE access below is guarded. AE hands back null for things that
+      // look guaranteed — layer.source on shape layers and cameras, and
+      // c.layer(i) for i <= c.numLayers on some comps — and one such layer
+      // used to abort the whole sweep with "null is not an object".
       while (queue.length > 0) {
         var c = queue.shift();
-        if (seen[c.name]) continue;
-        seen[c.name] = true;
-        var mx = c.width * marginPct / 100;
-        var my = c.height * marginPct / 100;
-        for (var i = 1; i <= c.numLayers; i++) {
-          var layer = c.layer(i);
-          if (layer.source instanceof CompItem && !seen[layer.source.name]) queue.push(layer.source);
-          if (!(layer instanceof TextLayer)) continue;
-          if (layer.guideLayer || !layer.enabled) continue; // FONT config guides never render
+        var cname = null, cw = 0, ch = 0, cn = 0;
+        try { cname = c.name; cw = c.width; ch = c.height; cn = c.numLayers; } catch (eC) { cname = null; }
+        if (cname === null) { unmeasured.push("unreadable comp in walk"); continue; }
+        if (seen[cname]) continue;
+        seen[cname] = true;
+        var mx = cw * marginPct / 100;
+        var my = ch * marginPct / 100;
+
+        for (var i = 1; i <= cn; i++) {
+          var layer = null;
+          try { layer = c.layer(i); } catch (eL) { layer = null; }
+          // NB: `!layer` is not a safe emptiness test — AE DOM objects can
+          // evaluate falsy in boolean context, which silently skipped ~half
+          // the shape/text layers in a comp. Compare against null explicitly.
+          if (layer === null || layer === undefined) { unmeasured.push(cname + " / layer " + i + " (null)"); continue; }
+
+          var lsrc = null;
+          try { lsrc = layer.source; } catch (eSrc) { lsrc = null; }
+          if (lsrc && lsrc instanceof CompItem && !seen[lsrc.name]) queue.push(lsrc);
+
+          var isText = false;
+          try { isText = (layer instanceof TextLayer); } catch (eT) { isText = false; }
+          if (!isText) continue;
+          try { if (layer.guideLayer || !layer.enabled) continue; } catch (eG) { continue; }
+
           checked++;
-          var t = textHoldTime(layer);
-          var rect = layer.sourceRectAtTime(t, false);
-          var pos = layer.property("ADBE Transform Group").property("ADBE Position").valueAtTime(t, false);
-          var anchor = layer.property("ADBE Transform Group").property("ADBE Anchor Point").valueAtTime(t, false);
-          var scale = layer.property("ADBE Transform Group").property("ADBE Scale").valueAtTime(t, false);
-          var sx = scale[0] / 100, sy = scale[1] / 100;
-          var left = pos[0] + (rect.left - anchor[0]) * sx;
-          var top = pos[1] + (rect.top - anchor[1]) * sy;
-          var right = left + rect.width * sx;
-          var bottom = top + rect.height * sy;
-          var EPS = 2; // exact-fit tolerance: autoFit scales text flush to the margin
-          var out = [];
-          if (left < mx - EPS) out.push("left by " + Math.round(mx - left) + "px");
-          if (right > c.width - mx + EPS) out.push("right by " + Math.round(right - (c.width - mx)) + "px");
-          if (top < my - EPS) out.push("top by " + Math.round(my - top) + "px");
-          if (bottom > c.height - my + EPS) out.push("bottom by " + Math.round(bottom - (c.height - my)) + "px");
-          if (out.length) {
-            violations.push({
-              comp: c.name, layer: layer.name, atTime: Math.round(t * 100) / 100,
-              bounds: [Math.round(left), Math.round(top), Math.round(right), Math.round(bottom)],
-              exceeds: out,
-              fixPath: 'comp("' + c.name + '").layer("' + layer.name + '") Transform/Scale or Position'
-            });
+          try {
+            var t = textHoldTime(layer);
+            var rect = layer.sourceRectAtTime(t, false);
+            var tg = layer.property("ADBE Transform Group");
+            var pos = tg.property("ADBE Position").valueAtTime(t, false);
+            var anchor = tg.property("ADBE Anchor Point").valueAtTime(t, false);
+            var scale = tg.property("ADBE Scale").valueAtTime(t, false);
+            if (!rect || !pos || !anchor || !scale) {
+              unmeasured.push(cname + " / " + layer.name + " (no bounds)");
+              continue;
+            }
+            var sx = scale[0] / 100, sy = scale[1] / 100;
+            var left = pos[0] + (rect.left - anchor[0]) * sx;
+            var top = pos[1] + (rect.top - anchor[1]) * sy;
+            var right = left + rect.width * sx;
+            var bottom = top + rect.height * sy;
+            var EPS = 2; // autoFit scales text flush to the margin
+            var out = [];
+            if (left < mx - EPS) out.push("left by " + Math.round(mx - left) + "px");
+            if (right > cw - mx + EPS) out.push("right by " + Math.round(right - (cw - mx)) + "px");
+            if (top < my - EPS) out.push("top by " + Math.round(my - top) + "px");
+            if (bottom > ch - my + EPS) out.push("bottom by " + Math.round(bottom - (ch - my)) + "px");
+            if (out.length) {
+              violations.push({
+                comp: cname, layer: layer.name, atTime: Math.round(t * 100) / 100,
+                bounds: [Math.round(left), Math.round(top), Math.round(right), Math.round(bottom)],
+                exceeds: out,
+                fixPath: 'comp("' + cname + '").layer("' + layer.name + '") Transform/Scale or Position'
+              });
+            }
+          } catch (eLayer) {
+            var lnm = "?"; try { lnm = layer.name; } catch (eN) {}
+            unmeasured.push(cname + " / " + lnm + ": " + eLayer.toString());
           }
         }
       }
-      return toJSON({ status: "success", marginPct: marginPct, textLayersChecked: checked, violations: violations });
+      return toJSON({
+        status: "success", marginPct: marginPct, textLayersChecked: checked,
+        violations: violations, unmeasured: unmeasured
+      });
     } catch (e) {
       return errJSON("checkTextSafeMargins", e);
     }
-  }
-
-  // Camera world position vs each station's scene plane at station arrival.
-  // Flags clipping (camera nearer than 300px to the plane) and framing
-  // misses (station not centered within tolerance). World positions are
-  // computed by summing the parent chain (our rigs use no parent rotation).
-  var CLIP_MIN_Z = 300;
-  var FRAME_TOLERANCE_XY = 250;
-
-  function layerWorldPos(layer, t) {
-    var p = layer.property("ADBE Transform Group").property("ADBE Position").valueAtTime(t, false);
-    var world = [p[0], p[1], (p.length > 2 ? p[2] : 0)];
-    var guard = 0;
-    var cur = layer;
-    while (cur.parent && guard < 10) {
-      cur = cur.parent;
-      var pp = cur.property("ADBE Transform Group").property("ADBE Position").valueAtTime(t, false);
-      world[0] += pp[0]; world[1] += pp[1]; world[2] += (pp.length > 2 ? pp[2] : 0);
-      guard++;
-    }
-    return world;
   }
 
   function checkCameraDistance(compName) {
@@ -1524,6 +1547,56 @@ var APOSTLE = (function () {
 
       var results = [];
       var violations = [];
+      var warnings = [];
+      // Thresholds were referenced but never declared, so this check threw
+      // before it could report anything. Measured against a healthy build:
+      // the expression rig parks the camera 1700px in front of every station
+      // with framing inside +/-2px. CLIP_MIN_Z therefore only fires when the
+      // camera has genuinely collapsed onto or behind the plane (the Phase 3
+      // HandyCam failure mode); FRAME_TOLERANCE_XY absorbs handheld shake at
+      // "energetic" while still catching a corridor-scale framing miss.
+      var CLIP_MIN_Z = 400;
+      var FRAME_TOLERANCE_XY = 60;
+      // layerWorldPos was called here but never defined — checkCameraDistance
+      // threw ReferenceError on every run, so one of the three deterministic
+      // checks has never actually reported. A child's Position is expressed
+      // relative to its parent's anchor, and that anchor sits at the parent's
+      // own world position, so with no rotation/scale in the chain world
+      // position is exact translation composition. The Apostle rig parents
+      // only the camera, to a plain translation null — but guard the general
+      // case rather than silently returning a wrong number.
+      function layerWorldPos(layer, t) {
+        var p = [0, 0, 0];
+        var node = layer;
+        var guard = 0;
+        while (node && guard < 32) {
+          guard++;
+          var tg = node.property("ADBE Transform Group");
+          var lp = tg.property("ADBE Position").valueAtTime(t, false);
+          p[0] += lp[0];
+          p[1] += lp[1];
+          p[2] += (lp.length > 2 ? lp[2] : 0);
+          node = node.parent;
+          if (node) {
+            var ptg = node.property("ADBE Transform Group");
+            var bad = false;
+            try {
+              var sc = ptg.property("ADBE Scale").valueAtTime(t, false);
+              if (Math.round(sc[0]) !== 100 || Math.round(sc[1]) !== 100) bad = true;
+            } catch (eS) {}
+            try {
+              var rz = ptg.property("ADBE Rotate Z").valueAtTime(t, false);
+              if (Math.round(rz) % 360 !== 0) bad = true;
+            } catch (eR) {}
+            try {
+              var or = ptg.property("ADBE Orientation").valueAtTime(t, false);
+              if (Math.round(or[0]) % 360 !== 0 || Math.round(or[1]) % 360 !== 0 || Math.round(or[2]) % 360 !== 0) bad = true;
+            } catch (eO) {}
+            if (bad) warnings.push("parent '" + node.name + "' carries rotation or scale — world position is translation-only and therefore approximate");
+          }
+        }
+        return p;
+      }
       var mkProp = rig.property("Marker");
       for (var k = 1; k <= mkProp.numKeys; k++) {
         var comment = String(mkProp.keyValue(k).comment);
@@ -1550,7 +1623,7 @@ var APOSTLE = (function () {
           violations.push({ station: idx + 1, time: entry.time, problem: "framing miss: camera offset [" + Math.round(dx) + ", " + Math.round(dy) + "]px from station center (tolerance " + FRAME_TOLERANCE_XY + ")" });
         }
       }
-      return toJSON({ status: "success", camera: cam.name, rig: rig.name, stations: results, violations: violations });
+      return toJSON({ status: "success", camera: cam.name, rig: rig.name, stations: results, violations: violations, warnings: warnings });
     } catch (e) {
       return errJSON("checkCameraDistance", e);
     }
@@ -1620,7 +1693,8 @@ var APOSTLE = (function () {
     headingSize: "Heading Size",
     bodySize: "Body Size",
     headingTracking: "Heading Tracking",
-    bodyTracking: "Body Tracking"
+    bodyTracking: "Body Tracking",
+    safeMarginPct: "Safe Margin %"
   };
 
   // Master comps are identified structurally: CONTROL null + both font
@@ -1673,6 +1747,43 @@ var APOSTLE = (function () {
     doc.text = str;
     prop.setValue(doc);
     return true;
+  }
+
+  var BRAND_SWATCHES = {
+    primary: "Primary",
+    secondary: "Secondary",
+    background: "Background",
+    text: "Text Color",
+    surface: "Surface"
+  };
+
+  function rgbToHex(v) {
+    var out = "#";
+    for (var i = 0; i < 3; i++) {
+      var n = Math.round(Math.max(0, Math.min(1, v[i])) * 255);
+      var s = n.toString(16).toUpperCase();
+      out += (s.length < 2 ? "0" : "") + s;
+    }
+    return out;
+  }
+
+  // The CONTROL swatches every background/moment fill expression reads back.
+  // The panel needs these to show a comp's OWN colours rather than a kit's —
+  // editing a swatch you cannot see is how a brand drifts per video.
+  function readBrandColors(masterName) {
+    var comp = findComp(masterName);
+    if (!comp) return { status: "error", error: "Comp not found: " + masterName };
+    var ctrl = findLayer(comp, "CONTROL");
+    if (!ctrl) return { status: "error", error: "CONTROL layer missing on " + masterName };
+    var out = { status: "success", master: masterName, colors: {} };
+    for (var k in BRAND_SWATCHES) {
+      if (!BRAND_SWATCHES.hasOwnProperty(k)) continue;
+      try {
+        var v = ctrl.property("ADBE Effect Parade").property(BRAND_SWATCHES[k]).property("ADBE Color Control-0001").value;
+        out.colors[k] = rgbToHex(v);
+      } catch (e) { out.colors[k] = null; }
+    }
+    return out;
   }
 
   function readTypography(masterName) {
@@ -1869,7 +1980,11 @@ var APOSTLE = (function () {
         if (!b.beatId) { report.warnings.push("Beat " + (i + 1) + " has no beatId; skipped."); continue; }
         var sc = findBeatComp(masterName, b.beatId);
         if (!sc) { report.warnings.push("No scene comp for beatId=" + b.beatId + " — structural change? insert/remove ops are not built yet."); continue; }
-        if (sc.duration < b._dur + 6) sc.duration = b._dur + 6;
+        // EXACT, not just grow. applyMoments derives the beat's VO window as
+        // (comp.duration - tailBuffer); a scene comp left oversized from an
+        // earlier, longer timing makes every moment fraction map onto the old
+        // window, so a retime silently does nothing to the moments inside.
+        sc.duration = b._dur + 6;
         var lay = null;
         for (var L = 1; L <= master.numLayers; L++) {
           if (master.layer(L).source === sc) { lay = master.layer(L); break; }
@@ -1890,6 +2005,11 @@ var APOSTLE = (function () {
           report.warnings.push("Layer '" + ml.name + "' could not extend to " + newDur.toFixed(1) + "s (solid source length).");
         }
       }
+
+      // Shrink the master last — growing first (above) let the layer layout
+      // above write past the old length; trimming now drops the dead tail a
+      // retime-to-shorter leaves behind.
+      if (master.duration > newDur) master.duration = newDur;
     } catch (e) {
       report.status = "error";
       report.error = e.toString();
@@ -2555,9 +2675,1073 @@ var APOSTLE = (function () {
   }
 
   // ---------------------------------------------------------------
+  // MOMENTS — timed supers + native vector illustration inside a
+  // scene comp. A scene precomp holds ONE beat of VO, which is often
+  // several ideas long; a moment is one idea: a super line, an
+  // optional sub, and an illustration, alive for its slice of the
+  // beat. Fully data-driven (see apostle/moments-schema.json) so the
+  // copy and the art live in a reviewable JSON, not in code.
+  //
+  // Illustration is native AE shape art only — no external assets, so
+  // everything stays editable, recolourable off the brand kit, and
+  // survives a retime (re-run applyMoments after retimeBeats).
+  // ---------------------------------------------------------------
+
+  var MOM_TAG = "apostle moment";
+
+  // Glyph vocabulary. Each glyph is a list of primitives drawn in a
+  // 100x100 box, origin top-left, y down, in PAINTER'S ORDER (first
+  // entry is furthest back). momAddPrims reverses on the way into AE,
+  // where contents index 1 is frontmost.
+  //   t: "rect" | "ellipse" | "path"
+  //   f: fill role, s: stroke role, sw: stroke width, r: rect roundness
+  // Roles resolve through the palette: ink / brand / paper / hole
+  // ("hole" = whatever the glyph sits on, so knock-outs read cleanly
+  // on a yellow tile and on the white background alike).
+  var MOM_GLYPHS = {
+    star: [
+      { t: "path", f: "ink", pts: [[50, 4], [62, 37], [96, 38], [69, 59], [79, 93], [50, 73], [21, 93], [31, 59], [4, 38], [38, 37]] }
+    ],
+    sparkle: [
+      { t: "path", f: "ink", pts: [[50, 2], [59, 41], [98, 50], [59, 59], [50, 98], [41, 59], [2, 50], [41, 41]] }
+    ],
+    card: [
+      { t: "rect", x: 6, y: 24, w: 88, h: 56, r: 8, s: "ink", sw: 7 },
+      { t: "rect", x: 6, y: 38, w: 88, h: 13, f: "ink" },
+      { t: "rect", x: 16, y: 61, w: 26, h: 7, r: 3, f: "ink" }
+    ],
+    doc: [
+      { t: "rect", x: 22, y: 6, w: 56, h: 88, r: 7, s: "ink", sw: 7 },
+      { t: "rect", x: 34, y: 26, w: 32, h: 7, r: 3, f: "ink" },
+      { t: "rect", x: 34, y: 44, w: 32, h: 7, r: 3, f: "ink" },
+      { t: "rect", x: 34, y: 62, w: 20, h: 7, r: 3, f: "ink" }
+    ],
+    renew: [
+      { t: "ellipse", x: 13, y: 15, w: 74, h: 74, s: "ink", sw: 9 },
+      { t: "rect", x: 48, y: 0, w: 54, h: 30, f: "hole" },
+      { t: "path", f: "ink", pts: [[46, 2], [76, 18], [46, 34]] }
+    ],
+    home: [
+      { t: "path", s: "ink", sw: 8, closed: true, pts: [[50, 8], [93, 44], [81, 44], [81, 90], [19, 90], [19, 44], [7, 44]] }
+    ],
+    shield: [
+      { t: "path", s: "ink", sw: 8, closed: true, pts: [[50, 5], [89, 20], [89, 52], [50, 95], [11, 52], [11, 20]] }
+    ],
+    bank: [
+      { t: "path", f: "ink", pts: [[4, 36], [50, 9], [96, 36]] },
+      { t: "rect", x: 16, y: 43, w: 13, h: 37, f: "ink" },
+      { t: "rect", x: 43, y: 43, w: 13, h: 37, f: "ink" },
+      { t: "rect", x: 70, y: 43, w: 13, h: 37, f: "ink" },
+      { t: "rect", x: 6, y: 84, w: 88, h: 10, r: 4, f: "ink" }
+    ],
+    cart: [
+      { t: "path", s: "ink", sw: 8, closed: false, pts: [[8, 14], [24, 14], [37, 62], [83, 62], [93, 28], [30, 28]] },
+      { t: "ellipse", x: 34, y: 72, w: 17, h: 17, f: "ink" },
+      { t: "ellipse", x: 68, y: 72, w: 17, h: 17, f: "ink" }
+    ],
+    basket: [
+      { t: "path", s: "ink", sw: 8, closed: true, pts: [[13, 36], [87, 36], [77, 90], [23, 90]] },
+      { t: "path", s: "ink", sw: 8, closed: false, pts: [[33, 36], [42, 12]] },
+      { t: "path", s: "ink", sw: 8, closed: false, pts: [[67, 36], [58, 12]] }
+    ],
+    plane: [
+      { t: "path", f: "ink", pts: [[6, 44], [96, 8], [58, 95], [46, 62]] },
+      { t: "path", s: "hole", sw: 5, closed: false, pts: [[46, 62], [96, 8]] }
+    ],
+    gift: [
+      { t: "ellipse", x: 24, y: 12, w: 27, h: 22, s: "ink", sw: 6 },
+      { t: "ellipse", x: 49, y: 12, w: 27, h: 22, s: "ink", sw: 6 },
+      { t: "rect", x: 8, y: 34, w: 84, h: 58, r: 5, s: "ink", sw: 7 },
+      { t: "rect", x: 8, y: 34, w: 84, h: 16, f: "ink" },
+      { t: "rect", x: 44, y: 34, w: 12, h: 58, f: "ink" }
+    ],
+    tag: [
+      { t: "path", s: "ink", sw: 7, closed: true, pts: [[8, 8], [54, 8], [93, 47], [47, 93], [8, 54]] },
+      { t: "ellipse", x: 20, y: 20, w: 19, h: 19, f: "ink" }
+    ],
+    percent: [
+      { t: "path", s: "ink", sw: 8, closed: false, pts: [[14, 86], [86, 14]] },
+      { t: "ellipse", x: 10, y: 10, w: 28, h: 28, s: "ink", sw: 8 },
+      { t: "ellipse", x: 62, y: 62, w: 28, h: 28, s: "ink", sw: 8 }
+    ],
+    ticket: [
+      { t: "rect", x: 6, y: 24, w: 88, h: 52, r: 7, s: "ink", sw: 7 },
+      { t: "rect", x: 60, y: 30, w: 6, h: 10, r: 3, f: "ink" },
+      { t: "rect", x: 60, y: 45, w: 6, h: 10, r: 3, f: "ink" },
+      { t: "rect", x: 60, y: 60, w: 6, h: 10, r: 3, f: "ink" }
+    ],
+    phone: [
+      { t: "rect", x: 27, y: 4, w: 46, h: 92, r: 9, s: "ink", sw: 7 },
+      { t: "rect", x: 42, y: 10, w: 16, h: 4, r: 2, f: "ink" },
+      { t: "rect", x: 35, y: 22, w: 30, h: 8, r: 4, f: "ink" },
+      { t: "rect", x: 35, y: 36, w: 30, h: 8, r: 4, f: "ink" },
+      { t: "rect", x: 35, y: 50, w: 30, h: 8, r: 4, f: "ink" }
+    ],
+    coin: [
+      { t: "ellipse", x: 4, y: 4, w: 92, h: 92, f: "ink" },
+      { t: "ellipse", x: 15, y: 15, w: 70, h: 70, f: "hole" },
+      { t: "path", f: "ink", pts: [[50, 24], [58, 44], [79, 45], [62, 58], [68, 78], [50, 66], [32, 78], [38, 58], [21, 45], [42, 44]] }
+    ],
+    receipt: [
+      { t: "rect", x: 20, y: 5, w: 60, h: 90, r: 5, s: "ink", sw: 7 },
+      { t: "rect", x: 32, y: 24, w: 36, h: 6, r: 3, f: "ink" },
+      { t: "rect", x: 32, y: 41, w: 36, h: 6, r: 3, f: "ink" },
+      { t: "rect", x: 32, y: 58, w: 22, h: 6, r: 3, f: "ink" }
+    ],
+    arrowRight: [
+      { t: "path", f: "ink", pts: [[4, 40], [60, 40], [60, 16], [96, 50], [60, 84], [60, 60], [4, 60]] }
+    ],
+    transfer: [
+      { t: "path", f: "ink", pts: [[4, 28], [66, 28], [66, 10], [96, 34], [66, 58], [66, 40], [4, 40]] },
+      { t: "path", f: "ink", pts: [[96, 62], [34, 62], [34, 44], [4, 68], [34, 92], [34, 74], [96, 74]] }
+    ],
+    check: [
+      { t: "path", s: "ink", sw: 12, closed: false, pts: [[10, 52], [38, 80], [90, 20]] }
+    ],
+    cross: [
+      { t: "path", s: "ink", sw: 11, closed: false, pts: [[20, 20], [80, 80]] },
+      { t: "path", s: "ink", sw: 11, closed: false, pts: [[80, 20], [20, 80]] }
+    ],
+    hub: [
+      { t: "ellipse", x: 34, y: 34, w: 32, h: 32, f: "ink" },
+      { t: "ellipse", x: 40, y: 2, w: 20, h: 20, s: "ink", sw: 6 },
+      { t: "ellipse", x: 40, y: 78, w: 20, h: 20, s: "ink", sw: 6 },
+      { t: "ellipse", x: 2, y: 40, w: 20, h: 20, s: "ink", sw: 6 },
+      { t: "ellipse", x: 78, y: 40, w: 20, h: 20, s: "ink", sw: 6 }
+    ]
+  };
+
+  function momPalette(spec) {
+    var p = {
+      ink: hexToRGB((spec && spec.ink) || "#1E1E1E"),
+      brand: hexToRGB((spec && spec.brand) || "#FFCC00"),
+      paper: hexToRGB((spec && spec.paper) || "#FFFFFF"),
+      hole: hexToRGB((spec && spec.hole) || "#FFFFFF"),
+      muted: hexToRGB((spec && spec.muted) || "#D6D6D6")
+    };
+    p.tileShape = (spec && spec.tileShape) || "rect";
+    p.tileFill = (spec && spec.tileFill) || "brand";
+    // Plates that sit DIRECTLY on the backdrop (chips, the compare "to" box).
+    // On a white backdrop these are brand yellow; on a yellow backdrop that is
+    // yellow-on-yellow and they disappear, so the skin flips them to paper.
+    // Device screen rows are NOT included — those sit inside a white phone
+    // body, where brand yellow still reads.
+    p.plateFill = (spec && spec.plateFill) || "brand";
+    p.plateStroke = (spec && spec.plateStroke) || null;
+    return p;
+  }
+
+  function momColor(role, pal) {
+    var c;
+    if (role === "brand") { c = pal.brand; }
+    else if (role === "paper") { c = pal.paper; }
+    else if (role === "hole") { c = pal.hole; }
+    else if (role === "muted") { c = pal.muted; }
+    else { c = pal.ink; }
+    return [c[0], c[1], c[2], 1];
+  }
+
+  // brand / background fills track the CONTROL nulls so a brand-kit
+  // change still repaints the illustration (same contract as accentBar)
+  function momLinkFill(prop, role, masterName) {
+    if (!masterName) return;
+    var eff = null;
+    if (role === "brand") { eff = "Primary"; }
+    else if (role === "hole" || role === "paper") { eff = "Surface"; }
+    if (!eff) return;
+    try {
+      prop.expression = 'comp("' + masterName + '").layer("CONTROL").effect("' + eff + '")("Color")';
+    } catch (e) {}
+  }
+
+  // remap lets a batch re-point a role: glyph knock-outs ("hole") must
+  // take the colour of whatever they sit ON, so the same glyph reads
+  // correctly loose on the background and inset in a yellow tile
+  function momRole(role, remap) {
+    if (remap && remap[role]) return remap[role];
+    return role;
+  }
+
+  function momAddPrim(contents, p, k, ox, oy, pal, masterName, remap) {
+    var g = contents.addProperty("ADBE Vector Group");
+    var c = g.property("ADBE Vectors Group");
+    if (p.t === "path") {
+      var sh = c.addProperty("ADBE Vector Shape - Group");
+      var s = new Shape();
+      var v = [];
+      for (var i = 0; i < p.pts.length; i++) {
+        v.push([(p.pts[i][0] - 50) * k + ox, (p.pts[i][1] - 50) * k + oy]);
+      }
+      s.vertices = v;
+      s.closed = (p.closed === false) ? false : true;
+      sh.property("ADBE Vector Shape").setValue(s);
+    } else if (p.t === "ellipse") {
+      var se = c.addProperty("ADBE Vector Shape - Ellipse");
+      se.property("ADBE Vector Ellipse Size").setValue([p.w * k, p.h * k]);
+      se.property("ADBE Vector Ellipse Position").setValue([(p.x + p.w / 2 - 50) * k + ox, (p.y + p.h / 2 - 50) * k + oy]);
+    } else {
+      var sr = c.addProperty("ADBE Vector Shape - Rect");
+      sr.property("ADBE Vector Rect Size").setValue([p.w * k, p.h * k]);
+      sr.property("ADBE Vector Rect Position").setValue([(p.x + p.w / 2 - 50) * k + ox, (p.y + p.h / 2 - 50) * k + oy]);
+      if (p.r) sr.property("ADBE Vector Rect Roundness").setValue(p.r * k);
+    }
+    if (p.f) {
+      var fRole = momRole(p.f, remap);
+      var fl = c.addProperty("ADBE Vector Graphic - Fill");
+      var fp = fl.property("ADBE Vector Fill Color");
+      fp.setValue(momColor(fRole, pal));
+      momLinkFill(fp, fRole, masterName);
+    }
+    if (p.s) {
+      var sRole = momRole(p.s, remap);
+      var st = c.addProperty("ADBE Vector Graphic - Stroke");
+      var sp = st.property("ADBE Vector Stroke Color");
+      sp.setValue(momColor(sRole, pal));
+      momLinkFill(sp, sRole, masterName);
+      st.property("ADBE Vector Stroke Width").setValue((p.sw || 6) * k);
+      try { st.property("ADBE Vector Stroke Line Cap").setValue(2); } catch (eCap) {}
+      try { st.property("ADBE Vector Stroke Line Join").setValue(2); } catch (eJoin) {}
+    }
+    return g;
+  }
+
+  // batches: [{ prims: [...], k: <px per glyph unit>, ox, oy }] in
+  // painter's order; reversed on the way in so batch 0 sits at the back
+  function momAddPrims(contents, batches, pal, masterName) {
+    for (var b = batches.length - 1; b >= 0; b--) {
+      var batch = batches[b];
+      var k = (batch.k === undefined) ? 1 : batch.k;
+      var ox = batch.ox || 0;
+      var oy = batch.oy || 0;
+      for (var i = batch.prims.length - 1; i >= 0; i--) {
+        momAddPrim(contents, batch.prims[i], k, ox, oy, pal, masterName, batch.remap);
+      }
+    }
+  }
+
+  function momShapeLayer(comp, name, batches, cx, cy, pal, masterName) {
+    var sl = comp.layers.addShape();
+    sl.startTime = 0; // trap #2
+    sl.name = name;
+    sl.label = 8;
+    sl.comment = MOM_TAG;
+    momAddPrims(sl.property("ADBE Root Vectors Group"), batches, pal, masterName);
+    sl.property("ADBE Transform Group").property("ADBE Position").setValue([cx, cy]);
+    return sl;
+  }
+
+  function momGlyphPrims(name) {
+    var g = MOM_GLYPHS[name];
+    if (!g) g = MOM_GLYPHS.sparkle;
+    return g;
+  }
+
+  // --- branded pictograms -------------------------------------------
+  //
+  // MOM_GLYPHS is Apostle's own drawn vocabulary — fine for a first pass, but
+  // the bank ships an official pictogram set and that is what must appear on
+  // screen. These are .ai (PDF-backed Illustrator) files imported once into
+  // IMPORTS/pictograms; a moment names one with `picto` instead of `glyph`.
+  //
+  // They are placed as CONTINUOUSLY RASTERISED footage layers, which is what
+  // "vector enabled" means for an AVLayer: AE re-renders the art from its
+  // vector description at whatever scale the layer sits at, so a pictogram
+  // scaled to 38% or blown up in a camera push stays crisp instead of
+  // resampling a 284px bitmap. Without this switch the .ai import is just a
+  // still at its native raster size and every push-in softens it.
+  //
+  // Tradeoff, stated plainly: unlike MOM_GLYPHS shape art, a footage layer's
+  // fill cannot carry an expression onto CONTROL, so a brand-kit colour change
+  // does NOT repaint these. The bank's pictograms are fixed black line art by
+  // design, so that is the correct behaviour here — but it does mean the
+  // pictogram set, not the kit, owns their colour.
+
+  var MOM_PICTO_FOLDER = "pictograms";
+
+  function momPictoItem(name) {
+    for (var i = 1; i <= app.project.numItems; i++) {
+      var it = app.project.item(i);
+      if (!(it instanceof FootageItem)) continue;
+      if (!it.parentFolder || it.parentFolder.name !== MOM_PICTO_FOLDER) continue;
+      var n = String(it.name).replace(/\.(ai|eps|svg|pdf)$/i, "");
+      if (n === name) return it;
+    }
+    return null;
+  }
+
+  // boxPx = the square the art must fit inside, matching the px size the
+  // equivalent MOM_GLYPHS batch would have rendered at (100 units * k)
+  function momPicto(comp, name, pictoName, cx, cy, boxPx) {
+    var item = momPictoItem(pictoName);
+    if (!item) return null;
+    var l = comp.layers.add(item);
+    l.startTime = 0; // trap #2
+    l.name = name;
+    l.label = 8;
+    l.comment = MOM_TAG;
+    l.collapseTransformation = true; // continuous rasterisation = vector
+    l.motionBlur = true;
+    var mx = item.width;
+    if (item.height > mx) mx = item.height;
+    if (!mx) return l;
+    // The set mixes padded artboards (284x284, art inset in its own margin)
+    // with "-nopadding" crops. At an equal box the crops read noticeably
+    // heavier, so trim them to match the padded set's optical weight.
+    var pad = 1.0;
+    if (mx < 280) pad = 0.8;
+    var s = (boxPx / mx) * 100 * pad;
+    var tr = l.property("ADBE Transform Group");
+    tr.property("ADBE Scale").setValue([s, s]);
+    tr.property("ADBE Position").setValue([cx, cy]);
+    return l;
+  }
+
+  // a tile = brand plate + inset art. Pass glyph = null for a bare plate,
+  // which is what a `picto` tile wants — the pictogram rides above it as its
+  // own layer (opacity does not inherit through parenting, so it cannot be a
+  // child; it gets its own animation at an identical delay instead).
+  function momTile(comp, name, glyph, cx, cy, size, pal, masterName) {
+    // Tile geometry is skin-controlled. The CommBank Yello 3.0 reference puts
+    // black line art in WHITE CIRCLES on a yellow backdrop; the original kit
+    // put black glyphs on YELLOW ROUNDED SQUARES on white. Same glyph
+    // vocabulary either way — only the plate under it changes.
+    var fillRole = pal.tileFill || "brand";
+    var shape = (pal.tileShape === "circle") ? "ellipse" : "rect";
+    var batches = [
+      { prims: [{ t: shape, x: 0, y: 0, w: 100, h: 100, r: 22, f: fillRole }], k: size / 100 }
+    ];
+    if (glyph) {
+      batches.push({ prims: momGlyphPrims(glyph), k: size * 0.54 / 100, remap: { hole: fillRole } });
+    }
+    return momShapeLayer(comp, name, batches, cx, cy, pal, masterName);
+  }
+
+  function momRect(comp, name, x, y, w, h, r, fillRole, strokeRole, sw, pal, masterName) {
+    // sized in real px, not through the 100-unit glyph box
+    var sl = comp.layers.addShape();
+    sl.startTime = 0;
+    sl.name = name;
+    sl.label = 8;
+    sl.comment = MOM_TAG;
+    var contents = sl.property("ADBE Root Vectors Group");
+    var g = contents.addProperty("ADBE Vector Group");
+    var c = g.property("ADBE Vectors Group");
+    var sr = c.addProperty("ADBE Vector Shape - Rect");
+    sr.property("ADBE Vector Rect Size").setValue([w, h]);
+    sr.property("ADBE Vector Rect Position").setValue([0, 0]);
+    if (r) sr.property("ADBE Vector Rect Roundness").setValue(r);
+    if (fillRole) {
+      var fl = c.addProperty("ADBE Vector Graphic - Fill");
+      var fp = fl.property("ADBE Vector Fill Color");
+      fp.setValue(momColor(fillRole, pal));
+      momLinkFill(fp, fillRole, masterName);
+    }
+    if (strokeRole) {
+      var st = c.addProperty("ADBE Vector Graphic - Stroke");
+      var sp = st.property("ADBE Vector Stroke Color");
+      sp.setValue(momColor(strokeRole, pal));
+      momLinkFill(sp, strokeRole, masterName);
+      st.property("ADBE Vector Stroke Width").setValue(sw || 6);
+      try { st.property("ADBE Vector Stroke Line Join").setValue(2); } catch (eJ) {}
+    }
+    sl.property("ADBE Transform Group").property("ADBE Position").setValue([x, y]);
+    return sl;
+  }
+
+  // Text inside a moment stays master-controlled: the style expression
+  // owns font / size / colour exactly as it does for a build super, so
+  // the FONT Heading / FONT Body guide layers still drive everything.
+  function momText(comp, str, opts, masterName) {
+    var tl = comp.layers.addText(str);
+    tl.startTime = 0; // trap #2
+    tl.name = opts.name;
+    tl.label = 2;
+    tl.comment = MOM_TAG;
+    var docProp = tl.property("ADBE Text Properties").property("ADBE Text Document");
+    var attempt;
+    for (attempt = 0; attempt < 2; attempt++) {
+      try {
+        var doc = docProp.value;
+        doc.resetCharStyle();
+        doc.fontSize = opts.size || 64;
+        doc.justification = ParagraphJustification.CENTER_JUSTIFY;
+        if (opts.leading) { doc.autoLeading = false; doc.leading = opts.leading; }
+        docProp.setValue(doc);
+        break;
+      } catch (eDoc) {}
+    }
+    try {
+      docProp.expression = styleExpr(masterName, opts.role || "heading", opts.sizeMult);
+    } catch (eExpr) {}
+    tl.property("ADBE Transform Group").property("ADBE Position").setValue(opts.pos);
+    if (opts.autoFit) {
+      try { tl.property("ADBE Transform Group").property("ADBE Scale").expression = autoFitExpr(masterName); } catch (eFit) {}
+    }
+    return tl;
+  }
+
+  function momClearKeys(prop) {
+    if (!prop) return;
+    while (prop.numKeys > 0) prop.removeKey(1);
+  }
+
+  // Entrance + exit for one element of a moment. Position/opacity only
+  // for text — Scale carries the autofit expression and keyframing it
+  // is the v2.8 bug that blanked frames.
+  // `lead` pulls the entrance earlier than the moment's nominal start so
+  // it overlaps the outgoing moment's fade. Without it the two ramps sit
+  // end-to-end and every boundary showed ~0.3s of empty white frame.
+  function momAnimate(layer, tIn, tOut, delay, isShape, compDur, lead) {
+    var tr = layer.property("ADBE Transform Group");
+    var pos = tr.property("ADBE Position");
+    var opa = tr.property("ADBE Opacity");
+    var sc = tr.property("ADBE Scale");
+    momClearKeys(pos); momClearKeys(opa); momClearKeys(sc);
+
+    var t0 = tIn - (lead || 0) + delay;
+    if (t0 < 0) t0 = 0;
+    var rise = 0.62;
+    var fadeOut = 0.34;
+    if (tOut - t0 < rise + fadeOut + 0.3) {
+      // very short moment — shrink the moves rather than overlap them
+      rise = Math.max(0.22, (tOut - t0) * 0.3);
+      fadeOut = Math.max(0.14, (tOut - t0) * 0.2);
+    }
+
+    opa.setValueAtTime(t0, 0);
+    opa.setValueAtTime(t0 + rise * 0.55, 100);
+    opa.setValueAtTime(tOut - fadeOut, 100);
+    opa.setValueAtTime(tOut, 0);
+    easeAllKeys(opa, 70, 70);
+
+    var base = pos.value;
+    pos.setValueAtTime(t0, [base[0], base[1] + 44]);
+    pos.setValueAtTime(t0 + rise, [base[0], base[1]]);
+    easeAllKeys(pos, 86, 80);
+
+    if (isShape) {
+      // RELATIVE to whatever the layer already sits at. Shape layers are
+      // always 100%, so this is identical to the old absolute 88/103/100 for
+      // them — but a pictogram footage layer is fit-scaled (often ~35-40%),
+      // and absolute keys would have snapped it to full size on arrival.
+      var bs = sc.value;
+      var b0 = bs[0], b1 = bs[1];
+      sc.setValueAtTime(t0, [b0 * 0.88, b1 * 0.88]);
+      sc.setValueAtTime(t0 + rise * 0.62, [b0 * 1.03, b1 * 1.03]);
+      sc.setValueAtTime(t0 + rise, [b0, b1]);
+      easeAllKeys(sc, 78, 80);
+    }
+
+    var lin = t0 - 0.05;
+    if (lin < 0) lin = 0;
+    layer.outPoint = Math.min(tOut + 0.05, compDur);
+    layer.inPoint = lin;
+  }
+
+  function momIdTag(prefix, mid, n) {
+    return prefix + " " + mid + (n === undefined ? "" : " " + n);
+  }
+
+  // --- layouts -----------------------------------------------------
+  // Every layout returns a flat list of { layer, delay, shape } which
+  // the caller animates on the moment's window. Geometry is fixed so
+  // moments of the same kind land identically across scenes.
+
+  function momLayout(comp, m, pal, masterName, superLayer) {
+    var W = comp.width, H = comp.height;
+    var el = [];
+    var kind = m.layout || "statement";
+    var mid = m.id || "m";
+    var i, n;
+
+    function addSuper(y, mult, x) {
+      var sx = (x === undefined) ? W / 2 : x;
+      var lay;
+      if (superLayer) {
+        // reuse the build's "Super" layer for the first moment so the
+        // updateBeatText / hashCompState contract still finds it
+        lay = superLayer;
+        setTextLayerString(comp, lay.name, m["super"] || "");
+        lay.property("ADBE Transform Group").property("ADBE Position").setValue([sx, y]);
+        // re-point the style expression at this layout's size multiplier —
+        // the build baked mult 1, so a reused Super would otherwise ignore
+        // the layout and render at full heading size
+        try {
+          lay.property("ADBE Text Properties").property("ADBE Text Document").expression =
+            styleExpr(masterName, "heading", mult);
+        } catch (eRe) {}
+        superLayer = null;
+      } else {
+        lay = momText(comp, m["super"] || "", { name: momIdTag("SUPER", mid), sizeMult: mult, pos: [sx, y], autoFit: true, leading: 96 }, masterName);
+      }
+      el.push({ layer: lay, delay: 0, shape: false });
+      return lay;
+    }
+    function addSub(y, x, mult) {
+      if (!m.sub) return null;
+      var lay = momText(comp, m.sub, { name: momIdTag("SUB", mid), role: "body", sizeMult: mult || 1.15, pos: [x === undefined ? W / 2 : x, y], autoFit: true, leading: 60 }, masterName);
+      el.push({ layer: lay, delay: 0.16, shape: false });
+      return lay;
+    }
+    function addLabel(str, x, y, idx, mult) {
+      var lay = momText(comp, str, { name: momIdTag("LABEL", mid, idx), role: "body", sizeMult: mult || 0.82, pos: [x, y], leading: 42 }, masterName);
+      return lay;
+    }
+
+    if (kind === "iconRow") {
+      var tiles = m.tiles || [];
+      n = tiles.length;
+      var hasSub = !!m.sub;
+      addSuper(hasSub ? 250 : 285, 0.92);
+      addSub(hasSub ? 375 : 0, W / 2, 1.1);
+      var size = 200;
+      if (n >= 4) size = 180;
+      var gap = (n >= 4) ? 78 : 110;
+      var rowW = n * size + (n - 1) * gap;
+      var x0 = W / 2 - rowW / 2 + size / 2;
+      var cy = hasSub ? 640 : 610;
+      for (i = 0; i < n; i++) {
+        var cx = x0 + i * (size + gap);
+        var tDelay = 0.30 + i * 0.10;
+        var t = momTile(comp, momIdTag("TILE", mid, i + 1), tiles[i].picto ? null : tiles[i].glyph, cx, cy, size, pal, masterName);
+        el.push({ layer: t, delay: tDelay, shape: true });
+        if (tiles[i].picto) {
+          // identical delay => momAnimate produces identical curves, so the
+          // pictogram and its plate move as one despite being two layers
+          var tp = momPicto(comp, momIdTag("TILE ART", mid, i + 1), tiles[i].picto, cx, cy, size * 0.54);
+          if (tp) el.push({ layer: tp, delay: tDelay, shape: true });
+        }
+        if (tiles[i].label) {
+          el.push({ layer: addLabel(tiles[i].label, cx, cy + size / 2 + 78, i + 1), delay: 0.38 + i * 0.10, shape: false });
+        }
+      }
+    } else if (kind === "chipRow") {
+      var chips = m.chips || [];
+      n = chips.length;
+      addSuper(320, 0.92);
+      addSub(452, W / 2, 1.1);
+      var chipH = 116;
+      var widths = [];
+      var total = 0;
+      for (i = 0; i < n; i++) {
+        var wch = 84 + String(chips[i]).length * 27;
+        if (wch < 240) wch = 240;
+        widths.push(wch);
+        total += wch;
+      }
+      var cgap = 44;
+      total += (n - 1) * cgap;
+      var maxW = W - 2 * 170;
+      var shrink = 1;
+      if (total > maxW) shrink = maxW / total;
+      var cx0 = W / 2 - (total * shrink) / 2;
+      var chipY = m.sub ? 690 : 620;
+      var run = cx0;
+      for (i = 0; i < n; i++) {
+        var cw = widths[i] * shrink;
+        var ccx = run + cw / 2;
+        var pill = momRect(comp, momIdTag("CHIP", mid, i + 1), ccx, chipY, cw, chipH, chipH / 2, pal.plateFill, pal.plateStroke, pal.plateStroke ? 3 : 0, pal, masterName);
+        el.push({ layer: pill, delay: 0.28 + i * 0.09, shape: true });
+        el.push({ layer: addLabel(String(chips[i]), ccx, chipY + 14, i + 1, 0.92), delay: 0.34 + i * 0.09, shape: false });
+        run += cw + cgap * shrink;
+      }
+    } else if (kind === "device") {
+      var px = m.deviceX || 1345;
+      var py = 545;
+      var body = momRect(comp, momIdTag("PHONE", mid), px, py, 452, 856, 52, "paper", "ink", 8, pal, masterName);
+      el.push({ layer: body, delay: 0.30, shape: true });
+      var notch = momRect(comp, momIdTag("PHONE NOTCH", mid), px, py - 386, 132, 14, 7, "ink", null, 0, pal, masterName);
+      el.push({ layer: notch, delay: 0.34, shape: true });
+      var rows = m.screen || [];
+      var nRows = Math.min(rows.length, 5);
+      var rowGap = 150;
+      // centre the card stack in the screen rather than stacking it
+      // against the notch — a top-hugging stack left the phone empty
+      var ry0 = py - ((nRows - 1) * rowGap) / 2 + 20;
+      for (i = 0; i < nRows; i++) {
+        var ry = ry0 + i * rowGap;
+        var card = momRect(comp, momIdTag("SCREEN", mid, i + 1), px, ry, 348, 108, 18, "brand", null, 0, pal, masterName);
+        el.push({ layer: card, delay: 0.52 + i * 0.11, shape: true });
+        // label is centred on the text half of the card, clear of the icon
+        if (rows[i].label) {
+          el.push({ layer: addLabel(rows[i].label, px + 46, ry + 12, i + 1, 0.78), delay: 0.58 + i * 0.11, shape: false });
+        }
+        if (rows[i].picto) {
+          var rp = momPicto(comp, momIdTag("SCREEN ICON", mid, i + 1), rows[i].picto, px - 116, ry, 56);
+          if (rp) el.push({ layer: rp, delay: 0.60 + i * 0.11, shape: true });
+        } else if (rows[i].glyph) {
+          var gl = momShapeLayer(comp, momIdTag("SCREEN ICON", mid, i + 1), [{ prims: momGlyphPrims(rows[i].glyph), k: 0.56, remap: { hole: "brand" } }], px - 116, ry, pal, masterName);
+          el.push({ layer: gl, delay: 0.60 + i * 0.11, shape: true });
+        }
+      }
+      var colX = m.textX || 640;
+      // goes through addSuper (not a fresh layer) so a device-led scene
+      // still hands the build's "Super" layer to moment 1
+      addSuper(m.sub ? 440 : 500, 0.86, colX);
+      addSub(600, colX, 1.1);
+    } else if (kind === "compare") {
+      addSuper(255, 0.92);
+      var boxW = 560, boxH = 230, cy2 = 620;
+      var lx = 560, rx = 1360;
+      var lbox = momRect(comp, momIdTag("FROM BOX", mid), lx, cy2, boxW, boxH, 26, "paper", "muted", 7, pal, masterName);
+      el.push({ layer: lbox, delay: 0.28, shape: true });
+      var fromLabel = (m.fromBox && m.fromBox.label) || "";
+      el.push({ layer: addLabel(fromLabel, lx, cy2 + 16, 1, 1.02), delay: 0.34, shape: false });
+      if (m.fromBox && m.fromBox.strike) {
+        // width tracks the label so the rule crosses the words, not the box
+        var strikeW = fromLabel.length * 22 + 24;
+        if (strikeW > boxW - 60) strikeW = boxW - 60;
+        if (strikeW < 80) strikeW = 80;
+        var strike = momRect(comp, momIdTag("STRIKE", mid), lx, cy2 + 2, strikeW, 7, 4, "ink", null, 0, pal, masterName);
+        el.push({ layer: strike, delay: 0.62, shape: true });
+      }
+      var arrow = momShapeLayer(comp, momIdTag("ARROW", mid), [{ prims: momGlyphPrims("arrowRight"), k: 1.28 }], (lx + rx) / 2, cy2, pal, masterName);
+      el.push({ layer: arrow, delay: 0.48, shape: true });
+      var rbox = momRect(comp, momIdTag("TO BOX", mid), rx, cy2, boxW, boxH, 26, pal.plateFill, pal.plateStroke, pal.plateStroke ? 5 : 0, pal, masterName);
+      el.push({ layer: rbox, delay: 0.60, shape: true });
+      el.push({ layer: addLabel((m.toBox && m.toBox.label) || "", rx, cy2 + 16, 2, 1.02), delay: 0.66, shape: false });
+      addSub(880, W / 2, 1.05);
+    } else if (kind === "hub") {
+      addSuper(235, 0.92);
+      addSub(360, W / 2, 1.1);
+      var hcx = W / 2, hcy = 680, R = 250;
+      var spokes = m.spokes || [];
+      n = spokes.length;
+      for (i = 0; i < n; i++) {
+        var ang = -Math.PI / 2 + (2 * Math.PI * i) / n;
+        var sx = hcx + Math.cos(ang) * R;
+        var sy = hcy + Math.sin(ang) * R * 0.62;
+        var link = momShapeLayer(comp, momIdTag("SPOKE", mid, i + 1),
+          [{ prims: [{ t: "path", s: "muted", sw: 1.25, closed: false, pts: [[50, 50], [50 + (sx - hcx) / 4, 50 + (sy - hcy) / 4]] }], k: 4 }],
+          hcx, hcy, pal, masterName);
+        el.push({ layer: link, delay: 0.42 + i * 0.06, shape: false });
+        var sDelay = 0.48 + i * 0.08;
+        var sat = momTile(comp, momIdTag("SPOKE TILE", mid, i + 1), spokes[i].picto ? null : (spokes[i].glyph || "tag"), sx, sy, 128, pal, masterName);
+        el.push({ layer: sat, delay: sDelay, shape: true });
+        if (spokes[i].picto) {
+          var sp2 = momPicto(comp, momIdTag("SPOKE ART", mid, i + 1), spokes[i].picto, sx, sy, 128 * 0.54);
+          if (sp2) el.push({ layer: sp2, delay: sDelay, shape: true });
+        }
+      }
+      var coreBatches = [{ prims: [{ t: "ellipse", x: 0, y: 0, w: 100, h: 100, f: "brand" }], k: 1.7 }];
+      if (!m.picto) {
+        coreBatches.push({ prims: momGlyphPrims(m.glyph || "star"), k: 0.86, remap: { hole: "brand" } });
+      }
+      var core = momShapeLayer(comp, momIdTag("HUB CORE", mid), coreBatches, hcx, hcy, pal, masterName);
+      el.push({ layer: core, delay: 0.34, shape: true });
+      if (m.picto) {
+        var cp = momPicto(comp, momIdTag("HUB CORE ART", mid), m.picto, hcx, hcy, 86);
+        if (cp) el.push({ layer: cp, delay: 0.34, shape: true });
+      }
+    } else if (kind === "placeholder") {
+      // A slot for artwork the build cannot draw — real card art, partner
+      // logos, app screenshots. Deliberately reads as unfinished: an outlined
+      // frame captioned with what belongs there, so it can never be mistaken
+      // for a finished moment in review.
+      var pw = 620, ph = 380, pcy = 400;
+      // momRect takes CENTRE coords, not top-left
+      var frame = momRect(comp, momIdTag("ASSET FRAME", mid), W / 2, pcy,
+        pw, ph, 24, "paper", "ink", 4, pal, masterName);
+      el.push({ layer: frame, delay: 0.16, shape: true });
+      var cap = momText(comp, "[ " + (m.asset || "artwork") + " ]",
+        { name: momIdTag("ASSET LABEL", mid), role: "body", sizeMult: 0.92, pos: [W / 2, pcy + 12], autoFit: true }, masterName);
+      el.push({ layer: cap, delay: 0.3, shape: false });
+      addSuper(700, 1.1);
+      addSub(842, W / 2, 1.12);
+    } else if (kind === "hero") {
+      var g2 = null;
+      if (m.picto) g2 = momPicto(comp, momIdTag("HERO", mid), m.picto, W / 2, 375, 310);
+      if (!g2) g2 = momShapeLayer(comp, momIdTag("HERO", mid), [{ prims: momGlyphPrims(m.glyph || "coin"), k: 3.1 }], W / 2, 375, pal, masterName);
+      el.push({ layer: g2, delay: 0.22, shape: true });
+      addSuper(730, 1.16);
+      addSub(872, W / 2, 1.15);
+    } else if (kind === "endcard") {
+      addSuper(400, 1.05);
+      if (m.url) {
+        var u = momText(comp, m.url, { name: momIdTag("URL", mid), role: "body", sizeMult: 1.28, pos: [W / 2, 560], autoFit: true }, masterName);
+        el.push({ layer: u, delay: 0.22, shape: false });
+      }
+      addSub(672, W / 2, 1.02);
+      var bar = momRect(comp, momIdTag("BAR", mid), W / 2, 772, 240, 9, 4, "brand", null, 0, pal, masterName);
+      el.push({ layer: bar, delay: 0.42, shape: true });
+    } else {
+      // statement
+      var hasGlyph = !!(m.glyph || m.picto);
+      if (hasGlyph) {
+        var gs = null;
+        if (m.picto) gs = momPicto(comp, momIdTag("ART", mid), m.picto, W / 2, 372, 210);
+        if (!gs && m.glyph) gs = momShapeLayer(comp, momIdTag("ART", mid), [{ prims: momGlyphPrims(m.glyph), k: 2.1 }], W / 2, 372, pal, masterName);
+        if (gs) { el.push({ layer: gs, delay: 0.18, shape: true }); } else { hasGlyph = false; }
+      }
+      addSuper(hasGlyph ? 668 : 480, 1.0);
+      addSub(hasGlyph ? 810 : 622, W / 2, 1.15);
+      // trap #1: no chained ternaries — ExtendScript mis-associates them
+      var barY;
+      if (hasGlyph) { barY = 906; }
+      else if (m.sub) { barY = 716; }
+      else { barY = 574; }
+      var b2 = momRect(comp, momIdTag("BAR", mid), W / 2, barY, 220, 8, 4, "brand", null, 0, pal, masterName);
+      el.push({ layer: b2, delay: 0.34, shape: true });
+    }
+
+    // a first moment that never consumed the build's Super layer: park it
+    if (superLayer) {
+      superLayer.enabled = false;
+      superLayer.comment = MOM_TAG + " retired";
+    }
+    return el;
+  }
+
+  // --- entry point -------------------------------------------------
+
+  function applyMoments(momentsJSON) {
+    try {
+      var data = parseJSONSafe(momentsJSON);
+      if (!data) return toJSON({ status: "error", error: "moments JSON did not parse" });
+      var meta = data.meta || {};
+      var masterName = meta.masterName || "";
+      var leadIn = (meta.voLeadIn === undefined) ? 0.45 : meta.voLeadIn;
+      var tail = (meta.tailBuffer === undefined) ? 6 : meta.tailBuffer;
+      var pal = momPalette(data.palette);
+      var report = { status: "success", scenes: [], warnings: [] };
+
+      app.beginUndoGroup("Apostle applyMoments");
+      try {
+        var scenes = data.scenes || [];
+        for (var s = 0; s < scenes.length; s++) {
+          var sc = scenes[s];
+          var rec = { beatId: sc.beatId || "", comp: "", moments: 0, layers: 0 };
+          var comp = null;
+          if (sc.beatId && masterName) comp = findBeatComp(masterName, sc.beatId);
+          if (!comp && sc.comp) comp = findComp(sc.comp);
+          if (!comp) {
+            rec.error = "scene comp not found (beatId=" + (sc.beatId || "-") + ", comp=" + (sc.comp || "-") + ")";
+            report.scenes.push(rec);
+            report.status = "partial";
+            continue;
+          }
+          rec.comp = comp.name;
+
+          // idempotent re-run: drop everything a previous pass made,
+          // plus the generic build placeholders the moments replace
+          for (var L = comp.numLayers; L >= 1; L--) {
+            var ly = comp.layer(L);
+            var isMoment = (ly.comment && ly.comment.substring(0, MOM_TAG.length) === MOM_TAG);
+            var isPlaceholder = (ly.name === "Accent Bar" || ly.name === "Device Frame (placeholder)");
+            if (isMoment || isPlaceholder) {
+              if (ly.name === "Super") { continue; }
+              ly.remove();
+            }
+          }
+
+          var superLayer = findLayer(comp, "Super");
+          if (superLayer) {
+            superLayer.enabled = true;
+            superLayer.comment = "";
+            var str = superLayer.property("ADBE Transform Group");
+            momClearKeys(str.property("ADBE Position"));
+            momClearKeys(str.property("ADBE Opacity"));
+            momClearKeys(str.property("ADBE Scale"));
+            superLayer.inPoint = 0;
+            superLayer.outPoint = comp.duration;
+          }
+
+          // moment windows are fractions of the beat's VO window, so a
+          // retime only means re-running this — no hand-nudged times
+          var voDur = comp.duration - tail;
+          if (voDur <= 0) voDur = comp.duration;
+          var moments = sc.moments || [];
+          for (var mi = 0; mi < moments.length; mi++) {
+            var m = moments[mi];
+            var tIn = (m.atSec !== undefined) ? m.atSec : (leadIn + voDur * m.from);
+            var tOut = (m.toSec !== undefined) ? m.toSec : (leadIn + voDur * m.to);
+            if (tOut > comp.duration) tOut = comp.duration;
+            if (tOut - tIn < 0.6) tOut = tIn + 0.6;
+            // first moment never leads — it would start before the
+            // camera has arrived on the station
+            var lead = (mi === 0) ? 0 : 0.3;
+            var els = momLayout(comp, m, pal, masterName, (mi === 0) ? superLayer : null);
+            for (var e = 0; e < els.length; e++) {
+              momAnimate(els[e].layer, tIn, tOut, els[e].delay, els[e].shape, comp.duration, lead);
+              rec.layers++;
+            }
+            rec.moments++;
+          }
+          // keep BG at the bottom of the stack
+          var bg = findLayer(comp, "BG");
+          if (bg) bg.moveToEnd();
+          report.scenes.push(rec);
+        }
+      } finally {
+        app.endUndoGroup();
+      }
+      return toJSON(report);
+    } catch (e) { return errJSON("applyMoments", e); }
+  }
+
+  // ---------------------------------------------------------------
+  // SKIN — backdrop + palette + typography swap on a built master
+  //
+  // The build already links every BG solid and moment fill to CONTROL, and
+  // reads fonts off the FONT guide layers, so colour/type re-skinning is just
+  // setting those. What CONTROL cannot express is a *textured* backdrop: the
+  // Yello 3.0 reference is a yellow gradient with a diagonal white beacon
+  // sweep and scattered confetti. That gets built once as a shared comp and
+  // dropped in behind every BG, so one edit repaints the whole video.
+  // ---------------------------------------------------------------
+
+  var BACKDROP_TAG = "apostle backdrop";
+
+  // deterministic scatter — no Math.random, so a rebuild is byte-identical
+  function skinRand(seed) {
+    var x = Math.sin(seed * 12.9898) * 43758.5453;
+    return x - Math.floor(x);
+  }
+
+  // The backdrop is a set of 3D planes living BEHIND the station corridor, not
+  // a flat 2D card. Each plane follows the rig at a slightly different rate, so
+  // a camera transit slides them past each other and the background reads as
+  // depth rather than wallpaper. Built oversize because perspective magnifies
+  // anything sitting further from the camera than the stations do.
+  var BACKDROP_OVERSIZE = 4;
+
+  function skinRampOn(layer, w, h, spec) {
+    var from = hexToRGB(spec.from || "#FDFD3C");
+    var to = hexToRGB(spec.to || "#FDFDAD");
+    var ramp = layer.property("ADBE Effect Parade").addProperty("ADBE Ramp");
+    var ang = (spec.angleDeg === undefined) ? 28 : spec.angleDeg;
+    var rad = ang * Math.PI / 180;
+    var cx = w / 2, cy = h / 2;
+    var reach = (Math.abs(Math.cos(rad)) * w + Math.abs(Math.sin(rad)) * h) / 2;
+    ramp.property("ADBE Ramp-0001").setValue([cx - Math.cos(rad) * reach, cy + Math.sin(rad) * reach]);
+    ramp.property("ADBE Ramp-0002").setValue(from);
+    ramp.property("ADBE Ramp-0003").setValue([cx + Math.cos(rad) * reach, cy - Math.sin(rad) * reach]);
+    ramp.property("ADBE Ramp-0004").setValue(to);
+    try { ramp.property("ADBE Ramp-0005").setValue(1); } catch (eS) {}
+  }
+
+  function buildBackdropComp(name, w, h, spec, fps) {
+    var existing = findComp(name);
+    if (existing) existing.remove();
+    var W = w * BACKDROP_OVERSIZE, H = h * BACKDROP_OVERSIZE;
+    var comp = app.project.items.addComp(name, W, H, 1, 12, fps || 25);
+    var base = comp.layers.addSolid(hexToRGB(spec.from || "#FDFD3C"), "GRADIENT", W, H, 1, comp.duration);
+    base.startTime = 0;
+    skinRampOn(base, W, H, spec);
+    if (spec.beacon !== false) {
+      var ang = (spec.angleDeg === undefined) ? 28 : spec.angleDeg;
+      var bw = Math.sqrt(W * W + H * H) * 1.2;
+      var beam = comp.layers.addSolid(hexToRGB(spec.beaconColor || "#FFFFFF"),
+        "BEACON", Math.round(bw), 6, 1, comp.duration);
+      beam.startTime = 0;
+      beam.property("ADBE Transform Group").property("ADBE Position").setValue([W / 2, H / 2]);
+      beam.property("ADBE Transform Group").property("ADBE Rotate Z").setValue(-ang);
+      beam.property("ADBE Transform Group").property("ADBE Opacity").setValue(88);
+      try {
+        var fea = beam.property("ADBE Effect Parade").addProperty("ADBE Box Blur2");
+        fea.property("ADBE Box Blur2-0001").setValue(4);
+      } catch (eB) {}
+    }
+    return comp;
+  }
+
+  // One confetti field. seed shifts the scatter so the three depth layers
+  // never sit on top of each other.
+  function buildConfettiComp(name, w, h, spec, fps, seed, count, sizeK) {
+    var existing = findComp(name);
+    if (existing) existing.remove();
+    var W = w * BACKDROP_OVERSIZE, H = h * BACKDROP_OVERSIZE;
+    var comp = app.project.items.addComp(name, W, H, 1, 12, fps || 25);
+    var sl = comp.layers.addShape();
+    sl.name = "CONFETTI";
+    sl.startTime = 0;
+    var root = sl.property("ADBE Root Vectors Group");
+    var col = hexToRGB(spec.confettiColor || "#F4E32A");
+    for (var i = 0; i < count; i++) {
+      var rx = skinRand(i + seed + 1.7), ry = skinRand(i + seed + 11.3);
+      var rs = skinRand(i + seed + 27.1), rr = skinRand(i + seed + 41.9);
+      var px = (rx - 0.5) * W * 0.98;
+      var py = (ry - 0.5) * H * 0.98;
+      var sz = (7 + rs * 30) * (sizeK || 1);
+      var g = root.addProperty("ADBE Vector Group");
+      g.name = "c" + (i + 1);
+      var c = g.property("ADBE Vectors Group");
+      var r0 = c.addProperty("ADBE Vector Shape - Rect");
+      r0.property("ADBE Vector Rect Size").setValue([sz, sz]);
+      r0.property("ADBE Vector Rect Position").setValue([px, py]);
+      if (rr < 0.55) {
+        var fl = c.addProperty("ADBE Vector Graphic - Fill");
+        fl.property("ADBE Vector Fill Color").setValue([col[0], col[1], col[2], 1]);
+        fl.property("ADBE Vector Fill Opacity").setValue(38 + rs * 50);
+      } else {
+        var st2 = c.addProperty("ADBE Vector Graphic - Stroke");
+        st2.property("ADBE Vector Stroke Color").setValue([col[0], col[1], col[2], 1]);
+        st2.property("ADBE Vector Stroke Width").setValue(2.5);
+        st2.property("ADBE Vector Stroke Opacity").setValue(42 + rs * 45);
+      }
+      g.property("ADBE Vector Transform Group").property("ADBE Vector Rotation").setValue(rr * 90);
+    }
+    return comp;
+  }
+
+  // Place a depth plane in the master: 3D, pushed back in z, tracking the rig
+  // at (1 - lag) so it drifts against the foreground during a transit. The
+  // drift is centred on the corridor midpoint so the plane never runs out of
+  // coverage at either end. `wob` adds a slow float so it breathes when the
+  // camera is parked on a station.
+  function attachDepthLayer(master, srcComp, name, z, lag, midX, wob, seed) {
+    for (var i = master.numLayers; i >= 1; i--) {
+      if (master.layer(i).comment === BACKDROP_TAG && master.layer(i).name === name) master.layer(i).remove();
+    }
+    var lay = master.layers.add(srcComp);
+    lay.name = name;
+    lay.comment = BACKDROP_TAG;
+    lay.startTime = 0;
+    lay.label = 8;
+    lay.threeDLayer = true;
+    try { lay.outPoint = master.duration; } catch (eO) {}
+    try { if (master.duration > srcComp.duration) lay.stretch = (master.duration / srcComp.duration) * 100; } catch (eS) {}
+    var expr =
+      'var r = thisComp.layer("APOSTLE RIG").transform.position;\n' +
+      'var mid = ' + midX + ';\n' +
+      'var lag = ' + lag + ';\n' +
+      'var w = ' + wob + ';\n' +
+      'var s = ' + seed + ';\n' +
+      '[ r[0] - (r[0]-mid)*lag + Math.sin(time*0.13+s)*w,\n' +
+      '  r[1] + Math.cos(time*0.11+s)*w*0.6,\n' +
+      '  ' + z + ' ]';
+    try { lay.property("ADBE Transform Group").property("ADBE Position").expression = expr; } catch (eE) {}
+    lay.moveToEnd();
+    return lay;
+  }
+
+  // corridor midpoint, read off the actual station planes
+  function corridorMidX(master) {
+    var lo = null, hi = null;
+    for (var i = 1; i <= master.numLayers; i++) {
+      var L = master.layer(i);
+      if (!(L.source instanceof CompItem)) continue;
+      if (L.comment === BACKDROP_TAG) continue;
+      if (L.name.indexOf("AUDIO") >= 0) continue;
+      var x = L.property("ADBE Transform Group").property("ADBE Position").value[0];
+      if (lo === null || x < lo) lo = x;
+      if (hi === null || x > hi) hi = x;
+    }
+    if (lo === null) return master.width / 2;
+    return (lo + hi) / 2;
+  }
+
+  function applySkin(masterName, skinJSON) {
+    try {
+      var spec = parseJSONSafe(skinJSON);
+      if (!spec) return toJSON({ status: "error", error: "skin JSON did not parse" });
+      var master = findComp(masterName);
+      if (!master) return toJSON({ status: "error", error: "Comp not found: " + masterName });
+      var report = { status: "success", master: masterName, comps: [], warnings: [] };
+
+      app.beginUndoGroup("Apostle applySkin");
+      try {
+        // 1. CONTROL colours — every BG and moment fill expression reads these
+        var ctrl = findLayer(master, "CONTROL");
+        if (ctrl && spec.colors) {
+          var map = { Primary: "primary", Secondary: "secondary", Background: "background", "Text Color": "text", Surface: "surface" };
+          for (var k in map) {
+            if (!map.hasOwnProperty(k)) continue;
+            var hex = spec.colors[map[k]];
+            if (!hex && k === "Surface") hex = "#FFFFFF";
+            if (!hex) continue;
+            // older builds predate the Surface control — add it on demand
+            if (k === "Surface") {
+              var has = null;
+              try { has = ctrl.property("ADBE Effect Parade").property("Surface"); } catch (eH) { has = null; }
+              if (!has) { try { addColor(ctrl, "Surface", hexToRGB(hex)); } catch (eA) {} }
+            }
+            try {
+              ctrl.property("ADBE Effect Parade").property(k).property("ADBE Color Control-0001").setValue(hexToRGB(hex));
+              report.comps.push("CONTROL." + k + " = " + hex);
+            } catch (eC) { report.warnings.push("CONTROL slider '" + k + "' not set: " + eC.toString()); }
+          }
+        }
+
+        // 2. fonts — master-controlled via the FONT guide layers
+        if (spec.fontHeadingPS || spec.fontBodyPS) {
+          var fh = findLayer(master, "FONT Heading"), fb = findLayer(master, "FONT Body");
+          if (fh && spec.fontHeadingPS) fh.property("Source Text").setValue(spec.fontHeadingPS);
+          if (fb && spec.fontBodyPS) fb.property("Source Text").setValue(spec.fontBodyPS);
+          report.comps.push("fonts -> " + spec.fontHeadingPS + " / " + spec.fontBodyPS);
+        }
+
+        // 3. backdrop
+        if (spec.backdrop && spec.backdrop.style === "gradient") {
+          var bdSpec = spec.backdrop;
+          var midX = corridorMidX(master);
+          var folder = null;
+          try { folder = master.parentFolder; } catch (eF) { folder = null; }
+
+          var bd = buildBackdropComp(masterName + " BACKDROP", master.width, master.height, bdSpec, master.frameRate);
+          if (folder) { try { bd.parentFolder = folder; } catch (eP) {} }
+          attachDepthLayer(master, bd, "BACKDROP", 2600, 0.04, midX, 10, 0.0);
+          report.comps.push("backdrop plane z=2600 lag=0.04 mid=" + Math.round(midX));
+
+          if (bdSpec.confetti !== false) {
+            // three fields at different depths — the differential rates are
+            // what sell the 3D; one field at one depth just slides.
+            // sizes/counts are pre-compensated for perspective: a field at
+            // z sits (z+camGap)/camGap further away than the stations, so it
+            // renders that much smaller. Only ~a third of each oversize field
+            // is ever in shot, hence the counts.
+            var fields = [
+              { z: 1900, lag: 0.055, n: 74, k: 3.1, wob: 16, seed: 3.1 },
+              { z: 1000, lag: 0.035, n: 58, k: 2.4, wob: 12, seed: 17.7 },
+              { z: 300, lag: 0.018, n: 40, k: 1.7, wob: 9, seed: 29.3 }
+            ];
+            for (var fi = 0; fi < fields.length; fi++) {
+              var F = fields[fi];
+              var cc = buildConfettiComp(masterName + " CONFETTI " + (fi + 1), master.width, master.height,
+                bdSpec, master.frameRate, F.seed, F.n, F.k);
+              if (folder) { try { cc.parentFolder = folder; } catch (eP2) {} }
+              attachDepthLayer(master, cc, "CONFETTI " + (fi + 1), F.z, F.lag, midX, F.wob, F.seed);
+              report.comps.push("confetti field " + (fi + 1) + " z=" + F.z + " lag=" + F.lag);
+            }
+          }
+
+          // scene planes go transparent so the depth stack reads through them
+          for (var L = 1; L <= master.numLayers; L++) {
+            var sl2 = master.layer(L);
+            if (!(sl2.source instanceof CompItem)) continue;
+            if (sl2.comment === BACKDROP_TAG) continue;
+            if (sl2.name.indexOf("AUDIO") >= 0) continue;
+            var sc2 = sl2.source;
+            for (var q = sc2.numLayers; q >= 1; q--) {
+              if (sc2.layer(q).comment === BACKDROP_TAG) sc2.layer(q).remove();
+            }
+            var sbg = findLayer(sc2, "BG");
+            if (sbg) sbg.enabled = false;
+          }
+          // flat solid stays at the very back as the last-resort fill
+          var mbg = findLayer(master, "MASTER BG");
+          if (mbg) { mbg.enabled = true; mbg.moveToEnd(); }
+        }
+      } catch (e) {
+        report.status = "error";
+        report.error = e.toString();
+      } finally {
+        app.endUndoGroup();
+      }
+      return toJSON(report);
+    } catch (e2) { return errJSON("applySkin", e2); }
+  }
+
+  function findItemFolder(comp) {
+    try { return comp.parentFolder; } catch (e) { return null; }
+  }
+
+  // ---------------------------------------------------------------
 
   return {
     version: LIB_VERSION,
+    applySkin: applySkin,
+    applyMoments: applyMoments,
     getProjectInfo: getProjectInfo,
     listComps: listComps,
     extractDesignSpec: extractDesignSpec,
@@ -2578,6 +3762,7 @@ var APOSTLE = (function () {
     listFonts: listFonts,
     readTypography: readTypography,
     applyTypography: applyTypography,
+    readBrandColors: readBrandColors,
     HC: HC,
     buildFromBeats: buildFromBeats,
     serializeCompState: serializeCompState,

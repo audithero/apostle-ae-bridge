@@ -1,0 +1,431 @@
+{
+ "meta": {
+  "briefId": "video_004_redeeming_deep_dive",
+  "masterName": "VIDEO_004_REDEEMING_DEEP_DIVE_v001",
+  "scriptVersion": 1,
+  "voLeadIn": 0.45,
+  "tailBuffer": 6,
+  "brandKit": "commbank-yello-3",
+  "note": "Windows are measured fractions of each beat's VO window."
+ },
+ "palette": {
+  "ink": "#000000",
+  "brand": "#FDFD3C",
+  "paper": "#FFFFFF",
+  "hole": "#FFFFFF",
+  "muted": "#E8E8B0",
+  "tileShape": "circle",
+  "tileFill": "paper",
+  "plateFill": "paper",
+  "plateStroke": "ink"
+ },
+ "scenes": [
+  {
+   "beatId": "one-of-the-biggest-benefits-of-commb",
+   "beatDurationSec": 22.12,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "hero",
+     "glyph": "sparkle",
+     "super": "Flexibility.",
+     "sub": "One of the biggest benefits of CommBank Yello points.",
+     "from": 0,
+     "to": 0.2111,
+     "voSec": [
+      0,
+      4.67
+     ],
+     "picto": "energy"
+    },
+    {
+     "id": "m2",
+     "layout": "statement",
+     "super": "A growing range of ways to use points.",
+     "sub": "More control over how customers are rewarded.",
+     "from": 0.2111,
+     "to": 0.5298,
+     "voSec": [
+      4.67,
+      11.72
+     ]
+    },
+    {
+     "id": "m3",
+     "layout": "iconRow",
+     "super": "Choose what works best.",
+     "tiles": [
+      {
+       "glyph": "home",
+       "label": "Everyday value",
+       "picto": "bill"
+      },
+      {
+       "glyph": "plane",
+       "label": "Travel",
+       "picto": "luggage"
+      },
+      {
+       "glyph": "star",
+       "label": "Brands they love",
+       "picto": "star"
+      }
+     ],
+     "from": 0.5298,
+     "to": 1,
+     "voSec": [
+      11.72,
+      22.12
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "customers-can-use-their-commbank-yel",
+   "beatDurationSec": 15.84,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "hero",
+     "glyph": "gift",
+     "super": "Points for gift cards.",
+     "sub": "From a range of popular retailers and brands.",
+     "from": 0,
+     "to": 0.4091,
+     "voSec": [
+      22.12,
+      28.6
+     ],
+     "picto": "gift"
+    },
+    {
+     "id": "m2",
+     "layout": "iconRow",
+     "super": "Turn points into value.",
+     "tiles": [
+      {
+       "glyph": "basket",
+       "label": "Everyday\rpurchases",
+       "picto": "shopping trolley"
+      },
+      {
+       "glyph": "ticket",
+       "label": "Special\roccasions",
+       "picto": "birthday"
+      },
+      {
+       "glyph": "coin",
+       "label": "Future spending",
+       "picto": "coin stack"
+      }
+     ],
+     "from": 0.4091,
+     "to": 1,
+     "voSec": [
+      28.6,
+      37.96
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "customers-can-also-transfer-their-co",
+   "beatDurationSec": 15.91,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "hero",
+     "glyph": "transfer",
+     "super": "Transfer to loyalty programs.",
+     "sub": "Programs customers already use.",
+     "from": 0,
+     "to": 0.4318,
+     "voSec": [
+      37.96,
+      44.83
+     ],
+     "picto": "change"
+    },
+    {
+     "id": "m2",
+     "layout": "statement",
+     "super": "Keep building value where it counts.",
+     "sub": "Within their preferred loyalty programs.",
+     "from": 0.4318,
+     "to": 1,
+     "voSec": [
+      44.83,
+      53.87
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "customers-can-choose-to-convert-thei",
+   "beatDurationSec": 10.67,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "hero",
+     "glyph": "coin",
+     "super": "Convert points into cash.",
+     "sub": "",
+     "from": 0,
+     "to": 0.4677,
+     "voSec": [
+      53.87,
+      58.86
+     ],
+     "picto": "coin stack"
+    },
+    {
+     "id": "m2",
+     "layout": "statement",
+     "super": "Everyday value, when it's needed most.",
+     "sub": "",
+     "from": 0.4677,
+     "to": 1,
+     "voSec": [
+      58.86,
+      64.54
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "customers-can-also-use-their-points",
+   "beatDurationSec": 14.85,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "device",
+     "super": "Use points with partner stores.",
+     "sub": "Through the CommBank app.",
+     "screen": [
+      {
+       "glyph": "cart",
+       "label": "Partner stores",
+       "picto": "store"
+      },
+      {
+       "glyph": "coin",
+       "label": "Use points",
+       "picto": "coin stack"
+      },
+      {
+       "glyph": "tag",
+       "label": "Offers",
+       "picto": "offers"
+      }
+     ],
+     "from": 0,
+     "to": 0.3912,
+     "voSec": [
+      64.54,
+      70.35
+     ]
+    },
+    {
+     "id": "m2",
+     "layout": "hub",
+     "glyph": "star",
+     "super": "Redeem directly with brands and retailers.",
+     "spokes": [
+      {
+       "glyph": "cart",
+       "picto": "store"
+      },
+      {
+       "glyph": "basket",
+       "picto": "shopping trolley"
+      },
+      {
+       "glyph": "gift",
+       "picto": "gift"
+      },
+      {
+       "glyph": "tag",
+       "picto": "offers"
+      },
+      {
+       "glyph": "percent",
+       "picto": "percentage"
+      },
+      {
+       "glyph": "ticket",
+       "picto": "offers"
+      }
+     ],
+     "from": 0.3912,
+     "to": 1,
+     "voSec": [
+      70.35,
+      79.39
+     ],
+     "picto": "star"
+    }
+   ]
+  },
+  {
+   "beatId": "customers-can-use-their-points-when",
+   "beatDurationSec": 15.89,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "iconRow",
+     "super": "Points for travel.",
+     "sub": "Booked through CommBank Travel.",
+     "tiles": [
+      {
+       "glyph": "plane",
+       "label": "Flights",
+       "picto": "plane"
+      },
+      {
+       "glyph": "home",
+       "label": "Hotels",
+       "picto": "house"
+      },
+      {
+       "glyph": "card",
+       "label": "Car hire",
+       "picto": "car"
+      }
+     ],
+     "from": 0,
+     "to": 0.4311,
+     "voSec": [
+      79.39,
+      86.24
+     ]
+    },
+    {
+     "id": "m2",
+     "layout": "statement",
+     "super": "Help fund the trip.",
+     "sub": "From a weekend getaway to something larger.",
+     "from": 0.4311,
+     "to": 1,
+     "voSec": [
+      86.24,
+      95.28
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "this-is-just-the-beginning-we-ll-con",
+   "beatDurationSec": 15.53,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "statement",
+     "super": "This is just the beginning.",
+     "sub": "",
+     "from": 0,
+     "to": 0.0592,
+     "voSec": [
+      95.28,
+      96.2
+     ]
+    },
+    {
+     "id": "m2",
+     "layout": "iconRow",
+     "super": "More to come, over time.",
+     "tiles": [
+      {
+       "glyph": "gift",
+       "label": "Rewards",
+       "picto": "gift"
+      },
+      {
+       "glyph": "hub",
+       "label": "Partners",
+       "picto": "partnership"
+      },
+      {
+       "glyph": "coin",
+       "label": "Redemption",
+       "picto": "coin stack"
+      }
+     ],
+     "from": 0.0592,
+     "to": 0.5834,
+     "voSec": [
+      96.2,
+      104.34
+     ]
+    },
+    {
+     "id": "m3",
+     "layout": "statement",
+     "super": "Even more ways to get value.",
+     "sub": "From CommBank Yello points, in the future.",
+     "from": 0.5834,
+     "to": 1,
+     "voSec": [
+      104.34,
+      110.81
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "commbank-yello-points-gives-customer",
+   "beatDurationSec": 28.46,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "iconRow",
+     "super": "Choose how you're rewarded.",
+     "tiles": [
+      {
+       "glyph": "gift",
+       "label": "Gift cards",
+       "picto": "gift"
+      },
+      {
+       "glyph": "coin",
+       "label": "Cash",
+       "picto": "coin stack"
+      },
+      {
+       "glyph": "plane",
+       "label": "Travel",
+       "picto": "luggage"
+      },
+      {
+       "glyph": "tag",
+       "label": "Partner offers",
+       "picto": "offers"
+      },
+      {
+       "glyph": "transfer",
+       "label": "Transfers",
+       "picto": "change"
+      }
+     ],
+     "from": 0,
+     "to": 0.584,
+     "voSec": [
+      110.81,
+      127.43
+     ]
+    },
+    {
+     "id": "m2",
+     "layout": "statement",
+     "super": "A rewards experience tailored to them.",
+     "sub": "By giving customers more choice.",
+     "from": 0.584,
+     "to": 1,
+     "voSec": [
+      127.43,
+      139.27
+     ]
+    }
+   ]
+  }
+ ]
+}

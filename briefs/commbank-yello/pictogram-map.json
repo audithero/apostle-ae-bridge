@@ -1,0 +1,62 @@
+{
+  "_note": "Maps Apostle's generic MOM_GLYPHS vocabulary onto the bank's official pictogram set (IMPORTS/pictograms, .ai). Keyed by glyph, then by the moment's label so the same generic glyph can resolve to different branded art depending on what it actually stands for in that moment. '_default' applies when no label rule matches. Names must match a footage item in IMPORTS/pictograms with the extension stripped.",
+  "_padding": "Prefer 284x284 padded artboards. '-nopadding' crops are trimmed to 80% at placement time so they carry the same optical weight.",
+
+  "coin":       { "_default": "coin stack" },
+
+  "plane":      { "_default": "plane",
+                  "Travel": "luggage" },
+
+  "star":       { "_default": "star",
+                  "Banking\rmilestones": "trophy",
+                  "Milestones": "trophy" },
+
+  "cart":       { "_default": "store" },
+
+  "tag":        { "_default": "offers" },
+
+  "basket":     { "_default": "shopping trolley",
+                  "Dining credits": "dining" },
+
+  "percent":    { "_default": "percentage",
+                  "Auto Price\rDrop": "decreasing trend" },
+
+  "gift":       { "_default": "gift" },
+
+  "ticket":     { "_default": "offers",
+                  "Presale access": "megaphone",
+                  "Lounge passes": "keycard",
+                  "Special\roccasions": "birthday" },
+
+  "card":       { "_default": "CommBank Card",
+                  "Car hire": "car",
+                  "Car rental": "car" },
+
+  "home":       { "_default": "bill",
+                  "Hotels": "house" },
+
+  "sparkle":    { "_default": "energy",
+                  "Price\rPrediction": "analytics",
+                  "Perks": "diamond" },
+
+  "check":      { "_default": "tick",
+                  "Banking\rmilestones": "trophy",
+                  "Milestones": "trophy" },
+
+  "transfer":   { "_default": "change" },
+
+  "doc":        { "_default": "document" },
+
+  "renew":      { "_default": "card cycle" },
+
+  "bank":       { "_default": "branch" },
+
+  "hub":        { "_default": "partnership" },
+
+  "cross":      { "_default": "no fees" },
+
+  "shield":     { "_default": "certified" },
+
+  "arrowRight": { "_default": null,
+                  "_why": "kept as native shape art — this is a UI direction arrow in the compare layout, not a brand pictogram" }
+}
