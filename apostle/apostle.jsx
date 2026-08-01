@@ -3036,19 +3036,42 @@ var APOSTLE = (function () {
     var contents = sl.property("ADBE Root Vectors Group");
     var g = contents.addProperty("ADBE Vector Group");
 
-    // ADD EVERY SUB-PROPERTY FIRST, THEN SET VALUES.
+    // ADD EVERY SUB-PROPERTY FIRST, THEN RE-READ EACH ONE BEFORE WRITING.
     //
-    // Interleaving addProperty with setValue/expression writes on the same
-    // vectors group makes the group handle go stale partway through — the
-    // symptom is "Function c.addProperty is undefined" on the second or third
-    // add, and it only showed up in chipRow because that is the one layout
-    // that calls momRect in a loop. Re-reading the group by path before each
-    // add, and doing all the adds before any writes, keeps every handle live.
+    // Two failure modes meet on this vectors group, and both are handle
+    // staleness:
+    //   - Interleaving addProperty with setValue/expression writes made the
+    //     GROUP handle go stale: "Function c.addProperty is undefined" on the
+    //     second or third add. Only chipRow hit it, being the one layout that
+    //     calls momRect in a loop. Fix: re-read the group before every add.
+    //   - Doing all the adds first but KEEPING the property objects those adds
+    //     returned makes those CHILD handles go stale instead: every
+    //     addProperty on the group invalidates the ones handed out before it,
+    //     so the first setValue below threw "ReferenceError: Object is
+    //     invalid". That took out every scene containing a rect and left them
+    //     half-built (2026-08-01) — momRect was the only site in the file
+    //     holding a handle across a later add.
+    // So: re-read the group before every add, and re-read each child by
+    // matchName after the last add. No handle ever spans an addProperty.
     function vec() { return g.property("ADBE Vectors Group"); }
 
-    var sr = vec().addProperty("ADBE Vector Shape - Rect");
-    var fl = fillRole ? vec().addProperty("ADBE Vector Graphic - Fill") : null;
-    var st = strokeRole ? vec().addProperty("ADBE Vector Graphic - Stroke") : null;
+    // by index, not vec().property(matchName) — index lookup is unambiguous
+    // and does not depend on how AE resolves a matchName on a vectors group
+    function vecProp(mn) {
+      var vg = vec();
+      for (var i = 1; i <= vg.numProperties; i++) {
+        if (vg.property(i).matchName === mn) return vg.property(i);
+      }
+      return null;
+    }
+
+    vec().addProperty("ADBE Vector Shape - Rect");
+    if (fillRole) vec().addProperty("ADBE Vector Graphic - Fill");
+    if (strokeRole) vec().addProperty("ADBE Vector Graphic - Stroke");
+
+    var sr = vecProp("ADBE Vector Shape - Rect");
+    var fl = fillRole ? vecProp("ADBE Vector Graphic - Fill") : null;
+    var st = strokeRole ? vecProp("ADBE Vector Graphic - Stroke") : null;
 
     sr.property("ADBE Vector Rect Size").setValue([Number(w), Number(h)]);
     sr.property("ADBE Vector Rect Position").setValue([0, 0]);

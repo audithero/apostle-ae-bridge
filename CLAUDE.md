@@ -88,6 +88,7 @@ Verified AE/ExtendScript traps (each one cost a debugging pass — do not reintr
 3. **Never set `collapseTransformation` on 3D scene precomps.** Collapsed 3D precomp groups composite in layer-stack order instead of z-sorting under the camera — the top scene paints over every station.
 4. The bridge's `executeScript` wraps code in a function: use `return`, and `$.evalFile` results need explicit `$.global.X = X` to persist.
 5. `app.effects` is 0-based (unlike the 1-based DOM collections).
+6. **On a shape layer's vectors group, a property handle does not survive a later `addProperty` on that same group.** Both orderings fail, for opposite reasons: interleaving adds with writes makes the *group* handle stale (`Function c.addProperty is undefined`), while doing all the adds first and keeping what they returned makes the *child* handles stale (`ReferenceError: Object is invalid` on the first `setValue`). The only safe shape is: re-read the group before every add, and re-read each child by matchName after the last add — no handle may span an `addProperty`. This took out `momRect`, and with it every moment scene containing a rect, on 2026-08-01.
 
 ## Loading the Apostle library
 

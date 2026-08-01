@@ -81,4 +81,6 @@ function restoreAfterRestart() {
   return out;
 }
 
-JSON.stringify(restoreAfterRestart());
+// `return`, not a bare expression: ae-run.sh / executeScript wrap this body in a
+// function, so an expression statement here is discarded and the report is lost.
+return JSON.stringify(restoreAfterRestart());

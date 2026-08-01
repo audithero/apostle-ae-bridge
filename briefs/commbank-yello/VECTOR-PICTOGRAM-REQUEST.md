@@ -14,10 +14,21 @@ vector at all:
   this project needs is one of these.
 * **176 SVGs are genuinely vector**, but roughly 154 of those are unnamed exports
   (`Group 459`, `Vector-3`), leaving only ~22 usable named vector pictograms.
-* **The `Pictograms_AI` folder is unusable.** Those `.ai` files were batch-converted from the
-  SVGs by something that preserved neither the vector data nor the embedded bitmap. They import
-  into After Effects at the correct dimensions with an alpha channel and render **completely
-  blank** — 147 correctly placed pictogram layers showed nothing on screen.
+* **The `Pictograms_AI` folder is unusable, and re-saving it will not help.** All 31 names we
+  need are in that folder, but it is the same bitmaps in a different wrapper. Reading the files
+  byte-for-byte (2026-08-01) shows two independent defects:
+  * **29 of the 31 contain a raster, not paths.** Each `.ai` was made by opening the
+    bitmap-in-SVG in Illustrator 24 and saving — `%%Title: (coin stack.svg)`, and the private
+    art block carries `%%BeginRaster`/`BeginData` with zero path operators. The only two with
+    real vector paths are `calendar` and `change`, which is exactly the pair already marked
+    "already true vector" below.
+  * **They were saved without "Create PDF Compatible File".** The PDF page every `.ai` exposes
+    is an empty marked-content block (`/OC /MC0 BDC EMC`, 19 bytes) with no drawing operators at
+    all. After Effects reads that PDF layer, which is why 147 correctly placed pictogram layers
+    imported at the right dimensions with an alpha channel and rendered **completely blank**.
+
+  So re-saving these with PDF compatibility on would fix the blankness and still leave 29
+  bitmaps. The artwork has to come from whatever the pictograms were drawn in, not from here.
 
 We are currently shipping artwork recovered from the embedded bitmaps: the PNG is extracted from
 each SVG, its transparent margin trimmed, and it is re-centred on the original artboard square.
