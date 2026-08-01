@@ -2,6 +2,7 @@
  "meta": {
   "briefId": "video_007_cards_cvp",
   "masterName": "VIDEO_007_CARDS_CVP_v001",
+  "easeProfile": "curvaceous",
   "scriptVersion": 1,
   "voLeadIn": 0.45,
   "tailBuffer": 6,

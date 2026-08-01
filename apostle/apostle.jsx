@@ -129,6 +129,11 @@ var APOSTLE = (function () {
     outQuint: "t=t/d-1; return c*(t*t*t*t*t+1)+b;",
     inOutQuint: "t/=d/2; if (t<1) return c/2*t*t*t*t*t+b; t-=2; return c/2*(t*t*t*t*t+2)+b;",
     outExpo: "if (t==d) return b+c; return c*(-Math.pow(2,-10*t/d)+1)+b;",
+    // Penner easeInOutExpo. The 0.000976563 correction (= 2^-10) is what keeps
+    // the two halves continuous at the midpoint; without it the curve steps.
+    // This is the shape Tim hand-applied via Ease and Wizz ("Curvaceous /
+    // inoutExpo") on VIDEO_001 SC01 — slow out, hard middle, long soft settle.
+    inOutExpo: "var C=0.000976563; t=t/(d/2); var v; if (t<1) { v=Math.pow(2,10*(t-1))-C; } else { v=(-Math.pow(2,-10*(t-1))+2)+C; } return b+(v/2)*c;",
     outBack: "var s=1.70158; t=t/d-1; return c*(t*t*((s+1)*t+s)+1)+b;",
     outElastic: "if (t==0) return b; t/=d; if (t==1) return b+c; var p=d*0.3, s=p/4; return c*Math.pow(2,-10*t)*Math.sin((t*d-s)*(2*Math.PI)/p)+c+b;"
   };
@@ -161,7 +166,10 @@ var APOSTLE = (function () {
   var EASE_PROFILES = {
     "corporate-smooth": { transitIn: 92, transitOut: 78, reveal: "outQuint", revealDur: 0.7, stagger: 0.14 },
     "snappy":           { transitIn: 96, transitOut: 55, reveal: "outExpo",  revealDur: 0.45, stagger: 0.10 },
-    "playful":          { transitIn: 88, transitOut: 82, reveal: "outBack",  revealDur: 0.75, stagger: 0.18 }
+    "playful":          { transitIn: 88, transitOut: 82, reveal: "outBack",  revealDur: 0.75, stagger: 0.18 },
+    // The CommBank Yello house style from 2026-08-02: expo in/out on every
+    // moment Position and Scale, plus the word-by-word text reveal.
+    "curvaceous":       { transitIn: 92, transitOut: 78, reveal: "inOutExpo", revealDur: 0.7, stagger: 0.14 }
   };
 
   function profileFor(beat, data) {
@@ -1409,7 +1417,31 @@ var APOSTLE = (function () {
       var pos = layer.property("ADBE Transform Group").property("ADBE Position");
       if (pos.numKeys > 0) t = pos.keyTime(pos.numKeys) + 0.1;
     } catch (e) {}
-    if (t > layer.outPoint) t = (layer.inPoint + layer.outPoint) / 2;
+    // A text animator is still mid-flight long after the layer transform has
+    // settled: the word reveal runs ~1.6s while Position finishes in 0.62s.
+    // Sampling in between measures words that are still thousands of px below
+    // the line — which read as a 6000px safe-margin violation on every
+    // revealed layer. Wait for the last selector keyframe too.
+    try {
+      var ans = layer.property("ADBE Text Properties").property("ADBE Text Animators");
+      for (var a = 1; a <= ans.numProperties; a++) {
+        var sels = ans.property(a).property("ADBE Text Selectors");
+        for (var s = 1; s <= sels.numProperties; s++) {
+          var off = sels.property(s).property("ADBE Text Percent Offset");
+          if (off && off.numKeys > 0) {
+            var ta = off.keyTime(off.numKeys) + 0.1;
+            if (ta > t) t = ta;
+          }
+        }
+      }
+    } catch (e2) {}
+    // If the entrance somehow outruns the layer, sample at the END of its
+    // life, not the midpoint — the midpoint of a layer whose animation is
+    // still running measures a shape that is still moving.
+    if (t > layer.outPoint) {
+      t = layer.outPoint - 0.05;
+      if (t < layer.inPoint) t = layer.inPoint;
+    }
     return t;
   }
 
@@ -3150,7 +3182,11 @@ var APOSTLE = (function () {
     return out;
   }
 
-  function momAnimate(layer, tIn, tOut, delay, isShape, compDur, lead) {
+  // easeName (optional): applies the keyframe-reading easing expression from
+  // EASE_CORE to Position and Scale, so the personality can be swapped later
+  // without touching a single key. Text Scale is never given one — it carries
+  // the autofit expression and has no keys.
+  function momAnimate(layer, tIn, tOut, delay, isShape, compDur, lead, easeName) {
     var tr = layer.property("ADBE Transform Group");
     var pos = tr.property("ADBE Position");
     var opa = tr.property("ADBE Opacity");
@@ -3177,6 +3213,7 @@ var APOSTLE = (function () {
     pos.setValueAtTime(t0, momFitDims(base, [base[0], base[1] + 44]));
     pos.setValueAtTime(t0 + rise, momFitDims(base, [base[0], base[1]]));
     easeAllKeys(pos, 86, 80);
+    if (easeName) applyEaseExpression(pos, easeName);
 
     if (isShape) {
       // RELATIVE to whatever the layer already sits at. Shape layers are
@@ -3189,6 +3226,7 @@ var APOSTLE = (function () {
       sc.setValueAtTime(t0 + rise * 0.62, momFitDims(bs, [b0 * 1.03, b1 * 1.03]));
       sc.setValueAtTime(t0 + rise, momFitDims(bs, [b0, b1]));
       easeAllKeys(sc, 78, 80);
+      if (easeName) applyEaseExpression(sc, easeName);
     }
 
     var lin = t0 - 0.05;
@@ -3199,6 +3237,219 @@ var APOSTLE = (function () {
 
   function momIdTag(prefix, mid, n) {
     return prefix + " " + mid + (n === undefined ? "" : " " + n);
+  }
+
+  // ---------------------------------------------------------------
+  // TEXT REVEAL — "Slide Up By Word" + per-line mask band
+  //
+  // Measured off the hand-built reference (VIDEO_001 SC01, 2026-08-02).
+  // Words ride up from far below into a band that is only as tall as the
+  // line they belong to, so a word is invisible until it has arrived. The
+  // band is the whole trick: without it every word is visible flying up
+  // through the frame and the composition reads as noise.
+  //
+  // The reference used Ease and Wizz for the transform easing; we get the
+  // same curve from EASE_CORE.inOutExpo through applyEaseExpression, so
+  // nothing here depends on the plugin being installed.
+  // ---------------------------------------------------------------
+  var MOM_REVEAL = {
+    slideY: 7445,   // animator Position Y, px — per the reference
+    dur: 1.6,       // 40 frames @ 25fps
+    stagger: 1.12,  // sub starts this long after its super
+    start: 13,      // range selector Start %
+    padTopK: 0.65,  // single-line band padding, as a multiple of line height
+    padBotK: 0.55,
+    padX: 240       // horizontal slack — the band never clips sideways
+  };
+
+  function momIsSuper(name) {
+    return (name === "Super" || name.substring(0, 5) === "SUPER");
+  }
+  function momIsSub(name) {
+    return name.substring(0, 3) === "SUB";
+  }
+
+  function momTextLines(layer) {
+    var n = 1;
+    try {
+      var s = layer.property("ADBE Text Properties").property("ADBE Text Document").value.text;
+      var cr = 0, lf = 0, i;
+      for (i = 0; i < s.length; i++) {
+        if (s.charAt(i) === "\r") cr++;
+        else if (s.charAt(i) === "\n") lf++;
+      }
+      // AE uses \r; count whichever is present so \r\n never double-counts
+      n = 1 + (cr > 0 ? cr : lf);
+    } catch (e) {}
+    return n;
+  }
+
+  // One band per line. A single band around a multi-line block would let a
+  // word from line 2 slide up through line 1 in full view — the exact mess
+  // the mask exists to prevent. Multi-line bands are a tight line slice
+  // (leading always exceeds glyph extent, so nothing clips); a single line
+  // gets the generous padding of the reference.
+  function momMaskBands(layer, sampleT) {
+    // The reveal owns masking on any layer it touches: two ADD masks union,
+    // so a leftover hand-drawn band would quietly crop this one layer
+    // differently from every other reveal in the project. Dropping non-ours
+    // is reported, never silent.
+    var mp = layer.property("ADBE Mask Parade");
+    var i, foreign = 0;
+    for (i = mp.numProperties; i >= 1; i--) {
+      if (mp.property(i).name.substring(0, 12) !== "APOSTLE band") foreign++;
+      mp.property(i).remove();
+    }
+    if (foreign > 0) MOM_REVEAL_WARN.push(layer.name + ": replaced " + foreign + " pre-existing mask(s) with generated band(s)");
+    var r = null;
+    try { r = layer.sourceRectAtTime(sampleT, false); } catch (e) { return 0; }
+    if (!r || r.width <= 0 || r.height <= 0) return 0;
+
+    var lines = momTextLines(layer);
+    var lineH = r.height / lines;
+    var x0 = r.left - MOM_REVEAL.padX;
+    var x1 = r.left + r.width + MOM_REVEAL.padX;
+    var made = 0;
+    for (i = 0; i < lines; i++) {
+      var y0 = r.top + i * lineH;
+      var y1 = y0 + lineH;
+      if (lines === 1) {
+        y0 -= lineH * MOM_REVEAL.padTopK;
+        y1 += lineH * MOM_REVEAL.padBotK;
+      }
+      // trap #6: re-read the parade before every add, write immediately after
+      var mk = layer.property("ADBE Mask Parade").addProperty("ADBE Mask Atom");
+      mk.name = "APOSTLE band " + (i + 1);
+      mk.maskMode = MaskMode.ADD;
+      var sh = new Shape();
+      sh.vertices = [[x1, y0], [x0, y0], [x0, y1], [x1, y1]];
+      sh.closed = true;
+      mk.property("ADBE Mask Shape").setValue(sh);
+      made++;
+    }
+    return made;
+  }
+
+  function momDropReveal(layer) {
+    var ans = null;
+    try { ans = layer.property("ADBE Text Properties").property("ADBE Text Animators"); } catch (e) { return; }
+    if (!ans) return;
+    for (var i = ans.numProperties; i >= 1; i--) {
+      if (ans.property(i).name === "Slide Up By Word") ans.property(i).remove();
+    }
+  }
+
+  function momSlideUpByWord(layer, t0, dur) {
+    var tp = layer.property("ADBE Text Properties");
+    var an = tp.property("ADBE Text Animators").addProperty("ADBE Text Animator");
+    an.name = "Slide Up By Word";
+
+    // trap #6: every add is followed by a fresh read of the group, and no
+    // handle returned by an add is used after the next add
+    an.property("ADBE Text Animator Properties").addProperty("ADBE Text Position 3D");
+    an.property("ADBE Text Animator Properties").addProperty("ADBE Text Opacity");
+    an.property("ADBE Text Animator Properties").property("ADBE Text Position 3D")
+      .setValue([0, MOM_REVEAL.slideY, 0]);
+    an.property("ADBE Text Animator Properties").property("ADBE Text Opacity").setValue(0);
+
+    an.property("ADBE Text Selectors").addProperty("ADBE Text Selector");
+    var sel = an.property("ADBE Text Selectors").property(1);
+    sel.property("ADBE Text Percent Start").setValue(MOM_REVEAL.start);
+    sel.property("ADBE Text Percent End").setValue(100);
+
+    // Some Advanced fields are hidden depending on the others — Smoothness
+    // only exists while Shape is Square, and setting a hidden property throws
+    // ("the property or a parent property is hidden"), which took the whole
+    // run down. Set what we can, then READ IT BACK: a swallowed write here
+    // would silently give the wrong reveal on every layer in the project.
+    var adv = sel.property("ADBE Text Range Advanced");
+    var wants = [
+      ["ADBE Text Range Units", 1],          // percentage
+      ["ADBE Text Range Type2", 3],          // based on: words
+      ["ADBE Text Selector Mode", 1],        // add
+      ["ADBE Text Selector Max Amount", 100],
+      ["ADBE Text Range Shape", 2],          // ramp up
+      ["ADBE Text Levels Max Ease", 0],      // ease high
+      ["ADBE Text Levels Min Ease", 100]     // ease low
+    ];
+    var bad = [];
+    for (var w = 0; w < wants.length; w++) {
+      try { adv.property(wants[w][0]).setValue(wants[w][1]); } catch (eW) {}
+      try {
+        if (adv.property(wants[w][0]).value !== wants[w][1]) bad.push(wants[w][0]);
+      } catch (eR) { bad.push(wants[w][0]); }
+    }
+
+    // The offset ramp is LINEAR on purpose — every bit of the easing comes
+    // from Ease High/Low + Smoothness above, exactly as in the reference.
+    var off = sel.property("ADBE Text Percent Offset");
+    off.setValueAtTime(t0, -100);
+    off.setValueAtTime(t0 + dur, 100);
+    for (var k = 1; k <= off.numKeys; k++) {
+      off.setInterpolationTypeAtKey(k, KeyframeInterpolationType.LINEAR, KeyframeInterpolationType.LINEAR);
+    }
+    return bad;
+  }
+
+  // Drop first, then measure, then rebuild: measuring while a previous pass's
+  // animator is live would read the flown-out bounds, not the settled ones.
+  var MOM_REVEAL_WARN = [];
+
+  function momTextReveal(layer, t0, dur) {
+    momDropReveal(layer);
+    var bands = momMaskBands(layer, t0 + dur + 0.2);
+    var bad = momSlideUpByWord(layer, t0, dur);
+    if (bands === 0) MOM_REVEAL_WARN.push(layer.name + ": no mask band (unmeasurable bounds)");
+    if (bad && bad.length) MOM_REVEAL_WARN.push(layer.name + ": selector fields not applied: " + bad.join(","));
+    return bands;
+  }
+
+  function momT0(tIn, lead, delay) {
+    var t = tIn - (lead || 0) + (delay || 0);
+    if (t < 0) t = 0;
+    return t;
+  }
+
+  // Super leads, every sub in the same moment follows one stagger later.
+  // A moment too short to hold super + stagger + reveal compresses both
+  // rather than running the reveal past its own fade-out.
+  function momRevealMoment(els, tIn, tOut, lead) {
+    var superEl = null, subs = [], i;
+    for (i = 0; i < els.length; i++) {
+      var ly = els[i].layer;
+      if (!(ly instanceof TextLayer)) continue;
+      if (momIsSuper(ly.name)) { if (!superEl) superEl = els[i]; }
+      else if (momIsSub(ly.name)) subs.push(els[i]);
+    }
+    if (!superEl && subs.length === 0) return 0;
+
+    var baseDelay = superEl ? superEl.delay : subs[0].delay;
+    var sT0 = momT0(tIn, lead, baseDelay);
+    var dur = MOM_REVEAL.dur, stag = MOM_REVEAL.stagger;
+
+    // The reveal must finish before the moment starts fading out, ALWAYS.
+    // An earlier version only compressed when there was room to spare, so a
+    // short moment kept the full 1.6s and its words were still arriving as
+    // the layer faded — visible as a super that never completes, and as a
+    // 7000px "safe margin" violation because the check samples mid-flight.
+    // A moment with no sub gets the whole window to itself.
+    var room = tOut - 0.34 - sT0;
+    if (room < 0.4) room = 0.4;
+    var need = dur + (subs.length > 0 ? stag : 0);
+    if (need > room) {
+      var k = room / need;
+      dur = dur * k;
+      stag = stag * k;
+    }
+    if (dur < 0.3) dur = 0.3;
+
+    var n = 0;
+    if (superEl) { momTextReveal(superEl.layer, sT0, dur); n++; }
+    for (i = 0; i < subs.length; i++) {
+      momTextReveal(subs[i].layer, superEl ? (sT0 + stag) : sT0, dur);
+      n++;
+    }
+    return n;
   }
 
   // --- layouts -----------------------------------------------------
@@ -3462,14 +3713,19 @@ var APOSTLE = (function () {
       var leadIn = (meta.voLeadIn === undefined) ? 0.45 : meta.voLeadIn;
       var tail = (meta.tailBuffer === undefined) ? 6 : meta.tailBuffer;
       var pal = momPalette(data.palette);
-      var report = { status: "success", scenes: [], warnings: [] };
+      // Motion personality. meta.easeProfile picks the transform easing;
+      // meta.textReveal:false turns the word-by-word reveal off for a doc.
+      var easeName = profileFor(null, data).reveal;
+      var revealOn = !(meta && meta.textReveal === false);
+      MOM_REVEAL_WARN = [];
+      var report = { status: "success", scenes: [], warnings: [], ease: easeName, reveal: revealOn };
 
       app.beginUndoGroup("Apostle applyMoments");
       try {
         var scenes = data.scenes || [];
         for (var s = 0; s < scenes.length; s++) {
           var sc = scenes[s];
-          var rec = { beatId: sc.beatId || "", comp: "", moments: 0, layers: 0 };
+          var rec = { beatId: sc.beatId || "", comp: "", moments: 0, layers: 0, reveals: 0 };
           var comp = null;
           if (sc.beatId && masterName) comp = findBeatComp(masterName, sc.beatId);
           if (!comp && sc.comp) comp = findComp(sc.comp);
@@ -3503,6 +3759,14 @@ var APOSTLE = (function () {
             momClearKeys(str.property("ADBE Scale"));
             superLayer.inPoint = 0;
             superLayer.outPoint = comp.duration;
+            // "Super" is the one text layer that survives a re-run (every
+            // other one is removed and remade above), so it is the only one
+            // that can carry a previous pass's reveal into this one.
+            momDropReveal(superLayer);
+            var smp = superLayer.property("ADBE Mask Parade");
+            for (var sb = smp.numProperties; sb >= 1; sb--) {
+              if (smp.property(sb).name.substring(0, 12) === "APOSTLE band") smp.property(sb).remove();
+            }
           }
 
           // moment windows are fractions of the beat's VO window, so a
@@ -3541,9 +3805,10 @@ var APOSTLE = (function () {
             var lead = (mi === 0) ? 0 : 0.3;
             var els = momLayout(comp, m, pal, masterName, (mi === 0) ? superLayer : null);
             for (var e = 0; e < els.length; e++) {
-              momAnimate(els[e].layer, tIn, tOut, els[e].delay, els[e].shape, comp.duration, lead);
+              momAnimate(els[e].layer, tIn, tOut, els[e].delay, els[e].shape, comp.duration, lead, easeName);
               rec.layers++;
             }
+            if (revealOn) rec.reveals += momRevealMoment(els, tIn, tOut, lead);
             rec.moments++;
           }
           // keep BG at the bottom of the stack
@@ -3554,6 +3819,7 @@ var APOSTLE = (function () {
       } finally {
         app.endUndoGroup();
       }
+      for (var rw = 0; rw < MOM_REVEAL_WARN.length; rw++) report.warnings.push(MOM_REVEAL_WARN[rw]);
       return toJSON(report);
     } catch (e) { return errJSON("applyMoments", e); }
   }

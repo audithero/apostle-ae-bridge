@@ -2,6 +2,7 @@
  "meta": {
   "briefId": "video_005_cards_travel",
   "masterName": "VIDEO_005_CARDS_TRAVEL_v001",
+  "easeProfile": "curvaceous",
   "scriptVersion": 1,
   "voLeadIn": 0.45,
   "tailBuffer": 6,

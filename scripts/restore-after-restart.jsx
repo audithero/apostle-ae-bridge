@@ -1,14 +1,17 @@
-// restore-after-restart.jsx — rebuild what the degraded AE session left half-done.
-//
-// Run this once, on a freshly restarted After Effects with CBA-EDUCATION_VIDEOS.aep open:
+// restore-after-restart.jsx — rebuild every moment layer across all 7 videos.
 //
 //   bash scripts/ae-run.sh scripts/restore-after-restart.jsx 1800
 //
-// Context: late in the 2026-08-01 session AE started failing scripted layer
-// creation with "ReferenceError: Object is invalid" on nearly every scene,
-// deterministically and regardless of the code being run. Because applyMoments
-// clears a scene's moment layers before rebuilding them, the failed passes left
-// VIDEO_001-004 partially rebuilt. VIDEO_005-007 were untouched.
+// Despite the name this is now the standard full-rebuild pass: run it after any
+// change to the moments docs or to the moment/reveal code in apostle.jsx. It is
+// idempotent, takes about a minute, and rebuilds moments, the expo transform
+// easing and the word-by-word text reveal together (all three come out of
+// applyMoments, so none of them can drift apart).
+//
+// Original context: late in the 2026-08-01 session AE failed scripted layer
+// creation with "ReferenceError: Object is invalid" on nearly every scene. That
+// was NOT session degradation — it was a stale property handle in momRect, and
+// it reproduced on a cold AE until fixed. See ExtendScript trap #6 in CLAUDE.md.
 //
 // Everything below is idempotent, so running it on the intact videos too is
 // harmless and confirms them. Order matters:

@@ -2,6 +2,7 @@
  "meta": {
   "briefId": "video_001_intro",
   "masterName": "VIDEO_001_INTRO_v001",
+  "easeProfile": "curvaceous",
   "scriptVersion": 2,
   "voLeadIn": 0.45,
   "tailBuffer": 6,

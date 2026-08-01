@@ -2,6 +2,7 @@
  "meta": {
   "briefId": "video_004_redeeming_deep_dive",
   "masterName": "VIDEO_004_REDEEMING_DEEP_DIVE_v001",
+  "easeProfile": "curvaceous",
   "scriptVersion": 1,
   "voLeadIn": 0.45,
   "tailBuffer": 6,

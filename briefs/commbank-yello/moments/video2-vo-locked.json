@@ -2,6 +2,7 @@
  "meta": {
   "briefId": "video_002_earning_redeeming",
   "masterName": "VIDEO_002_EARNING_REDEEMING_v001",
+  "easeProfile": "curvaceous",
   "scriptVersion": 1,
   "voLeadIn": 0.45,
   "tailBuffer": 6,

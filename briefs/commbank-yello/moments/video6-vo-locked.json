@@ -2,6 +2,7 @@
  "meta": {
   "briefId": "video_006_dine_in_deals",
   "masterName": "VIDEO_006_DINE_IN_DEALS_v001",
+  "easeProfile": "curvaceous",
   "scriptVersion": 1,
   "voLeadIn": 0.45,
   "tailBuffer": 6,
