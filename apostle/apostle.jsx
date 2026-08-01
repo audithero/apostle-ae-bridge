@@ -3025,19 +3025,33 @@ var APOSTLE = (function () {
     sl.comment = MOM_TAG;
     var contents = sl.property("ADBE Root Vectors Group");
     var g = contents.addProperty("ADBE Vector Group");
-    var c = g.property("ADBE Vectors Group");
-    var sr = c.addProperty("ADBE Vector Shape - Rect");
-    sr.property("ADBE Vector Rect Size").setValue([w, h]);
+
+    // ADD EVERY SUB-PROPERTY FIRST, THEN SET VALUES.
+    //
+    // Interleaving addProperty with setValue/expression writes on the same
+    // vectors group makes the group handle go stale partway through — the
+    // symptom is "Function c.addProperty is undefined" on the second or third
+    // add, and it only showed up in chipRow because that is the one layout
+    // that calls momRect in a loop. Re-reading the group by path before each
+    // add, and doing all the adds before any writes, keeps every handle live.
+    function vec() { return g.property("ADBE Vectors Group"); }
+
+    var sr = vec().addProperty("ADBE Vector Shape - Rect");
+    var fl = fillRole ? vec().addProperty("ADBE Vector Graphic - Fill") : null;
+    var st = strokeRole ? vec().addProperty("ADBE Vector Graphic - Stroke") : null;
+
+    sr.property("ADBE Vector Rect Size").setValue([Number(w), Number(h)]);
     sr.property("ADBE Vector Rect Position").setValue([0, 0]);
-    if (r) sr.property("ADBE Vector Rect Roundness").setValue(r);
-    if (fillRole) {
-      var fl = c.addProperty("ADBE Vector Graphic - Fill");
+    // roundness is a scalar — coerce so a stray vector cannot throw here
+    var rr = Number(r);
+    if (rr && !isNaN(rr)) sr.property("ADBE Vector Rect Roundness").setValue(rr);
+
+    if (fl) {
       var fp = fl.property("ADBE Vector Fill Color");
       fp.setValue(momColor(fillRole, pal));
       momLinkFill(fp, fillRole, masterName);
     }
-    if (strokeRole) {
-      var st = c.addProperty("ADBE Vector Graphic - Stroke");
+    if (st) {
       var sp = st.property("ADBE Vector Stroke Color");
       sp.setValue(momColor(strokeRole, pal));
       momLinkFill(sp, strokeRole, masterName);
@@ -3091,6 +3105,18 @@ var APOSTLE = (function () {
   // `lead` pulls the entrance earlier than the moment's nominal start so
   // it overlaps the outgoing moment's fade. Without it the two ramps sit
   // end-to-end and every boundary showed ~0.3s of empty white frame.
+  // Position and Scale are 2- or 3-component depending on how the layer was
+  // made — the build's text layers report 3 even when 2D. Writing a 2-element
+  // array into a 3-component property throws ("... is not a number"), so every
+  // transform write here is padded to the arity the property actually has.
+  function momFitDims(sample, vals) {
+    var out = [];
+    for (var i = 0; i < sample.length; i++) {
+      out.push(i < vals.length ? vals[i] : (sample[i] || 0));
+    }
+    return out;
+  }
+
   function momAnimate(layer, tIn, tOut, delay, isShape, compDur, lead) {
     var tr = layer.property("ADBE Transform Group");
     var pos = tr.property("ADBE Position");
@@ -3115,8 +3141,8 @@ var APOSTLE = (function () {
     easeAllKeys(opa, 70, 70);
 
     var base = pos.value;
-    pos.setValueAtTime(t0, [base[0], base[1] + 44]);
-    pos.setValueAtTime(t0 + rise, [base[0], base[1]]);
+    pos.setValueAtTime(t0, momFitDims(base, [base[0], base[1] + 44]));
+    pos.setValueAtTime(t0 + rise, momFitDims(base, [base[0], base[1]]));
     easeAllKeys(pos, 86, 80);
 
     if (isShape) {
@@ -3126,9 +3152,9 @@ var APOSTLE = (function () {
       // and absolute keys would have snapped it to full size on arrival.
       var bs = sc.value;
       var b0 = bs[0], b1 = bs[1];
-      sc.setValueAtTime(t0, [b0 * 0.88, b1 * 0.88]);
-      sc.setValueAtTime(t0 + rise * 0.62, [b0 * 1.03, b1 * 1.03]);
-      sc.setValueAtTime(t0 + rise, [b0, b1]);
+      sc.setValueAtTime(t0, momFitDims(bs, [b0 * 0.88, b1 * 0.88]));
+      sc.setValueAtTime(t0 + rise * 0.62, momFitDims(bs, [b0 * 1.03, b1 * 1.03]));
+      sc.setValueAtTime(t0 + rise, momFitDims(bs, [b0, b1]));
       easeAllKeys(sc, 78, 80);
     }
 

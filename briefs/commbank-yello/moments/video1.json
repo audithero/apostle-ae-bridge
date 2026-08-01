@@ -24,12 +24,11 @@
  "scenes": [
   {
    "beatId": "we-re-introducing-a-number-of-change",
-   "comp": "VIDEO_001_INTRO_v001 SC01 Were introducing a numbe",
    "moments": [
     {
      "id": "m1",
-     "from": 0,
-     "to": 0.3777,
+     "from": 0.0012,
+     "to": 0.6172,
      "vo": "We're introducing a number of changes across the CommBank Yello and credit card programs...",
      "layout": "iconRow",
      "super": "We're changing how customers are rewarded.",
@@ -53,8 +52,8 @@
     },
     {
      "id": "m2",
-     "from": 0.3777,
-     "to": 0.612,
+     "from": 0.6172,
+     "to": 1,
      "vo": "While we'll cover each change in detail, they all support a simpler and more flexible rewards experience.",
      "layout": "statement",
      "super": "A simpler, more flexible rewards experience.",
@@ -63,48 +62,81 @@
       10.32,
       16.72
      ]
+    }
+   ],
+   "beatDurationSec": 16.72
+  },
+  {
+   "beatId": "at-the-same-time-you-might-see-chang",
+   "beatDurationSec": 22.32,
+   "awaitingVO": true,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "statement",
+     "picto": "branch",
+     "super": "Industry-wide interchange reforms.",
+     "sub": "Announced by the Reserve Bank of Australia.",
+     "from": 0,
+     "to": 0.34
     },
     {
-     "id": "m5",
-     "from": 0.612,
-     "to": 0.8064,
-     "vo": "The biggest change for Yello is that from 1 October, we'll be introducing CommBank Yello points.",
+     "id": "m2",
+     "layout": "iconRow",
+     "super": "Reshaping the Australian credit card market.",
+     "sub": "From 1 October 2026.",
+     "tiles": [
+      {
+       "picto": "change",
+       "label": "Interchange\rreforms"
+      },
+      {
+       "picto": "CommBank Card",
+       "label": "Credit card\rmarket"
+      },
+      {
+       "picto": "calendar",
+       "label": "From 1 Oct\r2026"
+      }
+     ],
+     "from": 0.34,
+     "to": 0.7
+    },
+    {
+     "id": "m3",
+     "layout": "statement",
+     "picto": "star",
+     "super": "CommBank is evolving how customers are rewarded.",
+     "sub": "To keep delivering value as the industry adapts.",
+     "from": 0.7,
+     "to": 1
+    }
+   ]
+  },
+  {
+   "beatId": "the-biggest-change-for-yello-is-that",
+   "beatDurationSec": 10.6,
+   "moments": [
+    {
+     "id": "m1",
      "layout": "hero",
+     "picto": "coin stack",
      "glyph": "coin",
      "super": "Introducing CommBank Yello points.",
      "sub": "From 1 October.",
-     "voSec": [
-      16.72,
-      22.03
-     ],
-     "picto": "coin stack"
+     "from": 0,
+     "to": 0.52
     },
     {
-     "id": "m6",
-     "from": 0.8064,
-     "to": 1,
-     "vo": "Unlocking a whole new world of points and perks for our customers.",
-     "layout": "iconRow",
+     "id": "m2",
+     "layout": "statement",
+     "picto": "diamond",
      "super": "A whole new world of points and perks.",
-     "tiles": [
-      {
-       "glyph": "coin",
-       "label": "Points",
-       "picto": "coin stack"
-      },
-      {
-       "glyph": "sparkle",
-       "label": "Perks",
-       "picto": "diamond"
-      }
-     ],
-     "voSec": [
-      22.03,
-      27.32
-     ]
+     "sub": "",
+     "from": 0.52,
+     "to": 1
     }
-   ],
-   "beatDurationSec": 27.32
+   ]
   },
   {
    "beatId": "eligible-customers-can-earn-commbank",

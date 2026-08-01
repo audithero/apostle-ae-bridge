@@ -6,11 +6,25 @@ set -uo pipefail
 DIR="$(cd "$(dirname "$0")" && pwd)"
 PROBE="$DIR/preflight.jsx"
 
-if ! pgrep -qf "Adobe After Effects.*MacOS/After Effects$"; then
-  if ! pgrep -qf "MacOS/After Effects"; then
-    echo "After Effects is not running. Start it (and open the project) first." >&2
-    exit 1
-  fi
+# `pgrep -f` matches the full command line, which a sandboxed shell is not
+# always allowed to read — it then returns nothing and we would declare a
+# perfectly healthy AE dead. `ps -Ao comm` (executable path only) is always
+# readable, so treat either hit as running.
+# NB: no `... | grep -q` here — grep -q exits on first match, ps takes
+# SIGPIPE, and `set -o pipefail` then reports the whole pipeline as failed.
+ae_running() {
+  pgrep -qf "MacOS/After Effects" && return 0
+  local procs
+  procs="$(ps -Ao comm= 2>/dev/null)"
+  case "$procs" in
+    *"MacOS/After Effects"*) return 0 ;;
+  esac
+  return 1
+}
+
+if ! ae_running; then
+  echo "After Effects is not running. Start it (and open the project) first." >&2
+  exit 1
 fi
 
 OUT="$("$DIR/bridge-exec.sh" executeScript --file "$PROBE" 8 2>/dev/null)" && {
