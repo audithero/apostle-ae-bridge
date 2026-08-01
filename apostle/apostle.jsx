@@ -2966,7 +2966,7 @@ var APOSTLE = (function () {
       var it = app.project.item(i);
       if (!(it instanceof FootageItem)) continue;
       if (!it.parentFolder || it.parentFolder.name !== MOM_PICTO_FOLDER) continue;
-      var n = String(it.name).replace(/\.(ai|eps|svg|pdf)$/i, "");
+      var n = String(it.name).replace(/\.(ai|eps|svg|pdf|png|jpg|jpeg|tif|tiff)$/i, "");
       if (n === name) return it;
     }
     return null;
@@ -2982,7 +2982,14 @@ var APOSTLE = (function () {
     l.name = name;
     l.label = 8;
     l.comment = MOM_TAG;
-    l.collapseTransformation = true; // continuous rasterisation = vector
+    // Continuous rasterisation, but ONLY where AE allows it: the switch exists
+    // for vector footage (.ai/.eps/PDF) and throws on raster. Most of the CBA
+    // pictogram set turned out to be bitmaps despite the .ai extension (see
+    // scripts/extract-pictogram-art.py), so this has to be conditional —
+    // setting it unguarded failed every scene carrying a raster pictogram.
+    try {
+      if (l.canSetCollapseTransformation) l.collapseTransformation = true;
+    } catch (eC) {}
     l.motionBlur = true;
     var mx = item.width;
     if (item.height > mx) mx = item.height;
@@ -3486,8 +3493,28 @@ var APOSTLE = (function () {
             var tOut = (m.toSec !== undefined) ? m.toSec : (leadIn + voDur * m.to);
             if (tOut > comp.duration) tOut = comp.duration;
             if (tOut - tIn < 0.6) tOut = tIn + 0.6;
-            // first moment never leads — it would start before the
-            // camera has arrived on the station
+            // Moment 1 DOES lead, and by more than the rest.
+            //
+            // It used to be pinned to 0 on the reasoning that leading would
+            // start it before the camera reached the station. Measuring the
+            // rig proves the opposite: stations sit 2400 apart, the camera
+            // sees ~2460 wide at mid-transit, so the incoming plane is already
+            // in frame for most of the move. Pinning moment 1 to the arrival
+            // is what left the back of every transit staring at a blank plane
+            // (rendered proof: VIDEO_001 t=40.8s, an entirely empty frame).
+            //
+            // Leading it means content fades up as the camera flies in, which
+            // both removes the dead frames and is where the movement gets its
+            // energy — you arrive INTO something rather than at nothing.
+            // momAnimate clamps t0 at 0, so the opening beat is unaffected.
+            //
+            // REVERTED to 0 for moment 1 on 2026-08-01. Leading it is still
+            // believed correct, but applying it destabilised applyMoments
+            // across every video ("ReferenceError: Object is invalid" on
+            // nearly every scene, layers already stripped), and diagnosing
+            // that hit the verification-loop iteration cap. Restored to the
+            // known-good value rather than leave the project degraded. See
+            // SCRIPT-V2-CHANGES.md "blank transits" for the open finding.
             var lead = (mi === 0) ? 0 : 0.3;
             var els = momLayout(comp, m, pal, masterName, (mi === 0) ? superLayer : null);
             for (var e = 0; e < els.length; e++) {

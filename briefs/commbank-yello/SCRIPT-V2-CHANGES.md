@@ -110,3 +110,74 @@ retime — it is one beat carrying two moments, which is exactly what the moment
    14 super/sub wording edits applied (`scripts/apply-super-updates-v2.cjs`), plus one beat split
    (V5 beat 8) so that both of the script's supers for that beat land.
 3. The only red flag needed in AE is Video 1's unrecorded paragraph.
+
+---
+
+## D. Findings from the art + motion pass (2026-08-01)
+
+### D1 — The pictogram library is 65% raster, not vector 🔴
+
+The brief was to swap Apostle's drawn glyphs for the bank's pictograms and "make sure they are
+all vector enabled as they are .ai files". They are not vector, and this is a property of the
+delivered assets, not of the build:
+
+| | count | |
+|---|---|---|
+| SVGs that are genuinely vector (`<path>`) | 176 | but ~154 are unnamed — "Group 459", "Vector-3" |
+| SVGs that are a bitmap in an SVG wrapper | 324 | a `<rect>` filled by a `<pattern>` wrapping a base64 PNG |
+| usefully-named true-vector pictograms | ~22 | calendar, change, chart, conversation, security, stopwatch, travel, warning… |
+
+Every pictogram this brief needs — plane, gift, star, coin stack, dining, store, offers,
+percentage, CommBank Card — is in the raster group.
+
+Worse, the `Pictograms_AI` mirror is unusable. Those `.ai` files were produced from the SVGs by a
+converter that kept neither the vector data nor the embedded bitmap: they import into AE at the
+right dimensions with an alpha channel and **render completely blank**. That is why the first
+render showed 147 correctly-placed, correctly-scaled, entirely invisible pictogram layers.
+
+Resolution applied: `scripts/extract-pictogram-art.py` pulls the embedded PNG back out of each
+SVG, trims its transparent margin and re-centres it on the original artboard square (the source
+padding is inconsistent — the plane sits high-left in its 284x284 box, which would have shown as
+off-centre art inside the tile). The 29 pictograms in use were extracted to
+`01.MEDIA/GFX/Pictograms_PNG_AE/` and the project's footage items repointed at them. `calendar`
+and `change` are genuinely vector and were left as `.ai`.
+
+The artwork is now correct and on brand — verified in rendered pixels. **It is raster at 284px.**
+That is fine for a 108px tile and a 310px hero, and it will soften in a hard push-in. Getting true
+vector requires the original pictogram artwork from the design team; a 2022 file,
+`BACKUP/APRIL_2026/.../Pictograms_brand_refresh_complete.ai`, IS real vector (1107 path
+operators, zero embedded images) but is an older set on a single un-separated artboard.
+
+### D2 — Blank frames in the back half of `crane` transits 🔴 open
+
+`lateralTruck`, `whipOrbit` and `dollyZoom` were each given a mitigation after earlier pixel QA
+caught white mid-transit frames. `crane` never was: it arcs up and looks forward at a plane whose
+content has not revealed yet. Rendered proof: VIDEO_001 at t=40.8s is an entirely empty frame.
+
+Measured geometry: stations sit 2400 apart, camera zoom 1493 on a 1920 comp, so the camera sees
+~2460 wide at the transit midpoint — the incoming plane IS in frame. It is blank because the
+first moment of a beat is pinned to reveal at arrival (`lead = 0` for moment 1).
+
+`scripts/fix-blank-transits.jsx` pulls every mid-transit control point back in z, which widens the
+move and shortens the dead window but does not close it. The real fix is to let moment 1 lead so
+content fades up during the approach. That was attempted and reverted: see D3.
+
+### D3 — After Effects session degradation 🔴 needs an AE restart
+
+Through this session AE became progressively unreliable under scripted layer creation. It began as
+intermittent, non-deterministic failures inside `applyMoments` — a vectors-group handle losing
+`addProperty`, a scalar property handed a vector — which moved between runs and did not reproduce
+per scene. The codebase already documents this class of AE 26 fault at `makeText`: *"AE 26
+intermittently hands back a garbage TextDocument on the first .value read after addText
+(fillColor rejects junk like [3126,1920,1080]); non-deterministic, project-state dependent."*
+
+Mitigations that worked for a while: one undo group per scene rather than per document
+(`scripts/apply-moments-per-scene.jsx`), plus retry with a cache purge between attempts.
+
+It has now degraded past that. Nearly every scene fails with `ReferenceError: Object is invalid`,
+deterministically, on all four retries, and reverting the last code change did not help. AE itself
+is healthy (it answers preflight), so this is session state, and the remedy is an AE restart.
+
+Because `applyMoments` clears a scene's moment layers before rebuilding them, the failed passes
+left VIDEO_001–004 partially rebuilt. Nothing is lost: the beats and moments JSON are the source of
+truth and every step is a re-runnable script. VIDEO_005–007 are untouched and intact.
