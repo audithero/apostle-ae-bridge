@@ -81,7 +81,7 @@
    ],
    "transitIn": "none",
    "motion": {
-    "ease": "corporate-smooth",
+    "ease": "curvaceous",
     "entrance": "fadeRise",
     "exit": "fadeRise",
     "handycam": "subtle"
@@ -103,7 +103,7 @@
    ],
    "transitIn": "lateralTruck",
    "motion": {
-    "ease": "corporate-smooth",
+    "ease": "curvaceous",
     "entrance": "listCascade",
     "exit": "listCascade",
     "handycam": "subtle"
@@ -125,7 +125,7 @@
    ],
    "transitIn": "crane",
    "motion": {
-    "ease": "corporate-smooth",
+    "ease": "curvaceous",
     "entrance": "listCascade",
     "exit": "listCascade",
     "handycam": "subtle"
@@ -147,7 +147,7 @@
    ],
    "transitIn": "whipOrbit",
    "motion": {
-    "ease": "corporate-smooth",
+    "ease": "curvaceous",
     "entrance": "fadeRise",
     "exit": "fadeRise",
     "handycam": "subtle"
@@ -169,7 +169,7 @@
    ],
    "transitIn": "dollyZoom",
    "motion": {
-    "ease": "corporate-smooth",
+    "ease": "curvaceous",
     "entrance": "listCascade",
     "exit": "listCascade",
     "handycam": "subtle"
@@ -191,7 +191,7 @@
    ],
    "transitIn": "lateralTruck",
    "motion": {
-    "ease": "corporate-smooth",
+    "ease": "curvaceous",
     "entrance": "listCascade",
     "exit": "listCascade",
     "handycam": "subtle"
@@ -213,7 +213,7 @@
    ],
    "transitIn": "crane",
    "motion": {
-    "ease": "corporate-smooth",
+    "ease": "curvaceous",
     "entrance": "fadeRise",
     "exit": "fadeRise",
     "handycam": "subtle"
@@ -235,7 +235,7 @@
    ],
    "transitIn": "whipOrbit",
    "motion": {
-    "ease": "corporate-smooth",
+    "ease": "curvaceous",
     "entrance": "listCascade",
     "exit": "listCascade",
     "handycam": "subtle"
@@ -257,7 +257,7 @@
    ],
    "transitIn": "dollyZoom",
    "motion": {
-    "ease": "corporate-smooth",
+    "ease": "curvaceous",
     "entrance": "fadeRise",
     "exit": "fadeRise",
     "handycam": "subtle"
@@ -279,7 +279,7 @@
    ],
    "transitIn": "lateralTruck",
    "motion": {
-    "ease": "corporate-smooth",
+    "ease": "curvaceous",
     "entrance": "listCascade",
     "exit": "listCascade",
     "handycam": "subtle"
@@ -301,7 +301,7 @@
    ],
    "transitIn": "crane",
    "motion": {
-    "ease": "corporate-smooth",
+    "ease": "curvaceous",
     "entrance": "listCascade",
     "exit": "listCascade",
     "handycam": "subtle"
@@ -323,7 +323,7 @@
    ],
    "transitIn": "whipOrbit",
    "motion": {
-    "ease": "corporate-smooth",
+    "ease": "curvaceous",
     "entrance": "fadeRise",
     "exit": "fadeRise",
     "handycam": "subtle"
