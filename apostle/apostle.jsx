@@ -3825,6 +3825,250 @@ var APOSTLE = (function () {
   }
 
   // ---------------------------------------------------------------
+  // TRANSITIONS — the Point Signifier iris between stations
+  //
+  // The rig flies the camera between stations 2400 apart. Mid-flight the
+  // frame shows the seams of two flat scene planes over the backdrop, and
+  // on the longer moves it shows nothing at all (rendered proof: VIDEO_001
+  // at t=40.8s, a completely empty frame). Rather than fight the geometry,
+  // cover the move: the brand's Point Signifier appears, a backdrop-coloured
+  // disc opens out of it and swallows the frame, the camera flies behind it,
+  // then the disc irises open again on the arrived station.
+  //
+  // Art is drawn natively, not imported, so it stays CONTROL-linked and
+  // resolution-free. Proportions are measured off the supplied toolkit SVG
+  // (Yello_CurrencyIcon Light_sRGB.svg, 1080 box): ring centreline diameter
+  // 0.600 of the box, stroke 0.0148; diamond side 0.200 rotated 45 degrees
+  // with the same 0.0148 stroke.
+  // ---------------------------------------------------------------
+  var TRANS_TAG = "apostle transition";
+  var TRANS = {
+    iconSize: 420,     // the 1080-box size the proportions below scale from
+    ringD: 0.600,      // ring centreline diameter, x iconSize
+    strokeK: 0.0148,   // ring + diamond stroke, x iconSize
+    diamondK: 0.200,   // diamond side, x iconSize
+    // Centred on the MOVE MIDPOINT, not spanning the whole move. Anchoring
+    // the cover to depart/arrive held the frame white for the entire flight —
+    // on a 1.3s move that is 1.3s of blank, nine times a film. The seams only
+    // show mid-flight, so punch through the middle and let the ends play.
+    closeDur: 0.32,
+    holdDur: 0.30,
+    openDur: 0.32
+  };
+
+  // A transit is a run of rig position keys between two station dwells.
+  // Stations are the x values the rig rests at; a dwell is a gap > 2s.
+  function transitWindows(master) {
+    var rig = findLayer(master, "APOSTLE RIG");
+    if (!rig) return [];
+    var p = rig.property("ADBE Transform Group").property("ADBE Position");
+    if (!p || p.numKeys < 2) return [];
+    var k = [], i;
+    for (i = 1; i <= p.numKeys; i++) {
+      var v = p.keyValue(i);
+      k.push({ t: p.keyTime(i), x: Math.round(v[0]) });
+    }
+    // Station x values = those held across a long gap. The LAST station is
+    // never followed by a gap (the keys simply stop), so add it explicitly —
+    // without it the final transit of every video goes uncovered.
+    var station = {};
+    for (i = 0; i < k.length - 1; i++) {
+      if (k[i + 1].t - k[i].t > 2.0 && k[i + 1].x === k[i].x) station[k[i].x] = true;
+    }
+    station[k[k.length - 1].x] = true;
+
+    var out = [];
+    // start at 1: key 0 has no predecessor, and treating it as a departure
+    // invented a transit covering the whole opening beat
+    for (i = 1; i < k.length - 1; i++) {
+      // departure: a key whose predecessor sat at the same station for a while
+      if (!(k[i].t - k[i - 1].t > 2.0)) continue;
+      if (!station[k[i].x]) continue;
+      var from = k[i].x;
+      for (var j = i + 1; j < k.length; j++) {
+        if (station[k[j].x] && k[j].x !== from) {
+          out.push({ t0: k[i].t, t1: k[j].t, from: from, to: k[j].x });
+          break;
+        }
+      }
+    }
+    return out;
+  }
+
+  function transDropExisting(master) {
+    var n = 0;
+    for (var L = master.numLayers; L >= 1; L--) {
+      var ly = master.layer(L);
+      if (ly.comment && ly.comment.substring(0, TRANS_TAG.length) === TRANS_TAG) { ly.remove(); n++; }
+    }
+    return n;
+  }
+
+  // filled ellipse whose SIZE is keyed; a layer mask punches the hole later
+  function transDisc(master, name, pal, masterName) {
+    var sl = master.layers.addShape();
+    sl.startTime = 0;                       // trap #2
+    sl.name = name;
+    sl.comment = TRANS_TAG;
+    sl.label = 11;
+    var g = sl.property("ADBE Root Vectors Group").addProperty("ADBE Vector Group");
+    // trap #6: re-read the group before each add, re-read children after
+    g.property("ADBE Vectors Group").addProperty("ADBE Vector Shape - Ellipse");
+    g.property("ADBE Vectors Group").addProperty("ADBE Vector Graphic - Fill");
+    var vg = g.property("ADBE Vectors Group");
+    var el = null, fl = null;
+    for (var i = 1; i <= vg.numProperties; i++) {
+      var pr = vg.property(i);
+      if (pr.matchName === "ADBE Vector Shape - Ellipse") el = pr;
+      if (pr.matchName === "ADBE Vector Graphic - Fill") fl = pr;
+    }
+    var fp = fl.property("ADBE Vector Fill Color");
+    fp.setValue(momColor("paper", pal));
+    momLinkFill(fp, "paper", masterName);   // tracks CONTROL Surface
+    sl.property("ADBE Transform Group").property("ADBE Position")
+      .setValue([master.width / 2, master.height / 2]);
+    return { layer: sl, size: el.property("ADBE Vector Ellipse Size") };
+  }
+
+  function transIcon(master, name, pal, masterName) {
+    var S = TRANS.iconSize;
+    var sl = master.layers.addShape();
+    sl.startTime = 0;
+    sl.name = name;
+    sl.comment = TRANS_TAG;
+    sl.label = 11;
+
+    // ring
+    var gr = sl.property("ADBE Root Vectors Group").addProperty("ADBE Vector Group");
+    gr.name = "ring";
+    gr.property("ADBE Vectors Group").addProperty("ADBE Vector Shape - Ellipse");
+    gr.property("ADBE Vectors Group").addProperty("ADBE Vector Graphic - Stroke");
+    var rvg = gr.property("ADBE Vectors Group");
+    var rel = null, rst = null, i;
+    for (i = 1; i <= rvg.numProperties; i++) {
+      if (rvg.property(i).matchName === "ADBE Vector Shape - Ellipse") rel = rvg.property(i);
+      if (rvg.property(i).matchName === "ADBE Vector Graphic - Stroke") rst = rvg.property(i);
+    }
+    rel.property("ADBE Vector Ellipse Size").setValue([S * TRANS.ringD, S * TRANS.ringD]);
+    var rsc = rst.property("ADBE Vector Stroke Color");
+    rsc.setValue(momColor("ink", pal));
+    rst.property("ADBE Vector Stroke Width").setValue(S * TRANS.strokeK);
+
+    // diamond = square rotated 45 degrees, brand fill, ink stroke
+    var gd = sl.property("ADBE Root Vectors Group").addProperty("ADBE Vector Group");
+    gd.name = "diamond";
+    gd.property("ADBE Vectors Group").addProperty("ADBE Vector Shape - Rect");
+    gd.property("ADBE Vectors Group").addProperty("ADBE Vector Graphic - Fill");
+    gd.property("ADBE Vectors Group").addProperty("ADBE Vector Graphic - Stroke");
+    var dvg = gd.property("ADBE Vectors Group");
+    var dre = null, dfl = null, dst = null;
+    for (i = 1; i <= dvg.numProperties; i++) {
+      if (dvg.property(i).matchName === "ADBE Vector Shape - Rect") dre = dvg.property(i);
+      if (dvg.property(i).matchName === "ADBE Vector Graphic - Fill") dfl = dvg.property(i);
+      if (dvg.property(i).matchName === "ADBE Vector Graphic - Stroke") dst = dvg.property(i);
+    }
+    dre.property("ADBE Vector Rect Size").setValue([S * TRANS.diamondK, S * TRANS.diamondK]);
+    var dfp = dfl.property("ADBE Vector Fill Color");
+    dfp.setValue(momColor("brand", pal));
+    momLinkFill(dfp, "brand", masterName);  // tracks CONTROL Primary
+    dst.property("ADBE Vector Stroke Color").setValue(momColor("ink", pal));
+    dst.property("ADBE Vector Stroke Width").setValue(S * TRANS.strokeK);
+    gd.property("ADBE Vector Transform Group").property("ADBE Vector Rotation").setValue(45);
+
+    sl.property("ADBE Transform Group").property("ADBE Position")
+      .setValue([master.width / 2, master.height / 2]);
+    return sl;
+  }
+
+  function applyTransitions(masterName) {
+    try {
+      var master = findComp(masterName);
+      if (!master) return toJSON({ status: "error", error: "Comp not found: " + masterName });
+      var pal = momPalette(null);
+      var report = { status: "success", master: masterName, removed: 0, transits: [], warnings: [] };
+
+      app.beginUndoGroup("Apostle applyTransitions");
+      try {
+        report.removed = transDropExisting(master);
+        var wins = transitWindows(master);
+        if (wins.length === 0) {
+          report.warnings.push("no transits found — is APOSTLE RIG keyed?");
+          report.status = "partial";
+        }
+        // radius that guarantees frame cover, corner to corner
+        var R = Math.sqrt(master.width * master.width + master.height * master.height) / 2 + 40;
+
+        for (var w = 0; w < wins.length; w++) {
+          var t0 = wins[w].t0, t1 = wins[w].t1;
+          var tm = (t0 + t1) / 2;
+          var cA = tm - TRANS.holdDur / 2 - TRANS.closeDur;  // disc starts closing
+          var cB = tm - TRANS.holdDur / 2;                   // fully covered
+          var rA = tm + TRANS.holdDur / 2;                   // starts opening
+          var rB = tm + TRANS.holdDur / 2 + TRANS.openDur;   // fully open
+          if (cA < 0) cA = 0;
+
+          var d = transDisc(master, "TRANS DISC " + (w + 1), pal, masterName);
+          d.size.setValueAtTime(cA, [0, 0]);
+          d.size.setValueAtTime(cB, [R * 2, R * 2]);
+          easeAllKeys(d.size, 80, 80);
+          applyEaseExpression(d.size, "inOutExpo");
+
+          // the opening hole: one mask, expansion keyed
+          var mk = d.layer.property("ADBE Mask Parade").addProperty("ADBE Mask Atom");
+          mk.name = "iris";
+          mk.maskMode = MaskMode.SUBTRACT;
+          var sh = new Shape();
+          // LAYER space, not comp space: the shape layer's anchor is [0,0]
+          // and its position is comp centre, so the mask origin is 0,0.
+          // Using comp centre here opened the iris from the bottom-right
+          // corner instead of the middle of the frame.
+          var r0 = 6, cx = 0, cy = 0;
+          sh.vertices = [[cx, cy - r0], [cx + r0, cy], [cx, cy + r0], [cx - r0, cy]];
+          sh.inTangents = [[-r0 * 0.55, 0], [0, -r0 * 0.55], [r0 * 0.55, 0], [0, r0 * 0.55]];
+          sh.outTangents = [[r0 * 0.55, 0], [0, r0 * 0.55], [-r0 * 0.55, 0], [0, -r0 * 0.55]];
+          sh.closed = true;
+          mk.property("ADBE Mask Shape").setValue(sh);
+          var exp = mk.property("ADBE Mask Offset");
+          exp.setValueAtTime(rA, 0);
+          exp.setValueAtTime(rB, R);
+          easeAllKeys(exp, 80, 80);
+          applyEaseExpression(exp, "inOutExpo");
+
+          d.layer.inPoint = cA;
+          d.layer.outPoint = rB;
+
+          // the mark rides on top for the whole cover
+          var ic = transIcon(master, "TRANS MARK " + (w + 1), pal, masterName);
+          var itr = ic.property("ADBE Transform Group");
+          var op = itr.property("ADBE Opacity");
+          op.setValueAtTime(cA, 0);
+          op.setValueAtTime(cA + 0.22, 100);
+          op.setValueAtTime(rB - 0.24, 100);
+          op.setValueAtTime(rB, 0);
+          easeAllKeys(op, 70, 70);
+          var sc = itr.property("ADBE Scale");
+          sc.setValueAtTime(cA, [78, 78]);
+          sc.setValueAtTime(cB, [100, 100]);
+          sc.setValueAtTime(rA, [100, 100]);
+          sc.setValueAtTime(rB, [124, 124]);
+          easeAllKeys(sc, 80, 80);
+          applyEaseExpression(sc, "inOutExpo");
+          ic.inPoint = cA;
+          ic.outPoint = rB;
+
+          // both above every scene plane
+          d.layer.moveToBeginning();
+          ic.moveToBeginning();
+
+          report.transits.push({ n: w + 1, t0: Math.round(t0 * 100) / 100, t1: Math.round(t1 * 100) / 100,
+                                 cover: Math.round(cA * 100) / 100, open: Math.round(rB * 100) / 100 });
+        }
+      } finally { app.endUndoGroup(); }
+      return toJSON(report);
+    } catch (e) { return errJSON("applyTransitions", e); }
+  }
+
+  // ---------------------------------------------------------------
   // SKIN — backdrop + palette + typography swap on a built master
   //
   // The build already links every BG solid and moment fill to CONTROL, and
@@ -3944,8 +4188,13 @@ var APOSTLE = (function () {
     lay.startTime = 0;
     lay.label = 8;
     lay.threeDLayer = true;
+    // Lengthen the SOURCE, do not stretch the layer. AE clamps a precomp
+    // layer's outPoint to its source duration, so the old order (set
+    // outPoint, then stretch) silently left the backdrop short — VIDEO_001
+    // ran 183.28s with the gradient stopping at 160.96s, i.e. the last 22
+    // seconds played against the flat MASTER BG with no gradient or beacon.
+    try { if (srcComp.duration < master.duration) srcComp.duration = master.duration; } catch (eD) {}
     try { lay.outPoint = master.duration; } catch (eO) {}
-    try { if (master.duration > srcComp.duration) lay.stretch = (master.duration / srcComp.duration) * 100; } catch (eS) {}
     var expr =
       'var r = thisComp.layer("APOSTLE RIG").transform.position;\n' +
       'var mid = ' + midX + ';\n' +
@@ -4023,6 +4272,16 @@ var APOSTLE = (function () {
           var folder = null;
           try { folder = master.parentFolder; } catch (eF) { folder = null; }
 
+          // Clear the whole depth stack first. attachDepthLayer only replaces
+          // a layer of the SAME name, so switching confetti off used to leave
+          // the existing CONFETTI 1/2/3 layers in place and the setting looked
+          // like it did nothing.
+          var dropped = 0;
+          for (var dz = master.numLayers; dz >= 1; dz--) {
+            if (master.layer(dz).comment === BACKDROP_TAG) { master.layer(dz).remove(); dropped++; }
+          }
+          if (dropped > 0) report.comps.push("cleared " + dropped + " existing depth layer(s)");
+
           var bd = buildBackdropComp(masterName + " BACKDROP", master.width, master.height, bdSpec, master.frameRate);
           if (folder) { try { bd.parentFolder = folder; } catch (eP) {} }
           attachDepthLayer(master, bd, "BACKDROP", 2600, 0.04, midX, 10, 0.0);
@@ -4087,6 +4346,7 @@ var APOSTLE = (function () {
     version: LIB_VERSION,
     applySkin: applySkin,
     applyMoments: applyMoments,
+    applyTransitions: applyTransitions,
     getProjectInfo: getProjectInfo,
     listComps: listComps,
     extractDesignSpec: extractDesignSpec,

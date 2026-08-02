@@ -23,7 +23,7 @@
     "angleDeg": 28,
     "beacon": true,
     "beaconColor": "#FFFFFF",
-    "confetti": true,
+    "confetti": false,
     "confettiCount": 42
   },
   "moments": {

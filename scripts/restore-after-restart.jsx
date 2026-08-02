@@ -67,6 +67,34 @@ function restoreAfterRestart() {
   var mb = enableMotionBlur();
   out.motionBlur = { comps: mb.comps, layersOn: mb.layersOn };
 
+  // Backdrop from the kit (confetti off since 2026-08-02) + the Point
+  // Signifier iris over every camera transit. Both are master-level and
+  // independent of the moments, but they belong in the same pass so a
+  // rebuilt project is never left with covered transits missing.
+  //
+  // applyTransitions failed once on VIDEO_003 in a seven-master run and
+  // succeeded on an immediate re-run with the same inputs. The cause was
+  // not identified, so it retries rather than pretending it cannot happen.
+  var kitF = new File(REPO + "/brands/commbank-yello-3.json");
+  kitF.open("r"); var kit = JSON.parse(kitF.read()); kitF.close();
+  var skinSpec = JSON.stringify({ backdrop: kit.backdrop });
+  out.transitions = [];
+  for (var t = 0; t < masters.length; t++) {
+    var row = { master: masters[t] };
+    var sk = JSON.parse(APOSTLE.applySkin(masters[t], skinSpec));
+    row.skin = sk.status;
+    var tr = JSON.parse(APOSTLE.applyTransitions(masters[t]));
+    if (tr.status !== "success") {
+      try { app.purge(PurgeTarget.ALL_CACHES); } catch (eP) {}
+      tr = JSON.parse(APOSTLE.applyTransitions(masters[t]));
+      row.retried = true;
+    }
+    row.status = tr.status;
+    row.transits = tr.transits ? tr.transits.length : 0;
+    if (row.skin !== "success" || row.status !== "success") out.ok = false;
+    out.transitions.push(row);
+  }
+
   for (var m = 0; m < masters.length; m++) {
     var rec = { master: masters[m] };
     try {
