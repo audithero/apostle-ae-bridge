@@ -46,6 +46,16 @@ try {
   os = require("os");
   execFile = require("child_process").execFile;
   adobeCep = window.__adobe_cep__;
+  // AE swallows Cmd+V / Cmd+C at the app level (they're AE's own Paste/Copy
+  // shortcuts) before the panel's Chromium view ever sees them — the terminal
+  // could only paste via the right-click menu. Registering interest routes the
+  // combos to the panel while it has focus. Mac virtual keycodes: V=9, C=8.
+  try {
+    adobeCep.registerKeyEventsInterest(JSON.stringify([
+      { keyCode: 9, metaKey: true },
+      { keyCode: 8, metaKey: true }
+    ]));
+  } catch (eKeys) {}
   const extPath = decodeURIComponent(adobeCep.getSystemPath("extension").replace("file://", ""));
   try { REPO = path.dirname(fs.realpathSync(extPath)); } catch (e) { REPO = path.dirname(extPath); }
   BRIDGE_DIR = path.join(os.homedir(), "Documents", "ae-mcp-bridge");
@@ -218,7 +228,13 @@ function rdReset() {
   rdProviderNote();
   await checkProject(); // scopes memory + fills comp lists for the open project
   setInterval(checkProject, 5000); // follow project switches automatically
-  document.querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => checkProject()));
+  document.querySelectorAll(".tab").forEach((b) => b.addEventListener("click", () => {
+    checkProject();
+    // leaving the CLAUDE tab must not leave keyboard focus in the (now hidden)
+    // terminal — keystrokes would silently feed the session and the AE menu
+    // would stay dead
+    if (b.dataset.tab !== "claude" && term.xterm) { try { term.xterm.blur(); } catch (e) {} }
+  }));
   [JOBS_DIR, RENDER_DIR].forEach((d) => { try { fs.mkdirSync(d, { recursive: true }); } catch (e) {} });
 })();
 
@@ -1092,6 +1108,21 @@ $id("btnClaudeReview").addEventListener("click", () => {
 const RELAY_PORT = 8471;
 const term = { xterm: null, ws: null, fit: null };
 
+// While the terminal's hidden textarea holds keyboard focus, AE's application
+// menu is dead — macOS treats the whole app as "inside a text field". Ending
+// the session never released that focus, so the menu stayed hostage until the
+// user closed the project. Blur the panel and hand keyboard focus to a native
+// viewer; activeViewer.setActive() is what actually revives the menu.
+function releaseFocusToAE() {
+  try { if (term.xterm) term.xterm.blur(); } catch (e) {}
+  try { if (document.activeElement) document.activeElement.blur(); } catch (e) {}
+  try { evalJSX("(function(){try{if(app.activeViewer)app.activeViewer.setActive();}catch(e){}return'1'})()"); } catch (e) {}
+}
+$id("btnFocusAE").addEventListener("click", () => {
+  releaseFocusToAE();
+  termStatus("focus returned to AE", "ok");
+});
+
 function relayEnsure() {
   // idempotent: relay exits 0 immediately if the port is already served.
   // process.execPath inside CEP is the CEF binary, NOT node — go through a
@@ -1135,6 +1166,7 @@ function termConnect(attempt) {
         setTimeout(() => startSession(), 400);
       } else {
         termStatus("session ended");
+        releaseFocusToAE(); // the unfreeze: give the menu bar back when Claude is done
       }
     } else if ((attempt || 0) < 20) {
       // relay may still be starting — retry
@@ -1185,6 +1217,26 @@ function startSession() {
     term.xterm.loadAddon(term.fit);
     term.xterm.open($id("terminal"));
     term.xterm.onData((d) => { if (term.ws && term.ws.readyState === 1) term.ws.send(d); });
+    // Cmd+V/Cmd+C only reach us because of registerKeyEventsInterest; CEF's
+    // built-in clipboard shortcuts stay dead inside AE, so do it via pb* —
+    // xterm.paste() keeps bracketed paste intact for multi-line input.
+    term.xterm.attachCustomKeyEventHandler((ev) => {
+      if (ev.type === "keydown" && ev.metaKey && !ev.ctrlKey && !ev.altKey) {
+        const k = (ev.key || "").toLowerCase();
+        if (k === "v") {
+          ev.preventDefault(); // keep CEF's own paste (if alive) from doubling ours
+          execFile("/usr/bin/pbpaste", (err, out) => { if (!err && out && term.xterm) term.xterm.paste(out); });
+          return false;
+        }
+        if (k === "c" && term.xterm.hasSelection()) {
+          ev.preventDefault();
+          const p = require("child_process").spawn("/usr/bin/pbcopy");
+          p.stdin.end(term.xterm.getSelection());
+          return false;
+        }
+      }
+      return true;
+    });
     window.addEventListener("resize", () => { if (term.fit) { term.fit.fit(); sendResize(); } });
   }
   term.fit.fit();
