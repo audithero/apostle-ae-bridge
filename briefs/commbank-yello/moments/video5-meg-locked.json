@@ -1,0 +1,332 @@
+{
+ "meta": {
+  "briefId": "video_005_cards_travel",
+  "masterName": "VIDEO_005_CARDS_TRAVEL_v001",
+  "easeProfile": "curvaceous",
+  "scriptVersion": 1,
+  "voLeadIn": 0.45,
+  "tailBuffer": 6,
+  "brandKit": "commbank-yello-3",
+  "note": "Meg-locked 2026-08-10: windows re-measured against Meg's read. Fractions of each beat's VO window."
+ },
+ "palette": {
+  "ink": "#000000",
+  "brand": "#FDFD3C",
+  "paper": "#FFFFFF",
+  "hole": "#FFFFFF",
+  "muted": "#E8E8B0",
+  "tileShape": "circle",
+  "tileFill": "paper",
+  "plateFill": "paper",
+  "plateStroke": "ink"
+ },
+ "scenes": [
+  {
+   "beatId": "beat-1",
+   "beatDurationSec": 5.33,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "statement",
+     "super": "Be rewarded like never before with CommBank Yello.",
+     "sub": "Travel Booking with CommBank.",
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      -5.33,
+      0
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "for-commbank-customers-finding-the-b",
+   "beatDurationSec": 6.86,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "hero",
+     "glyph": "plane",
+     "super": "Finding travel has never been easier.",
+     "sub": "",
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      1.77,
+      8.63
+     ],
+     "picto": "plane"
+    }
+   ]
+  },
+  {
+   "beatId": "travel-booking-lets-customers-search",
+   "beatDurationSec": 8.93,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "device",
+     "super": "Search + book flights, hotels, car rental via Travel Booking.",
+     "sub": "Home screen > Features > Travel Booking.",
+     "screen": [
+      {
+       "glyph": "plane",
+       "label": "Flights",
+       "picto": "plane"
+      },
+      {
+       "glyph": "home",
+       "label": "Hotels",
+       "picto": "house"
+      },
+      {
+       "glyph": "card",
+       "label": "Car rental",
+       "picto": "car"
+      }
+     ],
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      8.63,
+      17.56
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "with-smart-tools-like-best-price-gua",
+   "beatDurationSec": 41.17,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "iconRow",
+     "super": "Smart travel tools to help customers save.",
+     "tiles": [
+      {
+       "glyph": "shield",
+       "label": "Best Price\rGuarantee",
+       "picto": "certified"
+      },
+      {
+       "glyph": "sparkle",
+       "label": "Price\rPrediction",
+       "picto": "analytics"
+      },
+      {
+       "glyph": "percent",
+       "label": "Auto Price\rDrop",
+       "picto": "decreasing trend"
+      }
+     ],
+     "from": 0,
+     "to": 0.241,
+     "voSec": [
+      17.56,
+      27.49
+     ]
+    },
+    {
+     "id": "m2",
+     "layout": "statement",
+     "super": "Best Price Guarantee.",
+     "sub": "Price drops within 24 hours come back as travel credits.",
+     "from": 0.241,
+     "to": 0.487,
+     "voSec": [
+      27.49,
+      37.63
+     ]
+    },
+    {
+     "id": "m3",
+     "layout": "statement",
+     "super": "AI-powered Price Prediction.",
+     "sub": "Shows customers the best time to book.",
+     "from": 0.487,
+     "to": 0.686,
+     "voSec": [
+      37.63,
+      45.8
+     ]
+    },
+    {
+     "id": "m4",
+     "layout": "statement",
+     "super": "Auto Price Drop.",
+     "sub": "Up to $50 in travel credits if the price drops within 10 days.",
+     "from": 0.686,
+     "to": 1,
+     "voSec": [
+      45.8,
+      58.73
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "travel-booking-gives-customers-acces",
+   "beatDurationSec": 11.89,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "iconRow",
+     "super": "Exclusive Travel Offers.",
+     "tiles": [
+      {
+       "glyph": "plane",
+       "label": "Flights",
+       "picto": "plane"
+      },
+      {
+       "glyph": "home",
+       "label": "Hotels",
+       "picto": "house"
+      },
+      {
+       "glyph": "card",
+       "label": "Car hire",
+       "picto": "car"
+      }
+     ],
+     "from": 0,
+     "to": 0.715,
+     "voSec": [
+      58.73,
+      67.23
+     ]
+    },
+    {
+     "id": "m2",
+     "layout": "statement",
+     "super": "24/7 Customer Support.",
+     "sub": "",
+     "from": 0.715,
+     "to": 1,
+     "voSec": [
+      67.23,
+      70.62
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "plus-from-october-1st-customers-can",
+   "beatDurationSec": 17.74,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "hero",
+     "glyph": "coin",
+     "super": "Use and earn Yello points with Travel Booking.",
+     "sub": "From 1 October.",
+     "from": 0,
+     "to": 0.413,
+     "voSec": [
+      70.62,
+      77.94
+     ],
+     "picto": "coin stack"
+    },
+    {
+     "id": "m2",
+     "layout": "chipRow",
+     "super": "",
+     "chips": [
+      "5x per $1 — hotels",
+      "5x per $1 — car rental",
+      "2x per $1 — flights"
+     ],
+     "from": 0.413,
+     "to": 1,
+     "voSec": [
+      77.94,
+      88.36
+     ],
+     "note": "2026-08-10: chip-row header removed (client: super not in script)"
+    }
+   ]
+  },
+  {
+   "beatId": "and-eligible-credit-card-customers-w",
+   "beatDurationSec": 15.06,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "placeholder",
+     "super": "From 1 Oct: $25 Monthly Travel Credit",
+     "sub": "For CommBank Ultimate credit card customers.",
+     "asset": "CBA Ultimate card art",
+     "from": 0,
+     "to": 0.457,
+     "voSec": [
+      88.36,
+      95.24
+     ]
+    },
+    {
+     "id": "m2",
+     "layout": "placeholder",
+     "super": "From 1 Oct: $10 Monthly Travel Credit",
+     "sub": "For CommBank Smart credit card customers.",
+     "asset": "CBA Smart card art",
+     "from": 0.457,
+     "to": 1,
+     "voSec": [
+      95.24,
+      103.42
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "you-can-even-enjoy-added-benefits-in",
+   "beatDurationSec": 12.72,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "statement",
+     "super": "Enjoy more travel benefits than ever.",
+     "sub": "",
+     "from": 0,
+     "to": 0.145
+    },
+    {
+     "id": "m2",
+     "layout": "iconRow",
+     "super": "Travel. Dining. Memberships. Airport Lounge Passes*",
+     "sub": "*Eligibility criteria applies",
+     "tiles": [
+      {
+       "glyph": "plane",
+       "label": "Travel credits",
+       "picto": "plane"
+      },
+      {
+       "glyph": "basket",
+       "label": "Dining credits",
+       "picto": "dining"
+      },
+      {
+       "glyph": "star",
+       "label": "Memberships",
+       "picto": "star"
+      },
+      {
+       "glyph": "ticket",
+       "label": "Lounge passes",
+       "picto": "keycard"
+      }
+     ],
+     "from": 0.145,
+     "to": 1,
+     "voSec": [
+      105.27,
+      116.14
+     ],
+     "note": "2026-08-10: eligibility sub restyled 28px at y~940 in comp (client feedback)"
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,395 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 0
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,570"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 570
+			},
+			"text": " Whether"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,570",
+				"to": "00:00:00,610"
+			},
+			"offsets": {
+				"from": 570,
+				"to": 610
+			},
+			"text": " they"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,610",
+				"to": "00:00:00,790"
+			},
+			"offsets": {
+				"from": 610,
+				"to": 790
+			},
+			"text": "'re"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,790",
+				"to": "00:00:01,160"
+			},
+			"offsets": {
+				"from": 790,
+				"to": 1160
+			},
+			"text": " looking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,160",
+				"to": "00:00:01,380"
+			},
+			"offsets": {
+				"from": 1160,
+				"to": 1380
+			},
+			"text": " for"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,380",
+				"to": "00:00:02,000"
+			},
+			"offsets": {
+				"from": 1380,
+				"to": 2000
+			},
+			"text": " everyday"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,000",
+				"to": "00:00:02,210"
+			},
+			"offsets": {
+				"from": 2000,
+				"to": 2210
+			},
+			"text": " value"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,210",
+				"to": "00:00:02,520"
+			},
+			"offsets": {
+				"from": 2210,
+				"to": 2520
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,520",
+				"to": "00:00:03,020"
+			},
+			"offsets": {
+				"from": 2520,
+				"to": 3020
+			},
+			"text": " travel"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,020",
+				"to": "00:00:04,080"
+			},
+			"offsets": {
+				"from": 3020,
+				"to": 4080
+			},
+			"text": " experiences"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,080",
+				"to": "00:00:04,650"
+			},
+			"offsets": {
+				"from": 4080,
+				"to": 4650
+			},
+			"text": " or"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,650",
+				"to": "00:00:04,660"
+			},
+			"offsets": {
+				"from": 4650,
+				"to": 4660
+			},
+			"text": " rewards"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,660",
+				"to": "00:00:04,920"
+			},
+			"offsets": {
+				"from": 4660,
+				"to": 4920
+			},
+			"text": " from"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,920",
+				"to": "00:00:05,370"
+			},
+			"offsets": {
+				"from": 4920,
+				"to": 5370
+			},
+			"text": " brands"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,370",
+				"to": "00:00:05,610"
+			},
+			"offsets": {
+				"from": 5370,
+				"to": 5610
+			},
+			"text": " they"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,610",
+				"to": "00:00:06,020"
+			},
+			"offsets": {
+				"from": 5610,
+				"to": 6020
+			},
+			"text": " already"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,020",
+				"to": "00:00:06,280"
+			},
+			"offsets": {
+				"from": 6020,
+				"to": 6280
+			},
+			"text": " know"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,280",
+				"to": "00:00:06,600"
+			},
+			"offsets": {
+				"from": 6280,
+				"to": 6600
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,600",
+				"to": "00:00:06,760"
+			},
+			"offsets": {
+				"from": 6600,
+				"to": 6760
+			},
+			"text": " love"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,760",
+				"to": "00:00:06,760"
+			},
+			"offsets": {
+				"from": 6760,
+				"to": 6760
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,760",
+				"to": "00:00:07,330"
+			},
+			"offsets": {
+				"from": 6760,
+				"to": 7330
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,330",
+				"to": "00:00:07,520"
+			},
+			"offsets": {
+				"from": 7330,
+				"to": 7520
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,520",
+				"to": "00:00:07,920"
+			},
+			"offsets": {
+				"from": 7520,
+				"to": 7920
+			},
+			"text": " choose"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,920",
+				"to": "00:00:08,050"
+			},
+			"offsets": {
+				"from": 7920,
+				"to": 8050
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,050",
+				"to": "00:00:08,520"
+			},
+			"offsets": {
+				"from": 8050,
+				"to": 8520
+			},
+			"text": " redemption"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,520",
+				"to": "00:00:08,960"
+			},
+			"offsets": {
+				"from": 8520,
+				"to": 8960
+			},
+			"text": " option"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,960",
+				"to": "00:00:09,500"
+			},
+			"offsets": {
+				"from": 8960,
+				"to": 9500
+			},
+			"text": " that"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,500",
+				"to": "00:00:09,530"
+			},
+			"offsets": {
+				"from": 9500,
+				"to": 9530
+			},
+			"text": " works"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,530",
+				"to": "00:00:09,760"
+			},
+			"offsets": {
+				"from": 9530,
+				"to": 9760
+			},
+			"text": " best"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,760",
+				"to": "00:00:09,930"
+			},
+			"offsets": {
+				"from": 9760,
+				"to": 9930
+			},
+			"text": " for"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,930",
+				"to": "00:00:10,160"
+			},
+			"offsets": {
+				"from": 9930,
+				"to": 10160
+			},
+			"text": " them"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,160",
+				"to": "00:00:10,360"
+			},
+			"offsets": {
+				"from": 10160,
+				"to": 10360
+			},
+			"text": "."
+		}
+	]
+}

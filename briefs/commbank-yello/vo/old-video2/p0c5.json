@@ -1,0 +1,263 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,650"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 650
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,650",
+				"to": "00:00:00,890"
+			},
+			"offsets": {
+				"from": 650,
+				"to": 890
+			},
+			"text": " Customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,890",
+				"to": "00:00:01,040"
+			},
+			"offsets": {
+				"from": 890,
+				"to": 1040
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,040",
+				"to": "00:00:01,390"
+			},
+			"offsets": {
+				"from": 1040,
+				"to": 1390
+			},
+			"text": " also"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,390",
+				"to": "00:00:01,740"
+			},
+			"offsets": {
+				"from": 1390,
+				"to": 1740
+			},
+			"text": " earn"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,740",
+				"to": "00:00:02,310"
+			},
+			"offsets": {
+				"from": 1740,
+				"to": 2310
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,310",
+				"to": "00:00:02,360"
+			},
+			"offsets": {
+				"from": 2310,
+				"to": 2360
+			},
+			"text": " when"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,360",
+				"to": "00:00:02,840"
+			},
+			"offsets": {
+				"from": 2360,
+				"to": 2840
+			},
+			"text": " shopping"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,840",
+				"to": "00:00:02,940"
+			},
+			"offsets": {
+				"from": 2840,
+				"to": 2940
+			},
+			"text": " with"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,940",
+				"to": "00:00:03,770"
+			},
+			"offsets": {
+				"from": 2940,
+				"to": 3770
+			},
+			"text": " participating"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,770",
+				"to": "00:00:03,960"
+			},
+			"offsets": {
+				"from": 3770,
+				"to": 3960
+			},
+			"text": " brand"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,960",
+				"to": "00:00:04,430"
+			},
+			"offsets": {
+				"from": 3960,
+				"to": 4430
+			},
+			"text": " digital"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,430",
+				"to": "00:00:05,250"
+			},
+			"offsets": {
+				"from": 4430,
+				"to": 5250
+			},
+			"text": " stores"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,250",
+				"to": "00:00:05,640"
+			},
+			"offsets": {
+				"from": 5250,
+				"to": 5640
+			},
+			"text": " available"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,640",
+				"to": "00:00:05,840"
+			},
+			"offsets": {
+				"from": 5640,
+				"to": 5840
+			},
+			"text": " through"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,840",
+				"to": "00:00:06,020"
+			},
+			"offsets": {
+				"from": 5840,
+				"to": 6020
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,020",
+				"to": "00:00:06,200"
+			},
+			"offsets": {
+				"from": 6020,
+				"to": 6200
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,200",
+				"to": "00:00:06,480"
+			},
+			"offsets": {
+				"from": 6200,
+				"to": 6480
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,480",
+				"to": "00:00:06,800"
+			},
+			"offsets": {
+				"from": 6480,
+				"to": 6800
+			},
+			"text": " Yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,800",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 6800,
+				"to": 7000
+			},
+			"text": " Hub"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,000",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 7000,
+				"to": 7000
+			},
+			"text": "."
+		}
+	]
+}

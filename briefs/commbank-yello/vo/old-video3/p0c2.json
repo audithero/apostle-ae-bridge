@@ -1,0 +1,285 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,580"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 580
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,580",
+				"to": "00:00:00,590"
+			},
+			"offsets": {
+				"from": 580,
+				"to": 590
+			},
+			"text": " eligible"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,590",
+				"to": "00:00:01,240"
+			},
+			"offsets": {
+				"from": 590,
+				"to": 1240
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,240",
+				"to": "00:00:01,450"
+			},
+			"offsets": {
+				"from": 1240,
+				"to": 1450
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,450",
+				"to": "00:00:01,740"
+			},
+			"offsets": {
+				"from": 1450,
+				"to": 1740
+			},
+			"text": " earn"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,740",
+				"to": "00:00:02,210"
+			},
+			"offsets": {
+				"from": 1740,
+				"to": 2210
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,210",
+				"to": "00:00:02,360"
+			},
+			"offsets": {
+				"from": 2210,
+				"to": 2360
+			},
+			"text": " when"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,360",
+				"to": "00:00:02,730"
+			},
+			"offsets": {
+				"from": 2360,
+				"to": 2730
+			},
+			"text": " taking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,730",
+				"to": "00:00:02,940"
+			},
+			"offsets": {
+				"from": 2730,
+				"to": 2940
+			},
+			"text": " out"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,940",
+				"to": "00:00:03,460"
+			},
+			"offsets": {
+				"from": 2940,
+				"to": 3460
+			},
+			"text": " eligible"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,460",
+				"to": "00:00:04,100"
+			},
+			"offsets": {
+				"from": 3460,
+				"to": 4100
+			},
+			"text": " products"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,100",
+				"to": "00:00:04,160"
+			},
+			"offsets": {
+				"from": 4100,
+				"to": 4160
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,160",
+				"to": "00:00:04,360"
+			},
+			"offsets": {
+				"from": 4160,
+				"to": 4360
+			},
+			"text": " renew"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,360",
+				"to": "00:00:04,520"
+			},
+			"offsets": {
+				"from": 4360,
+				"to": 4520
+			},
+			"text": "ing"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,520",
+				"to": "00:00:05,070"
+			},
+			"offsets": {
+				"from": 4520,
+				"to": 5070
+			},
+			"text": " existing"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,070",
+				"to": "00:00:05,760"
+			},
+			"offsets": {
+				"from": 5070,
+				"to": 5760
+			},
+			"text": " products"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,760",
+				"to": "00:00:05,870"
+			},
+			"offsets": {
+				"from": 5760,
+				"to": 5870
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,870",
+				"to": "00:00:06,000"
+			},
+			"offsets": {
+				"from": 5870,
+				"to": 6000
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,000",
+				"to": "00:00:06,570"
+			},
+			"offsets": {
+				"from": 6000,
+				"to": 6570
+			},
+			"text": " reaching"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,570",
+				"to": "00:00:06,840"
+			},
+			"offsets": {
+				"from": 6570,
+				"to": 6840
+			},
+			"text": " key"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,840",
+				"to": "00:00:07,290"
+			},
+			"offsets": {
+				"from": 6840,
+				"to": 7290
+			},
+			"text": " banking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,290",
+				"to": "00:00:08,000"
+			},
+			"offsets": {
+				"from": 7290,
+				"to": 8000
+			},
+			"text": " milestones"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,000",
+				"to": "00:00:08,000"
+			},
+			"offsets": {
+				"from": 8000,
+				"to": 8000
+			},
+			"text": "."
+		}
+	]
+}

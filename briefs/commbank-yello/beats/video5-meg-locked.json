@@ -1,0 +1,242 @@
+{
+ "meta": {
+  "schemaVersion": 2,
+  "briefId": "video_005_cards_travel",
+  "scriptVersion": 1,
+  "sourceScriptPath": null,
+  "title": "VIDEO_005_CARDS_TRAVEL",
+  "fps": 25,
+  "resolution": [
+   1920,
+   1080
+  ],
+  "wpm": 150,
+  "layout": "gallery",
+  "masterName": "VIDEO_005_CARDS_TRAVEL",
+  "rig": "auto",
+  "brandKit": "commbank-yello-3",
+  "note": "Meg-locked 2026-08-10: durations measured from Meg word boundaries; last beat padded so total equals the master comp duration. VO wav sits at startTime meta.voOffsetSec.",
+  "voOffsetSec": 5.56,
+  "voFiles": [
+   "01.MEDIA/AUDIO/VO/Meg CommBank Yello Internal Video Reads/Meg Video 5_ Credit Cards + Travel Booking.wav"
+  ]
+ },
+ "sections": [
+  {
+   "id": "intro",
+   "title": "Travel Booking"
+  },
+  {
+   "id": "tools",
+   "title": "Smart travel tools"
+  },
+  {
+   "id": "offers",
+   "title": "Exclusive offers and support"
+  },
+  {
+   "id": "points",
+   "title": "Use and earn Yello points"
+  },
+  {
+   "id": "credits",
+   "title": "Monthly travel credits"
+  },
+  {
+   "id": "benefits",
+   "title": "More travel benefits"
+  }
+ ],
+ "brand": {
+  "fontHeadingPS": "CBABeaconSans-Bold",
+  "fontBodyPS": "CBABeaconSans-Regular",
+  "headingSize": 84,
+  "bodySize": 42,
+  "headingTracking": 0,
+  "bodyTracking": 0,
+  "safeMarginPct": 10,
+  "colors": {
+   "primary": "#FDFD3C",
+   "secondary": "#000000",
+   "background": "#FDFD3C",
+   "text": "#000000",
+   "surface": "#FFFFFF"
+  },
+  "logo": null
+ },
+ "beats": [
+  {
+   "id": 1,
+   "beatId": "beat-1",
+   "sectionId": "intro",
+   "vo": "",
+   "superText": "Be rewarded like never before with CommBank Yello.",
+   "voSpokenWords": 0,
+   "silent": true,
+   "stylePreset": "titleCard",
+   "durationSec": 5.33,
+   "voWindow": null,
+   "transitIn": "none",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 2,
+   "beatId": "for-commbank-customers-finding-the-b",
+   "sectionId": "intro",
+   "vo": "For CommBank customers, finding the best place for travel has never been easier.",
+   "superText": "Finding travel has never been easier.",
+   "voSpokenWords": 13,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 6.86,
+   "voWindow": [
+    1.77,
+    8.63
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 3,
+   "beatId": "travel-booking-lets-customers-search",
+   "sectionId": "intro",
+   "vo": "Travel Booking lets customers search and book flights, hotels and car rentals, via Travel Booking in the CommBank app.",
+   "superText": "Search + book flights, hotels, car rental via Travel Booking.",
+   "voSpokenWords": 19,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 8.93,
+   "voWindow": [
+    8.63,
+    17.56
+   ],
+   "transitIn": "crane",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 4,
+   "beatId": "with-smart-tools-like-best-price-gua",
+   "sectionId": "tools",
+   "vo": "With smart tools like Best Price Guarantee, Price Prediction and Auto Price Drop, we're helping our customers save on travel too. With Best Price Guarantee, if the price of a booked flight drops within 24 hours of the customer booking, CommBank will provide the difference in travel credits. And with the AI powered Price Prediction, customers are shown what might be the best time to book to save. Also, Auto Price Drop helps customers by protecting their booking by providing up to $50 in travel credits if the price of the recommended flight drops within 10 days of booking.",
+   "superText": "Smart travel tools to help customers save.",
+   "voSpokenWords": 99,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 41.17,
+   "voWindow": [
+    17.56,
+    58.73
+   ],
+   "transitIn": "whipOrbit",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 5,
+   "beatId": "travel-booking-gives-customers-acces",
+   "sectionId": "offers",
+   "vo": "Travel Booking gives customers access to CommBank exclusive travel offers on flights, hotels and car hire, as well as 24/7 support.",
+   "superText": "Exclusive Travel Offers.",
+   "voSpokenWords": 21,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 11.89,
+   "voWindow": [
+    58.73,
+    70.62
+   ],
+   "transitIn": "dollyZoom",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 6,
+   "beatId": "plus-from-october-1st-customers-can",
+   "sectionId": "points",
+   "vo": "Plus, from October 1st, customers can use and earn CommBank Yello points with Travel Booking. Earn 5x points per $1 spent on hotel and car rental bookings, and 2x points for every $1 spent on flight bookings.",
+   "superText": "Use and earn Yello points with Travel Booking.",
+   "voSpokenWords": 37,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 17.74,
+   "voWindow": [
+    70.62,
+    88.36
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 7,
+   "beatId": "and-eligible-credit-card-customers-w",
+   "sectionId": "credits",
+   "vo": "And eligible credit card customers will receive a monthly $25 Travel Credit with their CommBank Ultimate credit card, or a $10 Travel Credit with the CommBank Smart credit card to spend on Travel Booking too.",
+   "superText": "From 1 Oct: $25 Monthly Travel Credit",
+   "voSpokenWords": 35,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 15.06,
+   "voWindow": [
+    88.36,
+    103.42
+   ],
+   "transitIn": "crane",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 8,
+   "beatId": "you-can-even-enjoy-added-benefits-in",
+   "sectionId": "benefits",
+   "vo": "You can even enjoy added benefits including travel credits, dining credits, DashPass membership, airport lounge passes, and more.",
+   "superText": "Enjoy more travel benefits than ever.",
+   "voSpokenWords": 18,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 12.72,
+   "voWindow": [
+    103.42,
+    114.99
+   ],
+   "transitIn": "whipOrbit",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  }
+ ]
+}

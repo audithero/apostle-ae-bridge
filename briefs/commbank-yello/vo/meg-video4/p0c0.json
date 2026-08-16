@@ -1,0 +1,186 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 0
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,380"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 380
+			},
+			"text": " One"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,380",
+				"to": "00:00:00,630"
+			},
+			"offsets": {
+				"from": 380,
+				"to": 630
+			},
+			"text": " of"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,630",
+				"to": "00:00:01,650"
+			},
+			"offsets": {
+				"from": 630,
+				"to": 1650
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,650",
+				"to": "00:00:01,890"
+			},
+			"offsets": {
+				"from": 1650,
+				"to": 1890
+			},
+			"text": " biggest"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,890",
+				"to": "00:00:02,920"
+			},
+			"offsets": {
+				"from": 1890,
+				"to": 2920
+			},
+			"text": " benefits"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,920",
+				"to": "00:00:03,060"
+			},
+			"offsets": {
+				"from": 2920,
+				"to": 3060
+			},
+			"text": " of"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,060",
+				"to": "00:00:03,220"
+			},
+			"offsets": {
+				"from": 3060,
+				"to": 3220
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,220",
+				"to": "00:00:03,510"
+			},
+			"offsets": {
+				"from": 3220,
+				"to": 3510
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,510",
+				"to": "00:00:03,840"
+			},
+			"offsets": {
+				"from": 3510,
+				"to": 3840
+			},
+			"text": " yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,840",
+				"to": "00:00:04,220"
+			},
+			"offsets": {
+				"from": 3840,
+				"to": 4220
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,220",
+				"to": "00:00:04,360"
+			},
+			"offsets": {
+				"from": 4220,
+				"to": 4360
+			},
+			"text": " is"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,360",
+				"to": "00:00:05,150"
+			},
+			"offsets": {
+				"from": 4360,
+				"to": 5150
+			},
+			"text": " flexibility"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,150",
+				"to": "00:00:05,380"
+			},
+			"offsets": {
+				"from": 5150,
+				"to": 5380
+			},
+			"text": "."
+		}
+	]
+}

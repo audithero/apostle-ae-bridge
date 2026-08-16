@@ -1,0 +1,285 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,400"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 400
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,400",
+				"to": "00:00:00,970"
+			},
+			"offsets": {
+				"from": 400,
+				"to": 970
+			},
+			"text": " Thanks"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,970",
+				"to": "00:00:01,110"
+			},
+			"offsets": {
+				"from": 970,
+				"to": 1110
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,110",
+				"to": "00:00:01,420"
+			},
+			"offsets": {
+				"from": 1110,
+				"to": 1420
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,420",
+				"to": "00:00:01,810"
+			},
+			"offsets": {
+				"from": 1420,
+				"to": 1810
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,810",
+				"to": "00:00:02,660"
+			},
+			"offsets": {
+				"from": 1810,
+				"to": 2660
+			},
+			"text": " Yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,660",
+				"to": "00:00:02,740"
+			},
+			"offsets": {
+				"from": 2660,
+				"to": 2740
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,740",
+				"to": "00:00:02,760"
+			},
+			"offsets": {
+				"from": 2740,
+				"to": 2760
+			},
+			"text": " we"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,760",
+				"to": "00:00:02,910"
+			},
+			"offsets": {
+				"from": 2760,
+				"to": 2910
+			},
+			"text": "'re"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,910",
+				"to": "00:00:03,240"
+			},
+			"offsets": {
+				"from": 2910,
+				"to": 3240
+			},
+			"text": " making"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,240",
+				"to": "00:00:03,590"
+			},
+			"offsets": {
+				"from": 3240,
+				"to": 3590
+			},
+			"text": " it"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,590",
+				"to": "00:00:04,010"
+			},
+			"offsets": {
+				"from": 3590,
+				"to": 4010
+			},
+			"text": " even"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,010",
+				"to": "00:00:04,330"
+			},
+			"offsets": {
+				"from": 4010,
+				"to": 4330
+			},
+			"text": " easier"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,330",
+				"to": "00:00:04,490"
+			},
+			"offsets": {
+				"from": 4330,
+				"to": 4490
+			},
+			"text": " for"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,490",
+				"to": "00:00:05,000"
+			},
+			"offsets": {
+				"from": 4490,
+				"to": 5000
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,000",
+				"to": "00:00:05,140"
+			},
+			"offsets": {
+				"from": 5000,
+				"to": 5140
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,140",
+				"to": "00:00:05,440"
+			},
+			"offsets": {
+				"from": 5140,
+				"to": 5440
+			},
+			"text": " find"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,440",
+				"to": "00:00:05,550"
+			},
+			"offsets": {
+				"from": 5440,
+				"to": 5550
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,550",
+				"to": "00:00:05,980"
+			},
+			"offsets": {
+				"from": 5550,
+				"to": 5980
+			},
+			"text": " best"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,980",
+				"to": "00:00:06,300"
+			},
+			"offsets": {
+				"from": 5980,
+				"to": 6300
+			},
+			"text": " places"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,300",
+				"to": "00:00:06,580"
+			},
+			"offsets": {
+				"from": 6300,
+				"to": 6580
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,580",
+				"to": "00:00:06,990"
+			},
+			"offsets": {
+				"from": 6580,
+				"to": 6990
+			},
+			"text": " eat"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,990",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 6990,
+				"to": 7000
+			},
+			"text": "."
+		}
+	]
+}

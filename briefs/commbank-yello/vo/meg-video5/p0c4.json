@@ -1,0 +1,395 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,180"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 180
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,180",
+				"to": "00:00:00,680"
+			},
+			"offsets": {
+				"from": 180,
+				"to": 680
+			},
+			"text": " With"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,680",
+				"to": "00:00:01,140"
+			},
+			"offsets": {
+				"from": 680,
+				"to": 1140
+			},
+			"text": " Best"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,140",
+				"to": "00:00:01,170"
+			},
+			"offsets": {
+				"from": 1140,
+				"to": 1170
+			},
+			"text": " Price"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,170",
+				"to": "00:00:01,910"
+			},
+			"offsets": {
+				"from": 1170,
+				"to": 1910
+			},
+			"text": " Guarant"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,910",
+				"to": "00:00:02,000"
+			},
+			"offsets": {
+				"from": 1910,
+				"to": 2000
+			},
+			"text": "ee"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,000",
+				"to": "00:00:02,140"
+			},
+			"offsets": {
+				"from": 2000,
+				"to": 2140
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,140",
+				"to": "00:00:02,280"
+			},
+			"offsets": {
+				"from": 2140,
+				"to": 2280
+			},
+			"text": " if"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,280",
+				"to": "00:00:02,500"
+			},
+			"offsets": {
+				"from": 2280,
+				"to": 2500
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,500",
+				"to": "00:00:02,880"
+			},
+			"offsets": {
+				"from": 2500,
+				"to": 2880
+			},
+			"text": " price"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,880",
+				"to": "00:00:03,030"
+			},
+			"offsets": {
+				"from": 2880,
+				"to": 3030
+			},
+			"text": " of"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,030",
+				"to": "00:00:03,080"
+			},
+			"offsets": {
+				"from": 3030,
+				"to": 3080
+			},
+			"text": " a"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,080",
+				"to": "00:00:03,520"
+			},
+			"offsets": {
+				"from": 3080,
+				"to": 3520
+			},
+			"text": " booked"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,520",
+				"to": "00:00:04,000"
+			},
+			"offsets": {
+				"from": 3520,
+				"to": 4000
+			},
+			"text": " flight"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,000",
+				"to": "00:00:04,420"
+			},
+			"offsets": {
+				"from": 4000,
+				"to": 4420
+			},
+			"text": " drops"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,420",
+				"to": "00:00:04,830"
+			},
+			"offsets": {
+				"from": 4420,
+				"to": 4830
+			},
+			"text": " within"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,830",
+				"to": "00:00:05,160"
+			},
+			"offsets": {
+				"from": 4830,
+				"to": 5160
+			},
+			"text": " 24"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,160",
+				"to": "00:00:05,520"
+			},
+			"offsets": {
+				"from": 5160,
+				"to": 5520
+			},
+			"text": " hours"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,520",
+				"to": "00:00:05,570"
+			},
+			"offsets": {
+				"from": 5520,
+				"to": 5570
+			},
+			"text": " of"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,570",
+				"to": "00:00:05,680"
+			},
+			"offsets": {
+				"from": 5570,
+				"to": 5680
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,680",
+				"to": "00:00:06,360"
+			},
+			"offsets": {
+				"from": 5680,
+				"to": 6360
+			},
+			"text": " customer"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,360",
+				"to": "00:00:06,790"
+			},
+			"offsets": {
+				"from": 6360,
+				"to": 6790
+			},
+			"text": " booking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,790",
+				"to": "00:00:06,830"
+			},
+			"offsets": {
+				"from": 6790,
+				"to": 6830
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,830",
+				"to": "00:00:07,050"
+			},
+			"offsets": {
+				"from": 6830,
+				"to": 7050
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,050",
+				"to": "00:00:07,320"
+			},
+			"offsets": {
+				"from": 7050,
+				"to": 7320
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,320",
+				"to": "00:00:07,590"
+			},
+			"offsets": {
+				"from": 7320,
+				"to": 7590
+			},
+			"text": " will"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,590",
+				"to": "00:00:07,960"
+			},
+			"offsets": {
+				"from": 7590,
+				"to": 7960
+			},
+			"text": " provide"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,960",
+				"to": "00:00:08,150"
+			},
+			"offsets": {
+				"from": 7960,
+				"to": 8150
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,150",
+				"to": "00:00:08,850"
+			},
+			"offsets": {
+				"from": 8150,
+				"to": 8850
+			},
+			"text": " difference"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,850",
+				"to": "00:00:08,930"
+			},
+			"offsets": {
+				"from": 8850,
+				"to": 8930
+			},
+			"text": " in"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,930",
+				"to": "00:00:09,330"
+			},
+			"offsets": {
+				"from": 8930,
+				"to": 9330
+			},
+			"text": " travel"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,330",
+				"to": "00:00:09,880"
+			},
+			"offsets": {
+				"from": 9330,
+				"to": 9880
+			},
+			"text": " credits"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,880",
+				"to": "00:00:09,880"
+			},
+			"offsets": {
+				"from": 9880,
+				"to": 9880
+			},
+			"text": "."
+		}
+	]
+}

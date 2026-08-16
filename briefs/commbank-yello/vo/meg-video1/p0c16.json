@@ -1,0 +1,384 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,180"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 180
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,180",
+				"to": "00:00:00,210"
+			},
+			"offsets": {
+				"from": 180,
+				"to": 210
+			},
+			"text": " It"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,210",
+				"to": "00:00:00,760"
+			},
+			"offsets": {
+				"from": 210,
+				"to": 760
+			},
+			"text": "'s"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,760",
+				"to": "00:00:01,360"
+			},
+			"offsets": {
+				"from": 760,
+				"to": 1360
+			},
+			"text": " important"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,360",
+				"to": "00:00:01,570"
+			},
+			"offsets": {
+				"from": 1360,
+				"to": 1570
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,570",
+				"to": "00:00:01,970"
+			},
+			"offsets": {
+				"from": 1570,
+				"to": 1970
+			},
+			"text": " know"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,970",
+				"to": "00:00:02,640"
+			},
+			"offsets": {
+				"from": 1970,
+				"to": 2640
+			},
+			"text": " this"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,640",
+				"to": "00:00:02,700"
+			},
+			"offsets": {
+				"from": 2640,
+				"to": 2700
+			},
+			"text": " is"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,700",
+				"to": "00:00:02,850"
+			},
+			"offsets": {
+				"from": 2700,
+				"to": 2850
+			},
+			"text": " in"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,850",
+				"to": "00:00:03,720"
+			},
+			"offsets": {
+				"from": 2850,
+				"to": 3720
+			},
+			"text": " addition"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,720",
+				"to": "00:00:03,820"
+			},
+			"offsets": {
+				"from": 3720,
+				"to": 3820
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,820",
+				"to": "00:00:03,990"
+			},
+			"offsets": {
+				"from": 3820,
+				"to": 3990
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,990",
+				"to": "00:00:04,420"
+			},
+			"offsets": {
+				"from": 3990,
+				"to": 4420
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,420",
+				"to": "00:00:04,710"
+			},
+			"offsets": {
+				"from": 4420,
+				"to": 4710
+			},
+			"text": " earned"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,710",
+				"to": "00:00:04,800"
+			},
+			"offsets": {
+				"from": 4710,
+				"to": 4800
+			},
+			"text": " through"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,800",
+				"to": "00:00:05,240"
+			},
+			"offsets": {
+				"from": 4800,
+				"to": 5240
+			},
+			"text": " eligible"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,240",
+				"to": "00:00:05,560"
+			},
+			"offsets": {
+				"from": 5240,
+				"to": 5560
+			},
+			"text": " credit"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,560",
+				"to": "00:00:06,320"
+			},
+			"offsets": {
+				"from": 5560,
+				"to": 6320
+			},
+			"text": " card"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,320",
+				"to": "00:00:06,460"
+			},
+			"offsets": {
+				"from": 6320,
+				"to": 6460
+			},
+			"text": " products"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,460",
+				"to": "00:00:06,690"
+			},
+			"offsets": {
+				"from": 6460,
+				"to": 6690
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,690",
+				"to": "00:00:06,950"
+			},
+			"offsets": {
+				"from": 6690,
+				"to": 6950
+			},
+			"text": " that"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,950",
+				"to": "00:00:07,240"
+			},
+			"offsets": {
+				"from": 6950,
+				"to": 7240
+			},
+			"text": " this"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,240",
+				"to": "00:00:07,680"
+			},
+			"offsets": {
+				"from": 7240,
+				"to": 7680
+			},
+			"text": " feature"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,680",
+				"to": "00:00:08,200"
+			},
+			"offsets": {
+				"from": 7680,
+				"to": 8200
+			},
+			"text": " will"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,200",
+				"to": "00:00:08,270"
+			},
+			"offsets": {
+				"from": 8200,
+				"to": 8270
+			},
+			"text": " be"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,270",
+				"to": "00:00:08,950"
+			},
+			"offsets": {
+				"from": 8270,
+				"to": 8950
+			},
+			"text": " replacing"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,950",
+				"to": "00:00:09,090"
+			},
+			"offsets": {
+				"from": 8950,
+				"to": 9090
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,090",
+				"to": "00:00:09,640"
+			},
+			"offsets": {
+				"from": 9090,
+				"to": 9640
+			},
+			"text": " current"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,640",
+				"to": "00:00:09,980"
+			},
+			"offsets": {
+				"from": 9640,
+				"to": 9980
+			},
+			"text": " cash"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,980",
+				"to": "00:00:10,190"
+			},
+			"offsets": {
+				"from": 9980,
+				"to": 10190
+			},
+			"text": "back"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,190",
+				"to": "00:00:10,720"
+			},
+			"offsets": {
+				"from": 10190,
+				"to": 10720
+			},
+			"text": " offers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,720",
+				"to": "00:00:10,720"
+			},
+			"offsets": {
+				"from": 10720,
+				"to": 10720
+			},
+			"text": "."
+		}
+	]
+}

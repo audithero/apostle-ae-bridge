@@ -1,0 +1,494 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 0
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,280"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 280
+			},
+			"text": " And"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,280",
+				"to": "00:00:00,750"
+			},
+			"offsets": {
+				"from": 280,
+				"to": 750
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,750",
+				"to": "00:00:01,200"
+			},
+			"offsets": {
+				"from": 750,
+				"to": 1200
+			},
+			"text": " eligible"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,200",
+				"to": "00:00:01,760"
+			},
+			"offsets": {
+				"from": 1200,
+				"to": 1760
+			},
+			"text": " credit"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,760",
+				"to": "00:00:02,130"
+			},
+			"offsets": {
+				"from": 1760,
+				"to": 2130
+			},
+			"text": " card"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,130",
+				"to": "00:00:03,060"
+			},
+			"offsets": {
+				"from": 2130,
+				"to": 3060
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,060",
+				"to": "00:00:03,120"
+			},
+			"offsets": {
+				"from": 3060,
+				"to": 3120
+			},
+			"text": " will"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,120",
+				"to": "00:00:03,500"
+			},
+			"offsets": {
+				"from": 3120,
+				"to": 3500
+			},
+			"text": " receive"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,500",
+				"to": "00:00:03,570"
+			},
+			"offsets": {
+				"from": 3500,
+				"to": 3570
+			},
+			"text": " a"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,570",
+				"to": "00:00:04,070"
+			},
+			"offsets": {
+				"from": 3570,
+				"to": 4070
+			},
+			"text": " monthly"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,070",
+				"to": "00:00:04,170"
+			},
+			"offsets": {
+				"from": 4070,
+				"to": 4170
+			},
+			"text": " $"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,170",
+				"to": "00:00:04,710"
+			},
+			"offsets": {
+				"from": 4170,
+				"to": 4710
+			},
+			"text": "25"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,710",
+				"to": "00:00:05,250"
+			},
+			"offsets": {
+				"from": 4710,
+				"to": 5250
+			},
+			"text": " travel"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,250",
+				"to": "00:00:06,080"
+			},
+			"offsets": {
+				"from": 5250,
+				"to": 6080
+			},
+			"text": " credit"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,080",
+				"to": "00:00:06,210"
+			},
+			"offsets": {
+				"from": 6080,
+				"to": 6210
+			},
+			"text": " with"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,210",
+				"to": "00:00:06,280"
+			},
+			"offsets": {
+				"from": 6210,
+				"to": 6280
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,280",
+				"to": "00:00:06,530"
+			},
+			"offsets": {
+				"from": 6280,
+				"to": 6530
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,530",
+				"to": "00:00:06,880"
+			},
+			"offsets": {
+				"from": 6530,
+				"to": 6880
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,880",
+				"to": "00:00:07,630"
+			},
+			"offsets": {
+				"from": 6880,
+				"to": 7630
+			},
+			"text": " Ultimate"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,630",
+				"to": "00:00:08,120"
+			},
+			"offsets": {
+				"from": 7630,
+				"to": 8120
+			},
+			"text": " Credit"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,120",
+				"to": "00:00:08,480"
+			},
+			"offsets": {
+				"from": 8120,
+				"to": 8480
+			},
+			"text": " Card"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,480",
+				"to": "00:00:08,650"
+			},
+			"offsets": {
+				"from": 8480,
+				"to": 8650
+			},
+			"text": " or"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,650",
+				"to": "00:00:08,730"
+			},
+			"offsets": {
+				"from": 8650,
+				"to": 8730
+			},
+			"text": " a"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,730",
+				"to": "00:00:08,860"
+			},
+			"offsets": {
+				"from": 8730,
+				"to": 8860
+			},
+			"text": " $"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,860",
+				"to": "00:00:09,340"
+			},
+			"offsets": {
+				"from": 8860,
+				"to": 9340
+			},
+			"text": "10"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,340",
+				"to": "00:00:09,940"
+			},
+			"offsets": {
+				"from": 9340,
+				"to": 9940
+			},
+			"text": " travel"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,940",
+				"to": "00:00:10,310"
+			},
+			"offsets": {
+				"from": 9940,
+				"to": 10310
+			},
+			"text": " credit"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,310",
+				"to": "00:00:10,640"
+			},
+			"offsets": {
+				"from": 10310,
+				"to": 10640
+			},
+			"text": " with"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,640",
+				"to": "00:00:10,720"
+			},
+			"offsets": {
+				"from": 10640,
+				"to": 10720
+			},
+			"text": " a"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,720",
+				"to": "00:00:10,970"
+			},
+			"offsets": {
+				"from": 10720,
+				"to": 10970
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,970",
+				"to": "00:00:11,310"
+			},
+			"offsets": {
+				"from": 10970,
+				"to": 11310
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:11,310",
+				"to": "00:00:11,730"
+			},
+			"offsets": {
+				"from": 11310,
+				"to": 11730
+			},
+			"text": " Smart"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:11,730",
+				"to": "00:00:12,220"
+			},
+			"offsets": {
+				"from": 11730,
+				"to": 12220
+			},
+			"text": " Credit"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:12,220",
+				"to": "00:00:12,780"
+			},
+			"offsets": {
+				"from": 12220,
+				"to": 12780
+			},
+			"text": " Card"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:12,780",
+				"to": "00:00:12,960"
+			},
+			"offsets": {
+				"from": 12780,
+				"to": 12960
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:12,960",
+				"to": "00:00:13,160"
+			},
+			"offsets": {
+				"from": 12960,
+				"to": 13160
+			},
+			"text": " spend"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:13,160",
+				"to": "00:00:13,300"
+			},
+			"offsets": {
+				"from": 13160,
+				"to": 13300
+			},
+			"text": " on"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:13,300",
+				"to": "00:00:13,910"
+			},
+			"offsets": {
+				"from": 13300,
+				"to": 13910
+			},
+			"text": " travel"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:13,910",
+				"to": "00:00:14,330"
+			},
+			"offsets": {
+				"from": 13910,
+				"to": 14330
+			},
+			"text": " booking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:14,330",
+				"to": "00:00:14,500"
+			},
+			"offsets": {
+				"from": 14330,
+				"to": 14500
+			},
+			"text": " too"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:14,500",
+				"to": "00:00:14,520"
+			},
+			"offsets": {
+				"from": 14500,
+				"to": 14520
+			},
+			"text": "."
+		}
+	]
+}

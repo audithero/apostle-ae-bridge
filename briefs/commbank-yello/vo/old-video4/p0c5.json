@@ -1,0 +1,230 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,660"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 660
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,660",
+				"to": "00:00:00,740"
+			},
+			"offsets": {
+				"from": 660,
+				"to": 740
+			},
+			"text": " Customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,740",
+				"to": "00:00:00,990"
+			},
+			"offsets": {
+				"from": 740,
+				"to": 990
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,990",
+				"to": "00:00:01,320"
+			},
+			"offsets": {
+				"from": 990,
+				"to": 1320
+			},
+			"text": " also"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,320",
+				"to": "00:00:02,000"
+			},
+			"offsets": {
+				"from": 1320,
+				"to": 2000
+			},
+			"text": " transfer"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,000",
+				"to": "00:00:02,270"
+			},
+			"offsets": {
+				"from": 2000,
+				"to": 2270
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,270",
+				"to": "00:00:02,430"
+			},
+			"offsets": {
+				"from": 2270,
+				"to": 2430
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,430",
+				"to": "00:00:02,650"
+			},
+			"offsets": {
+				"from": 2430,
+				"to": 2650
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,650",
+				"to": "00:00:03,070"
+			},
+			"offsets": {
+				"from": 2650,
+				"to": 3070
+			},
+			"text": " yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,070",
+				"to": "00:00:03,400"
+			},
+			"offsets": {
+				"from": 3070,
+				"to": 3400
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,400",
+				"to": "00:00:03,620"
+			},
+			"offsets": {
+				"from": 3400,
+				"to": 3620
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,620",
+				"to": "00:00:04,240"
+			},
+			"offsets": {
+				"from": 3620,
+				"to": 4240
+			},
+			"text": " participating"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,240",
+				"to": "00:00:04,630"
+			},
+			"offsets": {
+				"from": 4240,
+				"to": 4630
+			},
+			"text": " loyalty"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,630",
+				"to": "00:00:05,120"
+			},
+			"offsets": {
+				"from": 4630,
+				"to": 5120
+			},
+			"text": " programs"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,120",
+				"to": "00:00:05,650"
+			},
+			"offsets": {
+				"from": 5120,
+				"to": 5650
+			},
+			"text": " they"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,650",
+				"to": "00:00:06,570"
+			},
+			"offsets": {
+				"from": 5650,
+				"to": 6570
+			},
+			"text": " already"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,570",
+				"to": "00:00:06,860"
+			},
+			"offsets": {
+				"from": 6570,
+				"to": 6860
+			},
+			"text": " use"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,860",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 6860,
+				"to": 7000
+			},
+			"text": "."
+		}
+	]
+}

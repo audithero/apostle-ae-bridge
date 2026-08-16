@@ -1,0 +1,274 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 0
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,340"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 340
+			},
+			"text": " El"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,340",
+				"to": "00:00:00,920"
+			},
+			"offsets": {
+				"from": 340,
+				"to": 920
+			},
+			"text": "igible"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,920",
+				"to": "00:00:01,020"
+			},
+			"offsets": {
+				"from": 920,
+				"to": 1020
+			},
+			"text": " credit"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,020",
+				"to": "00:00:01,310"
+			},
+			"offsets": {
+				"from": 1020,
+				"to": 1310
+			},
+			"text": " card"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,310",
+				"to": "00:00:02,030"
+			},
+			"offsets": {
+				"from": 1310,
+				"to": 2030
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,030",
+				"to": "00:00:02,880"
+			},
+			"offsets": {
+				"from": 2030,
+				"to": 2880
+			},
+			"text": " will"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,880",
+				"to": "00:00:03,000"
+			},
+			"offsets": {
+				"from": 2880,
+				"to": 3000
+			},
+			"text": " transition"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,000",
+				"to": "00:00:03,220"
+			},
+			"offsets": {
+				"from": 3000,
+				"to": 3220
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,220",
+				"to": "00:00:04,000"
+			},
+			"offsets": {
+				"from": 3220,
+				"to": 4000
+			},
+			"text": " earning"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,000",
+				"to": "00:00:04,270"
+			},
+			"offsets": {
+				"from": 4000,
+				"to": 4270
+			},
+			"text": " Comm"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,270",
+				"to": "00:00:04,500"
+			},
+			"offsets": {
+				"from": 4270,
+				"to": 4500
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,500",
+				"to": "00:00:04,880"
+			},
+			"offsets": {
+				"from": 4500,
+				"to": 4880
+			},
+			"text": " yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,880",
+				"to": "00:00:05,050"
+			},
+			"offsets": {
+				"from": 4880,
+				"to": 5050
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,050",
+				"to": "00:00:06,300"
+			},
+			"offsets": {
+				"from": 5050,
+				"to": 6300
+			},
+			"text": " based"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,300",
+				"to": "00:00:06,480"
+			},
+			"offsets": {
+				"from": 6300,
+				"to": 6480
+			},
+			"text": " on"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,480",
+				"to": "00:00:06,800"
+			},
+			"offsets": {
+				"from": 6480,
+				"to": 6800
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,800",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 6800,
+				"to": 7000
+			},
+			"text": " Comm"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,000",
+				"to": "00:00:07,260"
+			},
+			"offsets": {
+				"from": 7000,
+				"to": 7260
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,260",
+				"to": "00:00:07,700"
+			},
+			"offsets": {
+				"from": 7260,
+				"to": 7700
+			},
+			"text": " yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,700",
+				"to": "00:00:07,810"
+			},
+			"offsets": {
+				"from": 7700,
+				"to": 7810
+			},
+			"text": " tier"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,810",
+				"to": "00:00:08,000"
+			},
+			"offsets": {
+				"from": 7810,
+				"to": 8000
+			},
+			"text": "."
+		}
+	]
+}

@@ -1,0 +1,252 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 0
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,300"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 300
+			},
+			"text": " Next"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,300",
+				"to": "00:00:00,450"
+			},
+			"offsets": {
+				"from": 300,
+				"to": 450
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,450",
+				"to": "00:00:00,600"
+			},
+			"offsets": {
+				"from": 450,
+				"to": 600
+			},
+			"text": " we"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,600",
+				"to": "00:00:01,360"
+			},
+			"offsets": {
+				"from": 600,
+				"to": 1360
+			},
+			"text": "'ll"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,360",
+				"to": "00:00:01,470"
+			},
+			"offsets": {
+				"from": 1360,
+				"to": 1470
+			},
+			"text": " explore"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,470",
+				"to": "00:00:01,590"
+			},
+			"offsets": {
+				"from": 1470,
+				"to": 1590
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,590",
+				"to": "00:00:02,280"
+			},
+			"offsets": {
+				"from": 1590,
+				"to": 2280
+			},
+			"text": " different"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,280",
+				"to": "00:00:02,580"
+			},
+			"offsets": {
+				"from": 2280,
+				"to": 2580
+			},
+			"text": " ways"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,580",
+				"to": "00:00:03,270"
+			},
+			"offsets": {
+				"from": 2580,
+				"to": 3270
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,270",
+				"to": "00:00:03,500"
+			},
+			"offsets": {
+				"from": 3270,
+				"to": 3500
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,500",
+				"to": "00:00:04,080"
+			},
+			"offsets": {
+				"from": 3500,
+				"to": 4080
+			},
+			"text": " redeem"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,080",
+				"to": "00:00:04,140"
+			},
+			"offsets": {
+				"from": 4080,
+				"to": 4140
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,140",
+				"to": "00:00:04,280"
+			},
+			"offsets": {
+				"from": 4140,
+				"to": 4280
+			},
+			"text": " use"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,280",
+				"to": "00:00:04,550"
+			},
+			"offsets": {
+				"from": 4280,
+				"to": 4550
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,550",
+				"to": "00:00:04,710"
+			},
+			"offsets": {
+				"from": 4550,
+				"to": 4710
+			},
+			"text": " Comm"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,710",
+				"to": "00:00:05,020"
+			},
+			"offsets": {
+				"from": 4710,
+				"to": 5020
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,020",
+				"to": "00:00:05,180"
+			},
+			"offsets": {
+				"from": 5020,
+				"to": 5180
+			},
+			"text": " yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,180",
+				"to": "00:00:05,760"
+			},
+			"offsets": {
+				"from": 5180,
+				"to": 5760
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,760",
+				"to": "00:00:05,760"
+			},
+			"offsets": {
+				"from": 5760,
+				"to": 5760
+			},
+			"text": "."
+		}
+	]
+}

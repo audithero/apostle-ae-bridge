@@ -1,0 +1,274 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 0
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,770"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 770
+			},
+			"text": " Customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,770",
+				"to": "00:00:01,000"
+			},
+			"offsets": {
+				"from": 770,
+				"to": 1000
+			},
+			"text": " who"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,000",
+				"to": "00:00:01,350"
+			},
+			"offsets": {
+				"from": 1000,
+				"to": 1350
+			},
+			"text": " currently"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,350",
+				"to": "00:00:01,620"
+			},
+			"offsets": {
+				"from": 1350,
+				"to": 1620
+			},
+			"text": " earn"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,620",
+				"to": "00:00:02,000"
+			},
+			"offsets": {
+				"from": 1620,
+				"to": 2000
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,000",
+				"to": "00:00:02,430"
+			},
+			"offsets": {
+				"from": 2000,
+				"to": 2430
+			},
+			"text": " through"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,430",
+				"to": "00:00:02,490"
+			},
+			"offsets": {
+				"from": 2430,
+				"to": 2490
+			},
+			"text": " a"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,490",
+				"to": "00:00:02,740"
+			},
+			"offsets": {
+				"from": 2490,
+				"to": 2740
+			},
+			"text": " Comm"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,740",
+				"to": "00:00:02,980"
+			},
+			"offsets": {
+				"from": 2740,
+				"to": 2980
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,980",
+				"to": "00:00:03,350"
+			},
+			"offsets": {
+				"from": 2980,
+				"to": 3350
+			},
+			"text": " Awards"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,350",
+				"to": "00:00:03,720"
+			},
+			"offsets": {
+				"from": 3350,
+				"to": 3720
+			},
+			"text": " credit"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,720",
+				"to": "00:00:04,000"
+			},
+			"offsets": {
+				"from": 3720,
+				"to": 4000
+			},
+			"text": " card"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,000",
+				"to": "00:00:04,560"
+			},
+			"offsets": {
+				"from": 4000,
+				"to": 4560
+			},
+			"text": " will"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,560",
+				"to": "00:00:05,120"
+			},
+			"offsets": {
+				"from": 4560,
+				"to": 5120
+			},
+			"text": " transition"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,120",
+				"to": "00:00:05,240"
+			},
+			"offsets": {
+				"from": 5120,
+				"to": 5240
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,240",
+				"to": "00:00:05,690"
+			},
+			"offsets": {
+				"from": 5240,
+				"to": 5690
+			},
+			"text": " earning"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,690",
+				"to": "00:00:05,950"
+			},
+			"offsets": {
+				"from": 5690,
+				"to": 5950
+			},
+			"text": " Comm"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,950",
+				"to": "00:00:06,210"
+			},
+			"offsets": {
+				"from": 5950,
+				"to": 6210
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,210",
+				"to": "00:00:06,600"
+			},
+			"offsets": {
+				"from": 6210,
+				"to": 6600
+			},
+			"text": " yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,600",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 6600,
+				"to": 7000
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,000",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 7000,
+				"to": 7000
+			},
+			"text": "."
+		}
+	]
+}

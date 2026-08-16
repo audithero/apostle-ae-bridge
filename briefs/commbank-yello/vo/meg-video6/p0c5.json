@@ -1,0 +1,197 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,350"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 350
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,350",
+				"to": "00:00:00,580"
+			},
+			"offsets": {
+				"from": 350,
+				"to": 580
+			},
+			"text": " Then"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,580",
+				"to": "00:00:00,650"
+			},
+			"offsets": {
+				"from": 580,
+				"to": 650
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,650",
+				"to": "00:00:00,970"
+			},
+			"offsets": {
+				"from": 650,
+				"to": 970
+			},
+			"text": " they"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,970",
+				"to": "00:00:01,410"
+			},
+			"offsets": {
+				"from": 970,
+				"to": 1410
+			},
+			"text": " add"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,410",
+				"to": "00:00:01,750"
+			},
+			"offsets": {
+				"from": 1410,
+				"to": 1750
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,750",
+				"to": "00:00:01,840"
+			},
+			"offsets": {
+				"from": 1750,
+				"to": 1840
+			},
+			"text": " D"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,840",
+				"to": "00:00:02,320"
+			},
+			"offsets": {
+				"from": 1840,
+				"to": 2320
+			},
+			"text": "ining"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,320",
+				"to": "00:00:02,810"
+			},
+			"offsets": {
+				"from": 2320,
+				"to": 2810
+			},
+			"text": " Deals"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,810",
+				"to": "00:00:03,290"
+			},
+			"offsets": {
+				"from": 2810,
+				"to": 3290
+			},
+			"text": " card"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,290",
+				"to": "00:00:03,340"
+			},
+			"offsets": {
+				"from": 3290,
+				"to": 3340
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,340",
+				"to": "00:00:03,610"
+			},
+			"offsets": {
+				"from": 3340,
+				"to": 3610
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,610",
+				"to": "00:00:03,970"
+			},
+			"offsets": {
+				"from": 3610,
+				"to": 3970
+			},
+			"text": " digital"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,970",
+				"to": "00:00:04,330"
+			},
+			"offsets": {
+				"from": 3970,
+				"to": 4330
+			},
+			"text": " wallet"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,330",
+				"to": "00:00:04,440"
+			},
+			"offsets": {
+				"from": 4330,
+				"to": 4440
+			},
+			"text": "."
+		}
+	]
+}

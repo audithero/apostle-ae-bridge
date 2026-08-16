@@ -1,0 +1,263 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,670"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 670
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,670",
+				"to": "00:00:00,710"
+			},
+			"offsets": {
+				"from": 670,
+				"to": 710
+			},
+			"text": " Customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,710",
+				"to": "00:00:00,950"
+			},
+			"offsets": {
+				"from": 710,
+				"to": 950
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,950",
+				"to": "00:00:01,270"
+			},
+			"offsets": {
+				"from": 950,
+				"to": 1270
+			},
+			"text": " have"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,270",
+				"to": "00:00:01,590"
+			},
+			"offsets": {
+				"from": 1270,
+				"to": 1590
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,590",
+				"to": "00:00:02,000"
+			},
+			"offsets": {
+				"from": 1590,
+				"to": 2000
+			},
+			"text": " choice"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,000",
+				"to": "00:00:02,520"
+			},
+			"offsets": {
+				"from": 2000,
+				"to": 2520
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,520",
+				"to": "00:00:03,000"
+			},
+			"offsets": {
+				"from": 2520,
+				"to": 3000
+			},
+			"text": " transfer"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,000",
+				"to": "00:00:03,280"
+			},
+			"offsets": {
+				"from": 3000,
+				"to": 3280
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,280",
+				"to": "00:00:03,480"
+			},
+			"offsets": {
+				"from": 3280,
+				"to": 3480
+			},
+			"text": " Comm"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,480",
+				"to": "00:00:03,680"
+			},
+			"offsets": {
+				"from": 3480,
+				"to": 3680
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,680",
+				"to": "00:00:04,030"
+			},
+			"offsets": {
+				"from": 3680,
+				"to": 4030
+			},
+			"text": " yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,030",
+				"to": "00:00:04,410"
+			},
+			"offsets": {
+				"from": 4030,
+				"to": 4410
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,410",
+				"to": "00:00:04,560"
+			},
+			"offsets": {
+				"from": 4410,
+				"to": 4560
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,560",
+				"to": "00:00:05,160"
+			},
+			"offsets": {
+				"from": 4560,
+				"to": 5160
+			},
+			"text": " participating"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,160",
+				"to": "00:00:05,600"
+			},
+			"offsets": {
+				"from": 5160,
+				"to": 5600
+			},
+			"text": " loyalty"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,600",
+				"to": "00:00:06,000"
+			},
+			"offsets": {
+				"from": 5600,
+				"to": 6000
+			},
+			"text": " programs"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,000",
+				"to": "00:00:06,570"
+			},
+			"offsets": {
+				"from": 6000,
+				"to": 6570
+			},
+			"text": " they"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,570",
+				"to": "00:00:07,250"
+			},
+			"offsets": {
+				"from": 6570,
+				"to": 7250
+			},
+			"text": " already"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,250",
+				"to": "00:00:07,990"
+			},
+			"offsets": {
+				"from": 7250,
+				"to": 7990
+			},
+			"text": " use"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,990",
+				"to": "00:00:08,000"
+			},
+			"offsets": {
+				"from": 7990,
+				"to": 8000
+			},
+			"text": "."
+		}
+	]
+}

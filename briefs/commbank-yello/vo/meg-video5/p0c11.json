@@ -1,0 +1,285 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,250"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 250
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,250",
+				"to": "00:00:00,340"
+			},
+			"offsets": {
+				"from": 250,
+				"to": 340
+			},
+			"text": " You"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,340",
+				"to": "00:00:00,580"
+			},
+			"offsets": {
+				"from": 340,
+				"to": 580
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,580",
+				"to": "00:00:00,910"
+			},
+			"offsets": {
+				"from": 580,
+				"to": 910
+			},
+			"text": " enjoy"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,910",
+				"to": "00:00:01,320"
+			},
+			"offsets": {
+				"from": 910,
+				"to": 1320
+			},
+			"text": " added"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,320",
+				"to": "00:00:02,100"
+			},
+			"offsets": {
+				"from": 1320,
+				"to": 2100
+			},
+			"text": " benefits"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,100",
+				"to": "00:00:02,650"
+			},
+			"offsets": {
+				"from": 2100,
+				"to": 2650
+			},
+			"text": " including"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,650",
+				"to": "00:00:03,010"
+			},
+			"offsets": {
+				"from": 2650,
+				"to": 3010
+			},
+			"text": " travel"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,010",
+				"to": "00:00:03,690"
+			},
+			"offsets": {
+				"from": 3010,
+				"to": 3690
+			},
+			"text": " credits"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,690",
+				"to": "00:00:03,800"
+			},
+			"offsets": {
+				"from": 3690,
+				"to": 3800
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,800",
+				"to": "00:00:04,290"
+			},
+			"offsets": {
+				"from": 3800,
+				"to": 4290
+			},
+			"text": " dining"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,290",
+				"to": "00:00:05,120"
+			},
+			"offsets": {
+				"from": 4290,
+				"to": 5120
+			},
+			"text": " credits"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,120",
+				"to": "00:00:05,140"
+			},
+			"offsets": {
+				"from": 5120,
+				"to": 5140
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,140",
+				"to": "00:00:05,370"
+			},
+			"offsets": {
+				"from": 5140,
+				"to": 5370
+			},
+			"text": " Dash"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,370",
+				"to": "00:00:05,640"
+			},
+			"offsets": {
+				"from": 5370,
+				"to": 5640
+			},
+			"text": "Pass"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,640",
+				"to": "00:00:06,560"
+			},
+			"offsets": {
+				"from": 5640,
+				"to": 6560
+			},
+			"text": " membership"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,560",
+				"to": "00:00:06,620"
+			},
+			"offsets": {
+				"from": 6560,
+				"to": 6620
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,620",
+				"to": "00:00:07,090"
+			},
+			"offsets": {
+				"from": 6620,
+				"to": 7090
+			},
+			"text": " airport"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,090",
+				"to": "00:00:07,540"
+			},
+			"offsets": {
+				"from": 7090,
+				"to": 7540
+			},
+			"text": " lounge"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,540",
+				"to": "00:00:08,200"
+			},
+			"offsets": {
+				"from": 7540,
+				"to": 8200
+			},
+			"text": " passes"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,200",
+				"to": "00:00:08,240"
+			},
+			"offsets": {
+				"from": 8200,
+				"to": 8240
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,240",
+				"to": "00:00:08,580"
+			},
+			"offsets": {
+				"from": 8240,
+				"to": 8580
+			},
+			"text": " more"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,580",
+				"to": "00:00:08,880"
+			},
+			"offsets": {
+				"from": 8580,
+				"to": 8880
+			},
+			"text": "."
+		}
+	]
+}

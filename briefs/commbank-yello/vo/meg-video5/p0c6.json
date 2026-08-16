@@ -1,0 +1,417 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,410"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 410
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,410",
+				"to": "00:00:00,610"
+			},
+			"offsets": {
+				"from": 410,
+				"to": 610
+			},
+			"text": " Also"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,610",
+				"to": "00:00:00,620"
+			},
+			"offsets": {
+				"from": 610,
+				"to": 620
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,620",
+				"to": "00:00:01,020"
+			},
+			"offsets": {
+				"from": 620,
+				"to": 1020
+			},
+			"text": " Auto"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,020",
+				"to": "00:00:01,590"
+			},
+			"offsets": {
+				"from": 1020,
+				"to": 1590
+			},
+			"text": " Price"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,590",
+				"to": "00:00:01,940"
+			},
+			"offsets": {
+				"from": 1590,
+				"to": 1940
+			},
+			"text": " Drop"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,940",
+				"to": "00:00:02,630"
+			},
+			"offsets": {
+				"from": 1940,
+				"to": 2630
+			},
+			"text": " helps"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,630",
+				"to": "00:00:03,520"
+			},
+			"offsets": {
+				"from": 2630,
+				"to": 3520
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,520",
+				"to": "00:00:03,530"
+			},
+			"offsets": {
+				"from": 3520,
+				"to": 3530
+			},
+			"text": " by"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,530",
+				"to": "00:00:04,190"
+			},
+			"offsets": {
+				"from": 3530,
+				"to": 4190
+			},
+			"text": " protecting"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,190",
+				"to": "00:00:04,510"
+			},
+			"offsets": {
+				"from": 4190,
+				"to": 4510
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,510",
+				"to": "00:00:05,000"
+			},
+			"offsets": {
+				"from": 4510,
+				"to": 5000
+			},
+			"text": " booking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,000",
+				"to": "00:00:05,130"
+			},
+			"offsets": {
+				"from": 5000,
+				"to": 5130
+			},
+			"text": " by"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,130",
+				"to": "00:00:05,800"
+			},
+			"offsets": {
+				"from": 5130,
+				"to": 5800
+			},
+			"text": " providing"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,800",
+				"to": "00:00:05,940"
+			},
+			"offsets": {
+				"from": 5800,
+				"to": 5940
+			},
+			"text": " up"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,940",
+				"to": "00:00:06,000"
+			},
+			"offsets": {
+				"from": 5940,
+				"to": 6000
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,000",
+				"to": "00:00:06,120"
+			},
+			"offsets": {
+				"from": 6000,
+				"to": 6120
+			},
+			"text": " $"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,120",
+				"to": "00:00:06,720"
+			},
+			"offsets": {
+				"from": 6120,
+				"to": 6720
+			},
+			"text": "50"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,720",
+				"to": "00:00:06,760"
+			},
+			"offsets": {
+				"from": 6720,
+				"to": 6760
+			},
+			"text": " in"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,760",
+				"to": "00:00:07,120"
+			},
+			"offsets": {
+				"from": 6760,
+				"to": 7120
+			},
+			"text": " travel"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,120",
+				"to": "00:00:07,690"
+			},
+			"offsets": {
+				"from": 7120,
+				"to": 7690
+			},
+			"text": " credits"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,690",
+				"to": "00:00:07,740"
+			},
+			"offsets": {
+				"from": 7690,
+				"to": 7740
+			},
+			"text": " if"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,740",
+				"to": "00:00:07,880"
+			},
+			"offsets": {
+				"from": 7740,
+				"to": 7880
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,880",
+				"to": "00:00:08,200"
+			},
+			"offsets": {
+				"from": 7880,
+				"to": 8200
+			},
+			"text": " price"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,200",
+				"to": "00:00:08,490"
+			},
+			"offsets": {
+				"from": 8200,
+				"to": 8490
+			},
+			"text": " of"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,490",
+				"to": "00:00:08,510"
+			},
+			"offsets": {
+				"from": 8490,
+				"to": 8510
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,510",
+				"to": "00:00:09,220"
+			},
+			"offsets": {
+				"from": 8510,
+				"to": 9220
+			},
+			"text": " recommended"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,220",
+				"to": "00:00:09,740"
+			},
+			"offsets": {
+				"from": 9220,
+				"to": 9740
+			},
+			"text": " flight"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,740",
+				"to": "00:00:10,030"
+			},
+			"offsets": {
+				"from": 9740,
+				"to": 10030
+			},
+			"text": " drops"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,030",
+				"to": "00:00:10,310"
+			},
+			"offsets": {
+				"from": 10030,
+				"to": 10310
+			},
+			"text": " within"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,310",
+				"to": "00:00:10,670"
+			},
+			"offsets": {
+				"from": 10310,
+				"to": 10670
+			},
+			"text": " 10"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,670",
+				"to": "00:00:10,950"
+			},
+			"offsets": {
+				"from": 10670,
+				"to": 10950
+			},
+			"text": " days"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,950",
+				"to": "00:00:11,040"
+			},
+			"offsets": {
+				"from": 10950,
+				"to": 11040
+			},
+			"text": " of"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:11,040",
+				"to": "00:00:11,560"
+			},
+			"offsets": {
+				"from": 11040,
+				"to": 11560
+			},
+			"text": " booking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:11,560",
+				"to": "00:00:11,600"
+			},
+			"offsets": {
+				"from": 11560,
+				"to": 11600
+			},
+			"text": "."
+		}
+	]
+}

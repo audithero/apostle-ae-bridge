@@ -1,0 +1,307 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,170"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 170
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,170",
+				"to": "00:00:00,660"
+			},
+			"offsets": {
+				"from": 170,
+				"to": 660
+			},
+			"text": " In"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,660",
+				"to": "00:00:00,970"
+			},
+			"offsets": {
+				"from": 660,
+				"to": 970
+			},
+			"text": " addition"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,970",
+				"to": "00:00:01,160"
+			},
+			"offsets": {
+				"from": 970,
+				"to": 1160
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,160",
+				"to": "00:00:01,630"
+			},
+			"offsets": {
+				"from": 1160,
+				"to": 1630
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,630",
+				"to": "00:00:02,110"
+			},
+			"offsets": {
+				"from": 1630,
+				"to": 2110
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,110",
+				"to": "00:00:02,450"
+			},
+			"offsets": {
+				"from": 2110,
+				"to": 2450
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,450",
+				"to": "00:00:02,680"
+			},
+			"offsets": {
+				"from": 2450,
+				"to": 2680
+			},
+			"text": " will"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,680",
+				"to": "00:00:03,210"
+			},
+			"offsets": {
+				"from": 2680,
+				"to": 3210
+			},
+			"text": " continue"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,210",
+				"to": "00:00:03,280"
+			},
+			"offsets": {
+				"from": 3210,
+				"to": 3280
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,280",
+				"to": "00:00:03,600"
+			},
+			"offsets": {
+				"from": 3280,
+				"to": 3600
+			},
+			"text": " enjoy"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,600",
+				"to": "00:00:04,190"
+			},
+			"offsets": {
+				"from": 3600,
+				"to": 4190
+			},
+			"text": " exclusive"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,190",
+				"to": "00:00:04,570"
+			},
+			"offsets": {
+				"from": 4190,
+				"to": 4570
+			},
+			"text": " offers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,570",
+				"to": "00:00:04,960"
+			},
+			"offsets": {
+				"from": 4570,
+				"to": 4960
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,960",
+				"to": "00:00:05,800"
+			},
+			"offsets": {
+				"from": 4960,
+				"to": 5800
+			},
+			"text": " discounts"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,800",
+				"to": "00:00:05,800"
+			},
+			"offsets": {
+				"from": 5800,
+				"to": 5800
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,800",
+				"to": "00:00:06,020"
+			},
+			"offsets": {
+				"from": 5800,
+				"to": 6020
+			},
+			"text": " pre"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,020",
+				"to": "00:00:06,090"
+			},
+			"offsets": {
+				"from": 6020,
+				"to": 6090
+			},
+			"text": "-"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,090",
+				"to": "00:00:06,400"
+			},
+			"offsets": {
+				"from": 6090,
+				"to": 6400
+			},
+			"text": "sale"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,400",
+				"to": "00:00:07,290"
+			},
+			"offsets": {
+				"from": 6400,
+				"to": 7290
+			},
+			"text": " access"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,290",
+				"to": "00:00:07,510"
+			},
+			"offsets": {
+				"from": 7290,
+				"to": 7510
+			},
+			"text": " through"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,510",
+				"to": "00:00:07,700"
+			},
+			"offsets": {
+				"from": 7510,
+				"to": 7700
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,700",
+				"to": "00:00:07,980"
+			},
+			"offsets": {
+				"from": 7700,
+				"to": 7980
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,980",
+				"to": "00:00:08,640"
+			},
+			"offsets": {
+				"from": 7980,
+				"to": 8640
+			},
+			"text": " Yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,640",
+				"to": "00:00:08,640"
+			},
+			"offsets": {
+				"from": 8640,
+				"to": 8640
+			},
+			"text": "."
+		}
+	]
+}

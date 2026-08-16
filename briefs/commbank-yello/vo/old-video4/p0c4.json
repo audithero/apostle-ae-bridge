@@ -1,0 +1,318 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 0
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,480"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 480
+			},
+			"text": " This"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,480",
+				"to": "00:00:00,680"
+			},
+			"offsets": {
+				"from": 480,
+				"to": 680
+			},
+			"text": " gives"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,680",
+				"to": "00:00:01,360"
+			},
+			"offsets": {
+				"from": 680,
+				"to": 1360
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,360",
+				"to": "00:00:01,690"
+			},
+			"offsets": {
+				"from": 1360,
+				"to": 1690
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,690",
+				"to": "00:00:02,470"
+			},
+			"offsets": {
+				"from": 1690,
+				"to": 2470
+			},
+			"text": " flexibility"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,470",
+				"to": "00:00:02,620"
+			},
+			"offsets": {
+				"from": 2470,
+				"to": 2620
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,620",
+				"to": "00:00:02,900"
+			},
+			"offsets": {
+				"from": 2620,
+				"to": 2900
+			},
+			"text": " turn"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,900",
+				"to": "00:00:03,320"
+			},
+			"offsets": {
+				"from": 2900,
+				"to": 3320
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,320",
+				"to": "00:00:03,600"
+			},
+			"offsets": {
+				"from": 3320,
+				"to": 3600
+			},
+			"text": " into"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,600",
+				"to": "00:00:04,030"
+			},
+			"offsets": {
+				"from": 3600,
+				"to": 4030
+			},
+			"text": " value"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,030",
+				"to": "00:00:04,200"
+			},
+			"offsets": {
+				"from": 4030,
+				"to": 4200
+			},
+			"text": " that"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,200",
+				"to": "00:00:04,240"
+			},
+			"offsets": {
+				"from": 4200,
+				"to": 4240
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,240",
+				"to": "00:00:04,360"
+			},
+			"offsets": {
+				"from": 4240,
+				"to": 4360
+			},
+			"text": " be"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,360",
+				"to": "00:00:04,690"
+			},
+			"offsets": {
+				"from": 4360,
+				"to": 4690
+			},
+			"text": " used"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,690",
+				"to": "00:00:04,870"
+			},
+			"offsets": {
+				"from": 4690,
+				"to": 4870
+			},
+			"text": " on"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,870",
+				"to": "00:00:05,160"
+			},
+			"offsets": {
+				"from": 4870,
+				"to": 5160
+			},
+			"text": " everyday"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,160",
+				"to": "00:00:05,930"
+			},
+			"offsets": {
+				"from": 5160,
+				"to": 5930
+			},
+			"text": " purchases"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,930",
+				"to": "00:00:06,280"
+			},
+			"offsets": {
+				"from": 5930,
+				"to": 6280
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,280",
+				"to": "00:00:06,490"
+			},
+			"offsets": {
+				"from": 6280,
+				"to": 6490
+			},
+			"text": " special"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,490",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 6490,
+				"to": 7000
+			},
+			"text": " occasions"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,000",
+				"to": "00:00:07,220"
+			},
+			"offsets": {
+				"from": 7000,
+				"to": 7220
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,220",
+				"to": "00:00:07,710"
+			},
+			"offsets": {
+				"from": 7220,
+				"to": 7710
+			},
+			"text": " or"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,710",
+				"to": "00:00:08,100"
+			},
+			"offsets": {
+				"from": 7710,
+				"to": 8100
+			},
+			"text": " future"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,100",
+				"to": "00:00:09,000"
+			},
+			"offsets": {
+				"from": 8100,
+				"to": 9000
+			},
+			"text": " spending"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,000",
+				"to": "00:00:09,000"
+			},
+			"offsets": {
+				"from": 9000,
+				"to": 9000
+			},
+			"text": "."
+		}
+	]
+}

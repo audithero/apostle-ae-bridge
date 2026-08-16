@@ -1,0 +1,406 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 0
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,570"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 570
+			},
+			"text": " El"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,570",
+				"to": "00:00:00,600"
+			},
+			"offsets": {
+				"from": 570,
+				"to": 600
+			},
+			"text": "igible"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,600",
+				"to": "00:00:01,330"
+			},
+			"offsets": {
+				"from": 600,
+				"to": 1330
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,330",
+				"to": "00:00:01,600"
+			},
+			"offsets": {
+				"from": 1330,
+				"to": 1600
+			},
+			"text": " will"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,600",
+				"to": "00:00:02,340"
+			},
+			"offsets": {
+				"from": 1600,
+				"to": 2340
+			},
+			"text": " transition"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,340",
+				"to": "00:00:02,410"
+			},
+			"offsets": {
+				"from": 2340,
+				"to": 2410
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,410",
+				"to": "00:00:02,840"
+			},
+			"offsets": {
+				"from": 2410,
+				"to": 2840
+			},
+			"text": " earning"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,840",
+				"to": "00:00:02,920"
+			},
+			"offsets": {
+				"from": 2840,
+				"to": 2920
+			},
+			"text": " K"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,920",
+				"to": "00:00:03,070"
+			},
+			"offsets": {
+				"from": 2920,
+				"to": 3070
+			},
+			"text": "omb"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,070",
+				"to": "00:00:03,250"
+			},
+			"offsets": {
+				"from": 3070,
+				"to": 3250
+			},
+			"text": "ank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,250",
+				"to": "00:00:03,610"
+			},
+			"offsets": {
+				"from": 3250,
+				"to": 3610
+			},
+			"text": " yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,610",
+				"to": "00:00:04,020"
+			},
+			"offsets": {
+				"from": 3610,
+				"to": 4020
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,020",
+				"to": "00:00:04,380"
+			},
+			"offsets": {
+				"from": 4020,
+				"to": 4380
+			},
+			"text": "."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,380",
+				"to": "00:00:04,950"
+			},
+			"offsets": {
+				"from": 4380,
+				"to": 4950
+			},
+			"text": " The"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,950",
+				"to": "00:00:05,010"
+			},
+			"offsets": {
+				"from": 4950,
+				"to": 5010
+			},
+			"text": " number"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,010",
+				"to": "00:00:05,190"
+			},
+			"offsets": {
+				"from": 5010,
+				"to": 5190
+			},
+			"text": " of"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,190",
+				"to": "00:00:05,570"
+			},
+			"offsets": {
+				"from": 5190,
+				"to": 5570
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,570",
+				"to": "00:00:05,990"
+			},
+			"offsets": {
+				"from": 5570,
+				"to": 5990
+			},
+			"text": " earned"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,990",
+				"to": "00:00:06,140"
+			},
+			"offsets": {
+				"from": 5990,
+				"to": 6140
+			},
+			"text": " on"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,140",
+				"to": "00:00:06,700"
+			},
+			"offsets": {
+				"from": 6140,
+				"to": 6700
+			},
+			"text": " eligible"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,700",
+				"to": "00:00:07,380"
+			},
+			"offsets": {
+				"from": 6700,
+				"to": 7380
+			},
+			"text": " purchases"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,380",
+				"to": "00:00:07,760"
+			},
+			"offsets": {
+				"from": 7380,
+				"to": 7760
+			},
+			"text": " will"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,760",
+				"to": "00:00:08,120"
+			},
+			"offsets": {
+				"from": 7760,
+				"to": 8120
+			},
+			"text": " depend"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,120",
+				"to": "00:00:08,180"
+			},
+			"offsets": {
+				"from": 8120,
+				"to": 8180
+			},
+			"text": " on"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,180",
+				"to": "00:00:08,310"
+			},
+			"offsets": {
+				"from": 8180,
+				"to": 8310
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,310",
+				"to": "00:00:08,680"
+			},
+			"offsets": {
+				"from": 8310,
+				"to": 8680
+			},
+			"text": " customer"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,680",
+				"to": "00:00:08,870"
+			},
+			"offsets": {
+				"from": 8680,
+				"to": 8870
+			},
+			"text": "'s"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,870",
+				"to": "00:00:08,940"
+			},
+			"offsets": {
+				"from": 8870,
+				"to": 8940
+			},
+			"text": " K"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,940",
+				"to": "00:00:09,210"
+			},
+			"offsets": {
+				"from": 8940,
+				"to": 9210
+			},
+			"text": "omb"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,210",
+				"to": "00:00:09,310"
+			},
+			"offsets": {
+				"from": 9210,
+				"to": 9310
+			},
+			"text": "ank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,310",
+				"to": "00:00:09,810"
+			},
+			"offsets": {
+				"from": 9310,
+				"to": 9810
+			},
+			"text": " yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,810",
+				"to": "00:00:10,160"
+			},
+			"offsets": {
+				"from": 9810,
+				"to": 10160
+			},
+			"text": " tier"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,160",
+				"to": "00:00:10,300"
+			},
+			"offsets": {
+				"from": 10160,
+				"to": 10300
+			},
+			"text": "."
+		}
+	]
+}

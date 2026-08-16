@@ -1,0 +1,208 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 0
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,580"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 580
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,580",
+				"to": "00:00:00,730"
+			},
+			"offsets": {
+				"from": 580,
+				"to": 730
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,730",
+				"to": "00:00:01,350"
+			},
+			"offsets": {
+				"from": 730,
+				"to": 1350
+			},
+			"text": " Yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,350",
+				"to": "00:00:02,250"
+			},
+			"offsets": {
+				"from": 1350,
+				"to": 2250
+			},
+			"text": " Points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,250",
+				"to": "00:00:02,350"
+			},
+			"offsets": {
+				"from": 2250,
+				"to": 2350
+			},
+			"text": " gives"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,350",
+				"to": "00:00:03,000"
+			},
+			"offsets": {
+				"from": 2350,
+				"to": 3000
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,000",
+				"to": "00:00:03,300"
+			},
+			"offsets": {
+				"from": 3000,
+				"to": 3300
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,300",
+				"to": "00:00:04,000"
+			},
+			"offsets": {
+				"from": 3300,
+				"to": 4000
+			},
+			"text": " flexibility"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,000",
+				"to": "00:00:04,130"
+			},
+			"offsets": {
+				"from": 4000,
+				"to": 4130
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,130",
+				"to": "00:00:04,440"
+			},
+			"offsets": {
+				"from": 4130,
+				"to": 4440
+			},
+			"text": " choose"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,440",
+				"to": "00:00:04,600"
+			},
+			"offsets": {
+				"from": 4440,
+				"to": 4600
+			},
+			"text": " how"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,600",
+				"to": "00:00:04,780"
+			},
+			"offsets": {
+				"from": 4600,
+				"to": 4780
+			},
+			"text": " they"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,780",
+				"to": "00:00:04,920"
+			},
+			"offsets": {
+				"from": 4780,
+				"to": 4920
+			},
+			"text": "'re"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,920",
+				"to": "00:00:05,420"
+			},
+			"offsets": {
+				"from": 4920,
+				"to": 5420
+			},
+			"text": " rewarded"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,420",
+				"to": "00:00:05,600"
+			},
+			"offsets": {
+				"from": 5420,
+				"to": 5600
+			},
+			"text": "."
+		}
+	]
+}

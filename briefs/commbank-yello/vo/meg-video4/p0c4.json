@@ -1,0 +1,274 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 0
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:01,030"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 1030
+			},
+			"text": " Customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,030",
+				"to": "00:00:01,370"
+			},
+			"offsets": {
+				"from": 1030,
+				"to": 1370
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,370",
+				"to": "00:00:02,230"
+			},
+			"offsets": {
+				"from": 1370,
+				"to": 2230
+			},
+			"text": " use"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,230",
+				"to": "00:00:02,280"
+			},
+			"offsets": {
+				"from": 2230,
+				"to": 2280
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,280",
+				"to": "00:00:02,620"
+			},
+			"offsets": {
+				"from": 2280,
+				"to": 2620
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,620",
+				"to": "00:00:03,080"
+			},
+			"offsets": {
+				"from": 2620,
+				"to": 3080
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,080",
+				"to": "00:00:03,770"
+			},
+			"offsets": {
+				"from": 3080,
+				"to": 3770
+			},
+			"text": " yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,770",
+				"to": "00:00:04,600"
+			},
+			"offsets": {
+				"from": 3770,
+				"to": 4600
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,600",
+				"to": "00:00:04,670"
+			},
+			"offsets": {
+				"from": 4600,
+				"to": 4670
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,670",
+				"to": "00:00:05,240"
+			},
+			"offsets": {
+				"from": 4670,
+				"to": 5240
+			},
+			"text": " purchase"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,240",
+				"to": "00:00:05,440"
+			},
+			"offsets": {
+				"from": 5240,
+				"to": 5440
+			},
+			"text": " gift"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,440",
+				"to": "00:00:05,870"
+			},
+			"offsets": {
+				"from": 5440,
+				"to": 5870
+			},
+			"text": " cards"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,870",
+				"to": "00:00:05,920"
+			},
+			"offsets": {
+				"from": 5870,
+				"to": 5920
+			},
+			"text": " from"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,920",
+				"to": "00:00:06,000"
+			},
+			"offsets": {
+				"from": 5920,
+				"to": 6000
+			},
+			"text": " a"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,000",
+				"to": "00:00:06,440"
+			},
+			"offsets": {
+				"from": 6000,
+				"to": 6440
+			},
+			"text": " range"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,440",
+				"to": "00:00:06,650"
+			},
+			"offsets": {
+				"from": 6440,
+				"to": 6650
+			},
+			"text": " of"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,650",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 6650,
+				"to": 7000
+			},
+			"text": " popular"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,000",
+				"to": "00:00:07,420"
+			},
+			"offsets": {
+				"from": 7000,
+				"to": 7420
+			},
+			"text": " retailers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,420",
+				"to": "00:00:07,560"
+			},
+			"offsets": {
+				"from": 7420,
+				"to": 7560
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,560",
+				"to": "00:00:07,840"
+			},
+			"offsets": {
+				"from": 7560,
+				"to": 7840
+			},
+			"text": " brands"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,840",
+				"to": "00:00:08,000"
+			},
+			"offsets": {
+				"from": 7840,
+				"to": 8000
+			},
+			"text": "."
+		}
+	]
+}

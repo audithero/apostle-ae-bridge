@@ -1,0 +1,263 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,500"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 500
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,500",
+				"to": "00:00:00,750"
+			},
+			"offsets": {
+				"from": 500,
+				"to": 750
+			},
+			"text": " Customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,750",
+				"to": "00:00:00,930"
+			},
+			"offsets": {
+				"from": 750,
+				"to": 930
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,930",
+				"to": "00:00:01,160"
+			},
+			"offsets": {
+				"from": 930,
+				"to": 1160
+			},
+			"text": " now"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,160",
+				"to": "00:00:01,480"
+			},
+			"offsets": {
+				"from": 1160,
+				"to": 1480
+			},
+			"text": " also"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,480",
+				"to": "00:00:02,090"
+			},
+			"offsets": {
+				"from": 1480,
+				"to": 2090
+			},
+			"text": " transfer"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,090",
+				"to": "00:00:02,660"
+			},
+			"offsets": {
+				"from": 2090,
+				"to": 2660
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,660",
+				"to": "00:00:03,000"
+			},
+			"offsets": {
+				"from": 2660,
+				"to": 3000
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,000",
+				"to": "00:00:03,130"
+			},
+			"offsets": {
+				"from": 3000,
+				"to": 3130
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,130",
+				"to": "00:00:03,770"
+			},
+			"offsets": {
+				"from": 3130,
+				"to": 3770
+			},
+			"text": " participating"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,770",
+				"to": "00:00:04,140"
+			},
+			"offsets": {
+				"from": 3770,
+				"to": 4140
+			},
+			"text": " loyalty"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,140",
+				"to": "00:00:04,600"
+			},
+			"offsets": {
+				"from": 4140,
+				"to": 4600
+			},
+			"text": " programs"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,600",
+				"to": "00:00:05,430"
+			},
+			"offsets": {
+				"from": 4600,
+				"to": 5430
+			},
+			"text": " giving"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,430",
+				"to": "00:00:05,980"
+			},
+			"offsets": {
+				"from": 5430,
+				"to": 5980
+			},
+			"text": " them"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,980",
+				"to": "00:00:06,580"
+			},
+			"offsets": {
+				"from": 5980,
+				"to": 6580
+			},
+			"text": " even"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,580",
+				"to": "00:00:07,080"
+			},
+			"offsets": {
+				"from": 6580,
+				"to": 7080
+			},
+			"text": " more"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,080",
+				"to": "00:00:07,630"
+			},
+			"offsets": {
+				"from": 7080,
+				"to": 7630
+			},
+			"text": " ways"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,630",
+				"to": "00:00:07,900"
+			},
+			"offsets": {
+				"from": 7630,
+				"to": 7900
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,900",
+				"to": "00:00:08,170"
+			},
+			"offsets": {
+				"from": 7900,
+				"to": 8170
+			},
+			"text": " be"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,170",
+				"to": "00:00:09,320"
+			},
+			"offsets": {
+				"from": 8170,
+				"to": 9320
+			},
+			"text": " rewarded"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,320",
+				"to": "00:00:09,320"
+			},
+			"offsets": {
+				"from": 9320,
+				"to": 9320
+			},
+			"text": "."
+		}
+	]
+}

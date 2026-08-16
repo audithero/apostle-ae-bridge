@@ -1,0 +1,340 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,450"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 450
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,450",
+				"to": "00:00:00,480"
+			},
+			"offsets": {
+				"from": 450,
+				"to": 480
+			},
+			"text": " Plus"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,480",
+				"to": "00:00:00,670"
+			},
+			"offsets": {
+				"from": 480,
+				"to": 670
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,670",
+				"to": "00:00:01,280"
+			},
+			"offsets": {
+				"from": 670,
+				"to": 1280
+			},
+			"text": " from"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,280",
+				"to": "00:00:01,910"
+			},
+			"offsets": {
+				"from": 1280,
+				"to": 1910
+			},
+			"text": " October"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,910",
+				"to": "00:00:02,250"
+			},
+			"offsets": {
+				"from": 1910,
+				"to": 2250
+			},
+			"text": " 1"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,250",
+				"to": "00:00:02,520"
+			},
+			"offsets": {
+				"from": 2250,
+				"to": 2520
+			},
+			"text": "st"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,520",
+				"to": "00:00:02,810"
+			},
+			"offsets": {
+				"from": 2520,
+				"to": 2810
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,810",
+				"to": "00:00:03,390"
+			},
+			"offsets": {
+				"from": 2810,
+				"to": 3390
+			},
+			"text": " eligible"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,390",
+				"to": "00:00:03,660"
+			},
+			"offsets": {
+				"from": 3390,
+				"to": 3660
+			},
+			"text": " credit"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,660",
+				"to": "00:00:03,930"
+			},
+			"offsets": {
+				"from": 3660,
+				"to": 3930
+			},
+			"text": " card"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,930",
+				"to": "00:00:04,700"
+			},
+			"offsets": {
+				"from": 3930,
+				"to": 4700
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,700",
+				"to": "00:00:04,760"
+			},
+			"offsets": {
+				"from": 4700,
+				"to": 4760
+			},
+			"text": " will"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,760",
+				"to": "00:00:05,160"
+			},
+			"offsets": {
+				"from": 4760,
+				"to": 5160
+			},
+			"text": " receive"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,160",
+				"to": "00:00:05,240"
+			},
+			"offsets": {
+				"from": 5160,
+				"to": 5240
+			},
+			"text": " a"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,240",
+				"to": "00:00:05,680"
+			},
+			"offsets": {
+				"from": 5240,
+				"to": 5680
+			},
+			"text": " monthly"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,680",
+				"to": "00:00:05,800"
+			},
+			"offsets": {
+				"from": 5680,
+				"to": 5800
+			},
+			"text": " $"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,800",
+				"to": "00:00:06,120"
+			},
+			"offsets": {
+				"from": 5800,
+				"to": 6120
+			},
+			"text": "10"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,120",
+				"to": "00:00:06,560"
+			},
+			"offsets": {
+				"from": 6120,
+				"to": 6560
+			},
+			"text": " dining"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,560",
+				"to": "00:00:07,040"
+			},
+			"offsets": {
+				"from": 6560,
+				"to": 7040
+			},
+			"text": " credit"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,040",
+				"to": "00:00:07,230"
+			},
+			"offsets": {
+				"from": 7040,
+				"to": 7230
+			},
+			"text": " for"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,230",
+				"to": "00:00:07,840"
+			},
+			"offsets": {
+				"from": 7230,
+				"to": 7840
+			},
+			"text": " dining"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,840",
+				"to": "00:00:08,060"
+			},
+			"offsets": {
+				"from": 7840,
+				"to": 8060
+			},
+			"text": " deals"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,060",
+				"to": "00:00:08,590"
+			},
+			"offsets": {
+				"from": 8060,
+				"to": 8590
+			},
+			"text": " powered"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,590",
+				"to": "00:00:08,740"
+			},
+			"offsets": {
+				"from": 8590,
+				"to": 8740
+			},
+			"text": " by"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,740",
+				"to": "00:00:08,970"
+			},
+			"offsets": {
+				"from": 8740,
+				"to": 8970
+			},
+			"text": " Eat"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,970",
+				"to": "00:00:09,370"
+			},
+			"offsets": {
+				"from": 8970,
+				"to": 9370
+			},
+			"text": " Club"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,370",
+				"to": "00:00:09,540"
+			},
+			"offsets": {
+				"from": 9370,
+				"to": 9540
+			},
+			"text": "."
+		}
+	]
+}

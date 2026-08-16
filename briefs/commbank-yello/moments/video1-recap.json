@@ -1,0 +1,70 @@
+{
+ "meta": {
+  "briefId": "video_001_intro",
+  "masterName": "VIDEO_001_INTRO_v001",
+  "easeProfile": "curvaceous",
+  "scriptVersion": 2,
+  "voLeadIn": 0.45,
+  "tailBuffer": 6,
+  "note": "Moment windows are MEASURED fractions of each beat's VO window, taken from whisper word timings of the recorded VO (briefs/commbank-yello/vo/video1-vo-words.json), not estimated from word counts. Re-run applyMoments after any retimeBeats. Beat 1 moments m3/m4 were removed 2026-07-31: they illustrated the script's RBA/interchange-reform paragraph, which was never recorded.",
+  "voSource": "YELLO - EDUCATIONAL_V1 Linked Comp 02",
+  "voOffsetSec": 2,
+  "brandKit": "commbank-yello-3"
+ },
+ "palette": {
+  "ink": "#000000",
+  "brand": "#FDFD3C",
+  "paper": "#FFFFFF",
+  "hole": "#FFFFFF",
+  "muted": "#E8E8B0",
+  "tileShape": "circle",
+  "tileFill": "paper",
+  "plateFill": "paper",
+  "plateStroke": "ink"
+ },
+ "scenes": [
+  {
+   "beatId": "to-recap-from-1-october-we-ll-be-int",
+   "moments": [
+    {
+     "id": "m1",
+     "from": 0,
+     "to": 0.0688,
+     "layout": "statement",
+     "super": "To recap.",
+     "vo": "To recap."
+    },
+    {
+     "id": "m2",
+     "from": 0.0688,
+     "to": 0.3857,
+     "layout": "statement",
+     "glyph": "check",
+     "super": "CommBank Yello points arrive 1 October.",
+     "sub": "A whole new world of points and perks.",
+     "vo": "From 1 October, we'll be introducing CommBank Yello points, unlocking a whole new world of points and perks for our customers."
+    },
+    {
+     "id": "m3",
+     "from": 0.3857,
+     "to": 0.6817,
+     "layout": "statement",
+     "glyph": "check",
+     "super": "Earn across banking, shopping and offers.",
+     "sub": "Banking products, the app, and activated offers.",
+     "vo": "Customers will be able to earn points across banking products, shopping via the app, and by activating offers."
+    },
+    {
+     "id": "m4",
+     "from": 0.6817,
+     "to": 1,
+     "layout": "statement",
+     "glyph": "check",
+     "super": "Awards customers transition to Yello points.",
+     "sub": "Points earned depend on your CommBank Yello tier.",
+     "vo": "Eligible credit card customers will transition to earning CommBank Yello points based on their CommBank Yello tier."
+    }
+   ]
+  }
+ ]
+}

@@ -1,0 +1,274 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,250"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 250
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,250",
+				"to": "00:00:00,360"
+			},
+			"offsets": {
+				"from": 250,
+				"to": 360
+			},
+			"text": " This"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,360",
+				"to": "00:00:00,760"
+			},
+			"offsets": {
+				"from": 360,
+				"to": 760
+			},
+			"text": " includes"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,760",
+				"to": "00:00:01,170"
+			},
+			"offsets": {
+				"from": 760,
+				"to": 1170
+			},
+			"text": " taking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,170",
+				"to": "00:00:01,330"
+			},
+			"offsets": {
+				"from": 1170,
+				"to": 1330
+			},
+			"text": " out"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,330",
+				"to": "00:00:01,840"
+			},
+			"offsets": {
+				"from": 1330,
+				"to": 1840
+			},
+			"text": " eligible"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,840",
+				"to": "00:00:02,260"
+			},
+			"offsets": {
+				"from": 1840,
+				"to": 2260
+			},
+			"text": " products"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,260",
+				"to": "00:00:02,640"
+			},
+			"offsets": {
+				"from": 2260,
+				"to": 2640
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,640",
+				"to": "00:00:02,820"
+			},
+			"offsets": {
+				"from": 2640,
+				"to": 2820
+			},
+			"text": " renew"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,820",
+				"to": "00:00:03,020"
+			},
+			"offsets": {
+				"from": 2820,
+				"to": 3020
+			},
+			"text": "ing"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,020",
+				"to": "00:00:03,610"
+			},
+			"offsets": {
+				"from": 3020,
+				"to": 3610
+			},
+			"text": " existing"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,610",
+				"to": "00:00:03,990"
+			},
+			"offsets": {
+				"from": 3610,
+				"to": 3990
+			},
+			"text": " ones"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,990",
+				"to": "00:00:04,030"
+			},
+			"offsets": {
+				"from": 3990,
+				"to": 4030
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,030",
+				"to": "00:00:04,320"
+			},
+			"offsets": {
+				"from": 4030,
+				"to": 4320
+			},
+			"text": " reaching"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,320",
+				"to": "00:00:04,640"
+			},
+			"offsets": {
+				"from": 4320,
+				"to": 4640
+			},
+			"text": " banking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,640",
+				"to": "00:00:05,660"
+			},
+			"offsets": {
+				"from": 4640,
+				"to": 5660
+			},
+			"text": " milestones"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,660",
+				"to": "00:00:06,020"
+			},
+			"offsets": {
+				"from": 5660,
+				"to": 6020
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,020",
+				"to": "00:00:06,210"
+			},
+			"offsets": {
+				"from": 6020,
+				"to": 6210
+			},
+			"text": " making"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,210",
+				"to": "00:00:06,710"
+			},
+			"offsets": {
+				"from": 6210,
+				"to": 6710
+			},
+			"text": " eligible"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,710",
+				"to": "00:00:06,960"
+			},
+			"offsets": {
+				"from": 6710,
+				"to": 6960
+			},
+			"text": " card"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,960",
+				"to": "00:00:07,540"
+			},
+			"offsets": {
+				"from": 6960,
+				"to": 7540
+			},
+			"text": " purchases"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,540",
+				"to": "00:00:07,540"
+			},
+			"offsets": {
+				"from": 7540,
+				"to": 7540
+			},
+			"text": "."
+		}
+	]
+}

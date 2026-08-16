@@ -1,0 +1,254 @@
+{
+ "meta": {
+  "schemaVersion": 2,
+  "briefId": "video_004_redeeming_deep_dive",
+  "scriptVersion": 1,
+  "sourceScriptPath": "briefs/commbank-yello/video4-redeeming-deep-dive.md",
+  "title": "VIDEO_004_REDEEMING_DEEP_DIVE",
+  "fps": 25,
+  "resolution": [
+   1920,
+   1080
+  ],
+  "wpm": 150,
+  "layout": "gallery",
+  "masterName": "VIDEO_004_REDEEMING_DEEP_DIVE",
+  "rig": "auto",
+  "brandKit": "commbank-yello-3",
+  "note": "Retimed to Meg read 2026-08-07; audio locked in 6 segments; elaboration-moment orphans discarded (SC02 m2, SC03 m2, SC04 m2, SC07 m3)",
+  "voOffsetSec": 2.0,
+  "voFiles": [
+   "01.MEDIA/AUDIO/VO/V4/VIDEO_004_A_AUDIO_VOICEOVER.mp3",
+   "01.MEDIA/AUDIO/VO/V4/VIDEO_004_B_AUDIO_VOICEOVER.mp3"
+  ]
+ },
+ "sections": [
+  {
+   "id": "intro",
+   "title": "Introducing points redemption"
+  },
+  {
+   "id": "gift",
+   "title": "Using points for gift cards"
+  },
+  {
+   "id": "transfer",
+   "title": "Transferring points to loyalty programs"
+  },
+  {
+   "id": "cash",
+   "title": "Using points for cash"
+  },
+  {
+   "id": "stores",
+   "title": "Using points with partner stores"
+  },
+  {
+   "id": "travel",
+   "title": "Using points for travel"
+  },
+  {
+   "id": "grow",
+   "title": "Continuing to grow"
+  },
+  {
+   "id": "takeaway",
+   "title": "Key takeaway"
+  }
+ ],
+ "brand": {
+  "fontHeadingPS": "CBABeaconSans-Bold",
+  "fontBodyPS": "CBABeaconSans-Regular",
+  "headingSize": 84,
+  "bodySize": 42,
+  "headingTracking": 0,
+  "bodyTracking": 0,
+  "safeMarginPct": 10,
+  "colors": {
+   "primary": "#FDFD3C",
+   "secondary": "#000000",
+   "background": "#FDFD3C",
+   "text": "#000000",
+   "surface": "#FFFFFF"
+  },
+  "logo": null
+ },
+ "beats": [
+  {
+   "id": 1,
+   "beatId": "one-of-the-biggest-benefits-of-commb",
+   "sectionId": "intro",
+   "vo": "One of the biggest benefits of CommBank Yello points is flexibility. Customers can choose from a growing range of ways to use their points, giving them more control over how they're rewarded. Whether they're looking for everyday value, travel experiences, or rewards from brands they already know and love, customers can choose the redemption option that works best for them.",
+   "superText": "Flexibility.",
+   "voSpokenWords": 60,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 30.09,
+   "voWindow": [
+    0.0,
+    22.12
+   ],
+   "transitIn": "none",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 2,
+   "beatId": "customers-can-use-their-commbank-yel",
+   "sectionId": "gift",
+   "vo": "Customers can use their CommBank Yello points to purchase gift cards from a range of popular retailers and brands. This gives customers the flexibility to turn points into value that can be used on everyday purchases, special occasions, or future spending.",
+   "superText": "Points for gift cards.",
+   "voSpokenWords": 41,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 9.71,
+   "voWindow": [
+    22.12,
+    37.96
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 3,
+   "beatId": "customers-can-also-transfer-their-co",
+   "sectionId": "transfer",
+   "vo": "Customers can also transfer their CommBank Yello points to participating loyalty programs they already use. This gives customers more choice in how they use their rewards, and allows them to continue building value within their preferred loyalty programs.",
+   "superText": "Transfer to loyalty programs.",
+   "voSpokenWords": 38,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 15.1,
+   "voWindow": [
+    37.96,
+    53.87
+   ],
+   "transitIn": "crane",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 4,
+   "beatId": "customers-can-choose-to-convert-thei",
+   "sectionId": "cash",
+   "vo": "Customers can choose to convert their CommBank Yello points into cash. This provides a simple way for customers to turn their rewards into everyday value when they need it most.",
+   "superText": "Convert points into cash.",
+   "voSpokenWords": 30,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 10.6,
+   "voWindow": [
+    53.87,
+    64.54
+   ],
+   "transitIn": "whipOrbit",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 5,
+   "beatId": "customers-can-also-use-their-points",
+   "sectionId": "stores",
+   "vo": "Customers can also use their points with participating partner stores through the CommBank app. This creates more opportunities to redeem points directly with brands and retailers available through the CommBank Yello experience.",
+   "superText": "Use points with partner stores.",
+   "voSpokenWords": 32,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 13.34,
+   "voWindow": [
+    64.54,
+    79.39
+   ],
+   "transitIn": "dollyZoom",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 6,
+   "beatId": "customers-can-use-their-points-when",
+   "sectionId": "travel",
+   "vo": "Customers can use their points when booking travel through CommBank Travel, including flights, hotels, and car hire. Whether planning a weekend getaway or a larger trip, customers can use points to help fund their travel experiences.",
+   "superText": "Points for travel.",
+   "voSpokenWords": 36,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 15.69,
+   "voWindow": [
+    79.39,
+    95.28
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 7,
+   "beatId": "this-is-just-the-beginning-we-ll-con",
+   "sectionId": "grow",
+   "vo": "This is just the beginning. We'll continue expanding the range of rewards, partners, and redemption opportunities available through CommBank Yello over time. This means customers can look forward to even more ways to get value from their CommBank Yello points in the future.",
+   "superText": "This is just the beginning.",
+   "voSpokenWords": 43,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 17.31,
+   "voWindow": [
+    95.28,
+    110.81
+   ],
+   "transitIn": "crane",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 8,
+   "beatId": "commbank-yello-points-gives-customer",
+   "sectionId": "takeaway",
+   "vo": "CommBank Yello points gives customers the flexibility to choose how they're rewarded, whether that's gift cards, cash, travel, partner offers, or transfers to participating loyalty programs. By giving customers more choice, we're creating a rewards experience that can be tailored to their individual needs and preferences.",
+   "superText": "Choose how you're rewarded.",
+   "voSpokenWords": 46,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 27.42,
+   "voWindow": [
+    110.81,
+    136.77
+   ],
+   "transitIn": "whipOrbit",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  }
+ ]
+}

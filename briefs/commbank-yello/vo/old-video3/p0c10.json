@@ -1,0 +1,208 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,340"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 340
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,340",
+				"to": "00:00:00,410"
+			},
+			"offsets": {
+				"from": 340,
+				"to": 410
+			},
+			"text": " These"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,410",
+				"to": "00:00:00,750"
+			},
+			"offsets": {
+				"from": 410,
+				"to": 750
+			},
+			"text": " offers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,750",
+				"to": "00:00:01,020"
+			},
+			"offsets": {
+				"from": 750,
+				"to": 1020
+			},
+			"text": " will"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,020",
+				"to": "00:00:01,150"
+			},
+			"offsets": {
+				"from": 1020,
+				"to": 1150
+			},
+			"text": " be"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,150",
+				"to": "00:00:01,770"
+			},
+			"offsets": {
+				"from": 1150,
+				"to": 1770
+			},
+			"text": " regularly"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,770",
+				"to": "00:00:02,360"
+			},
+			"offsets": {
+				"from": 1770,
+				"to": 2360
+			},
+			"text": " updated"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,360",
+				"to": "00:00:02,510"
+			},
+			"offsets": {
+				"from": 2360,
+				"to": 2510
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,510",
+				"to": "00:00:02,900"
+			},
+			"offsets": {
+				"from": 2510,
+				"to": 2900
+			},
+			"text": " provide"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,900",
+				"to": "00:00:03,060"
+			},
+			"offsets": {
+				"from": 2900,
+				"to": 3060
+			},
+			"text": " even"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,060",
+				"to": "00:00:03,280"
+			},
+			"offsets": {
+				"from": 3060,
+				"to": 3280
+			},
+			"text": " more"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,280",
+				"to": "00:00:04,050"
+			},
+			"offsets": {
+				"from": 3280,
+				"to": 4050
+			},
+			"text": " opportunities"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,050",
+				"to": "00:00:04,130"
+			},
+			"offsets": {
+				"from": 4050,
+				"to": 4130
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,130",
+				"to": "00:00:04,420"
+			},
+			"offsets": {
+				"from": 4130,
+				"to": 4420
+			},
+			"text": " earn"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,420",
+				"to": "00:00:04,690"
+			},
+			"offsets": {
+				"from": 4420,
+				"to": 4690
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,690",
+				"to": "00:00:04,880"
+			},
+			"offsets": {
+				"from": 4690,
+				"to": 4880
+			},
+			"text": "."
+		}
+	]
+}

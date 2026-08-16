@@ -1,0 +1,252 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,130"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 130
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,130",
+				"to": "00:00:00,470"
+			},
+			"offsets": {
+				"from": 130,
+				"to": 470
+			},
+			"text": " Meet"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,470",
+				"to": "00:00:00,580"
+			},
+			"offsets": {
+				"from": 470,
+				"to": 580
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,580",
+				"to": "00:00:00,920"
+			},
+			"offsets": {
+				"from": 580,
+				"to": 920
+			},
+			"text": " Comm"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,920",
+				"to": "00:00:01,240"
+			},
+			"offsets": {
+				"from": 920,
+				"to": 1240
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,240",
+				"to": "00:00:01,770"
+			},
+			"offsets": {
+				"from": 1240,
+				"to": 1770
+			},
+			"text": " yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,770",
+				"to": "00:00:02,820"
+			},
+			"offsets": {
+				"from": 1770,
+				"to": 2820
+			},
+			"text": " eligibility"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,820",
+				"to": "00:00:02,960"
+			},
+			"offsets": {
+				"from": 2820,
+				"to": 2960
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,960",
+				"to": "00:00:03,780"
+			},
+			"offsets": {
+				"from": 2960,
+				"to": 3780
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,780",
+				"to": "00:00:03,810"
+			},
+			"offsets": {
+				"from": 3780,
+				"to": 3810
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,810",
+				"to": "00:00:04,040"
+			},
+			"offsets": {
+				"from": 3810,
+				"to": 4040
+			},
+			"text": " earn"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,040",
+				"to": "00:00:04,830"
+			},
+			"offsets": {
+				"from": 4040,
+				"to": 4830
+			},
+			"text": " unlimited"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,830",
+				"to": "00:00:05,260"
+			},
+			"offsets": {
+				"from": 4830,
+				"to": 5260
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,260",
+				"to": "00:00:05,360"
+			},
+			"offsets": {
+				"from": 5260,
+				"to": 5360
+			},
+			"text": " per"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,360",
+				"to": "00:00:05,810"
+			},
+			"offsets": {
+				"from": 5360,
+				"to": 5810
+			},
+			"text": " year"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,810",
+				"to": "00:00:05,820"
+			},
+			"offsets": {
+				"from": 5810,
+				"to": 5820
+			},
+			"text": " on"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,820",
+				"to": "00:00:06,000"
+			},
+			"offsets": {
+				"from": 5820,
+				"to": 6000
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,000",
+				"to": "00:00:06,590"
+			},
+			"offsets": {
+				"from": 6000,
+				"to": 6590
+			},
+			"text": " credit"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,590",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 6590,
+				"to": 7000
+			},
+			"text": " card"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,000",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 7000,
+				"to": 7000
+			},
+			"text": "."
+		}
+	]
+}

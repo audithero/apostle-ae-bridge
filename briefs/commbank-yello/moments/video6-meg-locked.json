@@ -1,0 +1,271 @@
+{
+ "meta": {
+  "briefId": "video_006_dine_in_deals",
+  "masterName": "VIDEO_006_DINE_IN_DEALS_v001",
+  "easeProfile": "curvaceous",
+  "scriptVersion": 1,
+  "voLeadIn": 0.45,
+  "tailBuffer": 6,
+  "brandKit": "commbank-yello-3",
+  "note": "Meg-locked 2026-08-10: windows re-measured against Meg's read. Fractions of each beat's VO window."
+ },
+ "palette": {
+  "ink": "#000000",
+  "brand": "#FDFD3C",
+  "paper": "#FFFFFF",
+  "hole": "#FFFFFF",
+  "muted": "#E8E8B0",
+  "tileShape": "circle",
+  "tileFill": "paper",
+  "plateFill": "paper",
+  "plateStroke": "ink"
+ },
+ "scenes": [
+  {
+   "beatId": "beat-1",
+   "beatDurationSec": 4.98,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "statement",
+     "super": "Be rewarded like never before with CommBank Yello.",
+     "sub": "Dine In Deals in the CommBank app.",
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      -4.98,
+      0
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "thanks-to-commbank-yello-we-re-makin",
+   "beatDurationSec": 7.43,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "hero",
+     "glyph": "basket",
+     "super": "Dine In Deals in the CommBank app.",
+     "sub": "Making it easier to find the best places to eat.",
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      1.42,
+      8.85
+     ],
+     "picto": "shopping trolley"
+    }
+   ]
+  },
+  {
+   "beatId": "with-dine-in-deals-customers-can-dis",
+   "beatDurationSec": 8.22,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "device",
+     "super": "Discover and redeem great restaurant offers.",
+     "sub": "At participating restaurants across Australia.",
+     "screen": [
+      {
+       "glyph": "tag",
+       "label": "Offers near you",
+       "picto": "offers"
+      },
+      {
+       "glyph": "percent",
+       "label": "Save instantly",
+       "picto": "percentage"
+      },
+      {
+       "glyph": "star",
+       "label": "Participating\rrestaurants",
+       "picto": "star"
+      }
+     ],
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      8.85,
+      17.07
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "accessing-dine-in-deals-is-easy",
+   "beatDurationSec": 3.24,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "statement",
+     "super": "How do Dine In Deals work?",
+     "sub": "",
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      17.07,
+      20.31
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "first-customers-can-simply-browse-an",
+   "beatDurationSec": 4.71,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "chipRow",
+     "super": "1. Browse and redeem an offer.",
+     "chips": [
+      "Browse offers",
+      "Redeem"
+     ],
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      20.31,
+      25.02
+     ],
+     "note": "2026-08-10: chips replaced by PHONE_V6_DINE screenshot panel in comp (client feedback)"
+    }
+   ]
+  },
+  {
+   "beatId": "then-they-add-their-dine-in-deals-ca",
+   "beatDurationSec": 4.98,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "chipRow",
+     "super": "2. Add Dine In Deals card directly to digital wallet.",
+     "chips": [
+      "Dine In Deals card",
+      "Digital wallet"
+     ],
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      25.02,
+      30
+     ],
+     "note": "2026-08-10: chips replaced by PHONE_V6_CARD (Barcode Success screen) in comp (client feedback)"
+    }
+   ]
+  },
+  {
+   "beatId": "then-customers-pay-with-the-dine-in",
+   "beatDurationSec": 6.83,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "chipRow",
+     "super": "3. Pay with the Dine In Deals card and save.",
+     "chips": [
+      "Pay",
+      "Savings applied automatically"
+     ],
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      30,
+      36.83
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "no-codes-no-vouchers-and-no-awkward",
+   "beatDurationSec": 5.87,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "iconRow",
+     "super": "No codes. No vouchers. No awkward redemption moments.",
+     "tiles": [
+      {
+       "glyph": "cross",
+       "label": "No codes",
+       "picto": "no fees"
+      },
+      {
+       "glyph": "cross",
+       "label": "No vouchers",
+       "picto": "no fees"
+      },
+      {
+       "glyph": "check",
+       "label": "Just pay",
+       "picto": "tick"
+      }
+     ],
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      36.83,
+      42.7
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "plus-from-october-1st-eligible-credi",
+   "beatDurationSec": 10.04,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "placeholder",
+     "super": "From 1 Oct: $10 Monthly Dining Credit",
+     "sub": "Up to $120 in total. For eligible credit card customers.",
+     "asset": "Eat Club + Dine In Deals logos",
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      42.7,
+      52.74
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "bank-dining-rewards-like-never-befor",
+   "beatDurationSec": 5.75,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "statement",
+     "super": "Helping customers enjoy more dining benefits than ever.",
+     "sub": "Dine In Deals in the CommBank app.",
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      52.74,
+      58.49
+     ]
+    }
+   ]
+  },
+  {
+   "beatId": "to-find-out-more-visit-commbank-com",
+   "beatDurationSec": 13.89,
+   "moments": [
+    {
+     "id": "m1",
+     "layout": "endcard",
+     "super": "Find out more.",
+     "url": "commbank.com.au/commbankyello",
+     "sub": "Or search CommBank Yello on One.CBA",
+     "from": 0,
+     "to": 1,
+     "voSec": [
+      58.49,
+      72.38
+     ]
+    }
+   ]
+  }
+ ]
+}

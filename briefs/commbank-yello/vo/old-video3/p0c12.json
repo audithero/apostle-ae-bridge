@@ -1,0 +1,384 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 0
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,800"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 800
+			},
+			"text": " Whether"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,800",
+				"to": "00:00:01,140"
+			},
+			"offsets": {
+				"from": 800,
+				"to": 1140
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,140",
+				"to": "00:00:01,350"
+			},
+			"offsets": {
+				"from": 1140,
+				"to": 1350
+			},
+			"text": " are"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,350",
+				"to": "00:00:01,850"
+			},
+			"offsets": {
+				"from": 1350,
+				"to": 1850
+			},
+			"text": " banking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,850",
+				"to": "00:00:02,240"
+			},
+			"offsets": {
+				"from": 1850,
+				"to": 2240
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,240",
+				"to": "00:00:02,530"
+			},
+			"offsets": {
+				"from": 2240,
+				"to": 2530
+			},
+			"text": " spending"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,530",
+				"to": "00:00:02,660"
+			},
+			"offsets": {
+				"from": 2530,
+				"to": 2660
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,660",
+				"to": "00:00:03,250"
+			},
+			"offsets": {
+				"from": 2660,
+				"to": 3250
+			},
+			"text": " shopping"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,250",
+				"to": "00:00:03,260"
+			},
+			"offsets": {
+				"from": 3250,
+				"to": 3260
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,260",
+				"to": "00:00:03,320"
+			},
+			"offsets": {
+				"from": 3260,
+				"to": 3320
+			},
+			"text": " or"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,320",
+				"to": "00:00:03,600"
+			},
+			"offsets": {
+				"from": 3320,
+				"to": 3600
+			},
+			"text": " reaching"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,600",
+				"to": "00:00:04,160"
+			},
+			"offsets": {
+				"from": 3600,
+				"to": 4160
+			},
+			"text": " important"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,160",
+				"to": "00:00:05,000"
+			},
+			"offsets": {
+				"from": 4160,
+				"to": 5000
+			},
+			"text": " milestones"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,000",
+				"to": "00:00:05,000"
+			},
+			"offsets": {
+				"from": 5000,
+				"to": 5000
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,000",
+				"to": "00:00:05,120"
+			},
+			"offsets": {
+				"from": 5000,
+				"to": 5120
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,120",
+				"to": "00:00:05,280"
+			},
+			"offsets": {
+				"from": 5120,
+				"to": 5280
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,280",
+				"to": "00:00:05,770"
+			},
+			"offsets": {
+				"from": 5280,
+				"to": 5770
+			},
+			"text": " Yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,770",
+				"to": "00:00:05,810"
+			},
+			"offsets": {
+				"from": 5770,
+				"to": 5810
+			},
+			"text": "points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,810",
+				"to": "00:00:06,100"
+			},
+			"offsets": {
+				"from": 5810,
+				"to": 6100
+			},
+			"text": " provides"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,100",
+				"to": "00:00:06,320"
+			},
+			"offsets": {
+				"from": 6100,
+				"to": 6320
+			},
+			"text": " more"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,320",
+				"to": "00:00:06,420"
+			},
+			"offsets": {
+				"from": 6320,
+				"to": 6420
+			},
+			"text": " ways"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,420",
+				"to": "00:00:06,500"
+			},
+			"offsets": {
+				"from": 6420,
+				"to": 6500
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,500",
+				"to": "00:00:06,660"
+			},
+			"offsets": {
+				"from": 6500,
+				"to": 6660
+			},
+			"text": " earn"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,660",
+				"to": "00:00:07,230"
+			},
+			"offsets": {
+				"from": 6660,
+				"to": 7230
+			},
+			"text": " rewards"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,230",
+				"to": "00:00:07,340"
+			},
+			"offsets": {
+				"from": 7230,
+				"to": 7340
+			},
+			"text": " across"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,340",
+				"to": "00:00:07,620"
+			},
+			"offsets": {
+				"from": 7340,
+				"to": 7620
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,620",
+				"to": "00:00:08,310"
+			},
+			"offsets": {
+				"from": 7620,
+				"to": 8310
+			},
+			"text": " relationship"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,310",
+				"to": "00:00:08,560"
+			},
+			"offsets": {
+				"from": 8310,
+				"to": 8560
+			},
+			"text": " with"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,560",
+				"to": "00:00:08,820"
+			},
+			"offsets": {
+				"from": 8560,
+				"to": 8820
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,820",
+				"to": "00:00:09,000"
+			},
+			"offsets": {
+				"from": 8820,
+				"to": 9000
+			},
+			"text": " bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,000",
+				"to": "00:00:09,000"
+			},
+			"offsets": {
+				"from": 9000,
+				"to": 9000
+			},
+			"text": "."
+		}
+	]
+}

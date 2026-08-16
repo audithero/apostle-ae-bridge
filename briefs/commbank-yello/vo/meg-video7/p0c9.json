@@ -1,0 +1,384 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 0
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,470"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 470
+			},
+			"text": " To"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,470",
+				"to": "00:00:00,520"
+			},
+			"offsets": {
+				"from": 470,
+				"to": 520
+			},
+			"text": " find"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,520",
+				"to": "00:00:00,780"
+			},
+			"offsets": {
+				"from": 520,
+				"to": 780
+			},
+			"text": " out"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,780",
+				"to": "00:00:01,130"
+			},
+			"offsets": {
+				"from": 780,
+				"to": 1130
+			},
+			"text": " more"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,130",
+				"to": "00:00:01,300"
+			},
+			"offsets": {
+				"from": 1130,
+				"to": 1300
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,300",
+				"to": "00:00:01,740"
+			},
+			"offsets": {
+				"from": 1300,
+				"to": 1740
+			},
+			"text": " visit"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,740",
+				"to": "00:00:02,000"
+			},
+			"offsets": {
+				"from": 1740,
+				"to": 2000
+			},
+			"text": " www"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,000",
+				"to": "00:00:02,260"
+			},
+			"offsets": {
+				"from": 2000,
+				"to": 2260
+			},
+			"text": "."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,260",
+				"to": "00:00:02,520"
+			},
+			"offsets": {
+				"from": 2260,
+				"to": 2520
+			},
+			"text": "com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,520",
+				"to": "00:00:02,870"
+			},
+			"offsets": {
+				"from": 2520,
+				"to": 2870
+			},
+			"text": "bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,870",
+				"to": "00:00:03,130"
+			},
+			"offsets": {
+				"from": 2870,
+				"to": 3130
+			},
+			"text": "."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,130",
+				"to": "00:00:03,390"
+			},
+			"offsets": {
+				"from": 3130,
+				"to": 3390
+			},
+			"text": "com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,390",
+				"to": "00:00:03,650"
+			},
+			"offsets": {
+				"from": 3390,
+				"to": 3650
+			},
+			"text": "."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,650",
+				"to": "00:00:03,900"
+			},
+			"offsets": {
+				"from": 3650,
+				"to": 3900
+			},
+			"text": "au"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,900",
+				"to": "00:00:03,970"
+			},
+			"offsets": {
+				"from": 3900,
+				"to": 3970
+			},
+			"text": "/"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,970",
+				"to": "00:00:04,250"
+			},
+			"offsets": {
+				"from": 3970,
+				"to": 4250
+			},
+			"text": "card"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,250",
+				"to": "00:00:04,420"
+			},
+			"offsets": {
+				"from": 4250,
+				"to": 4420
+			},
+			"text": "up"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,420",
+				"to": "00:00:05,410"
+			},
+			"offsets": {
+				"from": 4420,
+				"to": 5410
+			},
+			"text": "dates"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,410",
+				"to": "00:00:05,480"
+			},
+			"offsets": {
+				"from": 5410,
+				"to": 5480
+			},
+			"text": " or"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,480",
+				"to": "00:00:06,000"
+			},
+			"offsets": {
+				"from": 5480,
+				"to": 6000
+			},
+			"text": " search"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,000",
+				"to": "00:00:06,050"
+			},
+			"offsets": {
+				"from": 6000,
+				"to": 6050
+			},
+			"text": " '"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,050",
+				"to": "00:00:06,210"
+			},
+			"offsets": {
+				"from": 6050,
+				"to": 6210
+			},
+			"text": "com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,210",
+				"to": "00:00:06,430"
+			},
+			"offsets": {
+				"from": 6210,
+				"to": 6430
+			},
+			"text": "bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,430",
+				"to": "00:00:06,840"
+			},
+			"offsets": {
+				"from": 6430,
+				"to": 6840
+			},
+			"text": " yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,840",
+				"to": "00:00:06,940"
+			},
+			"offsets": {
+				"from": 6840,
+				"to": 6940
+			},
+			"text": "'"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,940",
+				"to": "00:00:07,080"
+			},
+			"offsets": {
+				"from": 6940,
+				"to": 7080
+			},
+			"text": " on"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,080",
+				"to": "00:00:07,440"
+			},
+			"offsets": {
+				"from": 7080,
+				"to": 7440
+			},
+			"text": " 1"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,440",
+				"to": "00:00:07,850"
+			},
+			"offsets": {
+				"from": 7440,
+				"to": 7850
+			},
+			"text": "."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,850",
+				"to": "00:00:07,900"
+			},
+			"offsets": {
+				"from": 7850,
+				"to": 7900
+			},
+			"text": "c"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,900",
+				"to": "00:00:08,130"
+			},
+			"offsets": {
+				"from": 7900,
+				"to": 8130
+			},
+			"text": "ba"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,130",
+				"to": "00:00:08,520"
+			},
+			"offsets": {
+				"from": 8130,
+				"to": 8520
+			},
+			"text": "."
+		}
+	]
+}

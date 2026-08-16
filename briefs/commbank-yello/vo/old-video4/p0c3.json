@@ -1,0 +1,285 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,660"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 660
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,660",
+				"to": "00:00:00,810"
+			},
+			"offsets": {
+				"from": 660,
+				"to": 810
+			},
+			"text": " Customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,810",
+				"to": "00:00:00,880"
+			},
+			"offsets": {
+				"from": 810,
+				"to": 880
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,880",
+				"to": "00:00:01,100"
+			},
+			"offsets": {
+				"from": 880,
+				"to": 1100
+			},
+			"text": " use"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,100",
+				"to": "00:00:01,460"
+			},
+			"offsets": {
+				"from": 1100,
+				"to": 1460
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,460",
+				"to": "00:00:01,530"
+			},
+			"offsets": {
+				"from": 1460,
+				"to": 1530
+			},
+			"text": " K"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,530",
+				"to": "00:00:01,750"
+			},
+			"offsets": {
+				"from": 1530,
+				"to": 1750
+			},
+			"text": "omb"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,750",
+				"to": "00:00:01,970"
+			},
+			"offsets": {
+				"from": 1750,
+				"to": 1970
+			},
+			"text": "ank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,970",
+				"to": "00:00:02,430"
+			},
+			"offsets": {
+				"from": 1970,
+				"to": 2430
+			},
+			"text": " yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,430",
+				"to": "00:00:02,840"
+			},
+			"offsets": {
+				"from": 2430,
+				"to": 2840
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,840",
+				"to": "00:00:02,860"
+			},
+			"offsets": {
+				"from": 2840,
+				"to": 2860
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,860",
+				"to": "00:00:02,940"
+			},
+			"offsets": {
+				"from": 2860,
+				"to": 2940
+			},
+			"text": " purchase"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,940",
+				"to": "00:00:03,320"
+			},
+			"offsets": {
+				"from": 2940,
+				"to": 3320
+			},
+			"text": " gift"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,320",
+				"to": "00:00:03,770"
+			},
+			"offsets": {
+				"from": 3320,
+				"to": 3770
+			},
+			"text": " cards"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,770",
+				"to": "00:00:03,920"
+			},
+			"offsets": {
+				"from": 3770,
+				"to": 3920
+			},
+			"text": " from"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,920",
+				"to": "00:00:04,000"
+			},
+			"offsets": {
+				"from": 3920,
+				"to": 4000
+			},
+			"text": " a"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,000",
+				"to": "00:00:04,280"
+			},
+			"offsets": {
+				"from": 4000,
+				"to": 4280
+			},
+			"text": " range"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,280",
+				"to": "00:00:04,450"
+			},
+			"offsets": {
+				"from": 4280,
+				"to": 4450
+			},
+			"text": " of"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,450",
+				"to": "00:00:04,760"
+			},
+			"offsets": {
+				"from": 4450,
+				"to": 4760
+			},
+			"text": " popular"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,760",
+				"to": "00:00:05,370"
+			},
+			"offsets": {
+				"from": 4760,
+				"to": 5370
+			},
+			"text": " retailers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,370",
+				"to": "00:00:05,570"
+			},
+			"offsets": {
+				"from": 5370,
+				"to": 5570
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,570",
+				"to": "00:00:05,990"
+			},
+			"offsets": {
+				"from": 5570,
+				"to": 5990
+			},
+			"text": " brands"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,990",
+				"to": "00:00:06,000"
+			},
+			"offsets": {
+				"from": 5990,
+				"to": 6000
+			},
+			"text": "."
+		}
+	]
+}

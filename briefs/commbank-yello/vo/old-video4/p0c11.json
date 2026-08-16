@@ -1,0 +1,274 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,660"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 660
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,660",
+				"to": "00:00:00,700"
+			},
+			"offsets": {
+				"from": 660,
+				"to": 700
+			},
+			"text": " Customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,700",
+				"to": "00:00:00,920"
+			},
+			"offsets": {
+				"from": 700,
+				"to": 920
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,920",
+				"to": "00:00:01,160"
+			},
+			"offsets": {
+				"from": 920,
+				"to": 1160
+			},
+			"text": " use"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,160",
+				"to": "00:00:01,530"
+			},
+			"offsets": {
+				"from": 1160,
+				"to": 1530
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,530",
+				"to": "00:00:02,000"
+			},
+			"offsets": {
+				"from": 1530,
+				"to": 2000
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,000",
+				"to": "00:00:02,190"
+			},
+			"offsets": {
+				"from": 2000,
+				"to": 2190
+			},
+			"text": " when"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,190",
+				"to": "00:00:02,520"
+			},
+			"offsets": {
+				"from": 2190,
+				"to": 2520
+			},
+			"text": " booking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,520",
+				"to": "00:00:02,840"
+			},
+			"offsets": {
+				"from": 2520,
+				"to": 2840
+			},
+			"text": " travel"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,840",
+				"to": "00:00:03,000"
+			},
+			"offsets": {
+				"from": 2840,
+				"to": 3000
+			},
+			"text": " through"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,000",
+				"to": "00:00:03,190"
+			},
+			"offsets": {
+				"from": 3000,
+				"to": 3190
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,190",
+				"to": "00:00:03,500"
+			},
+			"offsets": {
+				"from": 3190,
+				"to": 3500
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,500",
+				"to": "00:00:03,840"
+			},
+			"offsets": {
+				"from": 3500,
+				"to": 3840
+			},
+			"text": " Travel"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,840",
+				"to": "00:00:04,000"
+			},
+			"offsets": {
+				"from": 3840,
+				"to": 4000
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,000",
+				"to": "00:00:05,050"
+			},
+			"offsets": {
+				"from": 4000,
+				"to": 5050
+			},
+			"text": " including"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,050",
+				"to": "00:00:05,870"
+			},
+			"offsets": {
+				"from": 5050,
+				"to": 5870
+			},
+			"text": " flights"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,870",
+				"to": "00:00:06,100"
+			},
+			"offsets": {
+				"from": 5870,
+				"to": 6100
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,100",
+				"to": "00:00:06,800"
+			},
+			"offsets": {
+				"from": 6100,
+				"to": 6800
+			},
+			"text": " hotels"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,800",
+				"to": "00:00:07,160"
+			},
+			"offsets": {
+				"from": 6800,
+				"to": 7160
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,160",
+				"to": "00:00:07,490"
+			},
+			"offsets": {
+				"from": 7160,
+				"to": 7490
+			},
+			"text": " car"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,490",
+				"to": "00:00:08,000"
+			},
+			"offsets": {
+				"from": 7490,
+				"to": 8000
+			},
+			"text": " hire"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,000",
+				"to": "00:00:08,000"
+			},
+			"offsets": {
+				"from": 8000,
+				"to": 8000
+			},
+			"text": "."
+		}
+	]
+}

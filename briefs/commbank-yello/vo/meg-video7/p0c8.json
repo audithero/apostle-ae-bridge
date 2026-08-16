@@ -1,0 +1,307 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,540"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 540
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,540",
+				"to": "00:00:00,990"
+			},
+			"offsets": {
+				"from": 540,
+				"to": 990
+			},
+			"text": " Additionally"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,990",
+				"to": "00:00:01,150"
+			},
+			"offsets": {
+				"from": 990,
+				"to": 1150
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,150",
+				"to": "00:00:01,560"
+			},
+			"offsets": {
+				"from": 1150,
+				"to": 1560
+			},
+			"text": " there"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,560",
+				"to": "00:00:01,890"
+			},
+			"offsets": {
+				"from": 1560,
+				"to": 1890
+			},
+			"text": " will"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,890",
+				"to": "00:00:02,240"
+			},
+			"offsets": {
+				"from": 1890,
+				"to": 2240
+			},
+			"text": " also"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,240",
+				"to": "00:00:02,380"
+			},
+			"offsets": {
+				"from": 2240,
+				"to": 2380
+			},
+			"text": " be"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,380",
+				"to": "00:00:03,060"
+			},
+			"offsets": {
+				"from": 2380,
+				"to": 3060
+			},
+			"text": " changes"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,060",
+				"to": "00:00:03,140"
+			},
+			"offsets": {
+				"from": 3060,
+				"to": 3140
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,140",
+				"to": "00:00:03,330"
+			},
+			"offsets": {
+				"from": 3140,
+				"to": 3330
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,330",
+				"to": "00:00:03,950"
+			},
+			"offsets": {
+				"from": 3330,
+				"to": 3950
+			},
+			"text": " insurance"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,950",
+				"to": "00:00:04,500"
+			},
+			"offsets": {
+				"from": 3950,
+				"to": 4500
+			},
+			"text": " provider"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,500",
+				"to": "00:00:05,190"
+			},
+			"offsets": {
+				"from": 4500,
+				"to": 5190
+			},
+			"text": " details"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,190",
+				"to": "00:00:05,380"
+			},
+			"offsets": {
+				"from": 5190,
+				"to": 5380
+			},
+			"text": " for"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,380",
+				"to": "00:00:05,520"
+			},
+			"offsets": {
+				"from": 5380,
+				"to": 5520
+			},
+			"text": " all"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,520",
+				"to": "00:00:05,800"
+			},
+			"offsets": {
+				"from": 5520,
+				"to": 5800
+			},
+			"text": " Comm"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,800",
+				"to": "00:00:06,220"
+			},
+			"offsets": {
+				"from": 5800,
+				"to": 6220
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,220",
+				"to": "00:00:06,490"
+			},
+			"offsets": {
+				"from": 6220,
+				"to": 6490
+			},
+			"text": " credit"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,490",
+				"to": "00:00:07,020"
+			},
+			"offsets": {
+				"from": 6490,
+				"to": 7020
+			},
+			"text": " cards"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,020",
+				"to": "00:00:07,170"
+			},
+			"offsets": {
+				"from": 7020,
+				"to": 7170
+			},
+			"text": " from"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,170",
+				"to": "00:00:07,410"
+			},
+			"offsets": {
+				"from": 7170,
+				"to": 7410
+			},
+			"text": " 1"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,410",
+				"to": "00:00:07,990"
+			},
+			"offsets": {
+				"from": 7410,
+				"to": 7990
+			},
+			"text": " October"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,990",
+				"to": "00:00:08,470"
+			},
+			"offsets": {
+				"from": 7990,
+				"to": 8470
+			},
+			"text": " 20"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,470",
+				"to": "00:00:08,930"
+			},
+			"offsets": {
+				"from": 8470,
+				"to": 8930
+			},
+			"text": "26"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,930",
+				"to": "00:00:10,000"
+			},
+			"offsets": {
+				"from": 8930,
+				"to": 10000
+			},
+			"text": "."
+		}
+	]
+}

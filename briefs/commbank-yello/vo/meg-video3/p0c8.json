@@ -1,0 +1,252 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,120"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 120
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,120",
+				"to": "00:00:01,020"
+			},
+			"offsets": {
+				"from": 120,
+				"to": 1020
+			},
+			"text": " This"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,020",
+				"to": "00:00:01,850"
+			},
+			"offsets": {
+				"from": 1020,
+				"to": 1850
+			},
+			"text": " introduces"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,850",
+				"to": "00:00:01,900"
+			},
+			"offsets": {
+				"from": 1850,
+				"to": 1900
+			},
+			"text": " a"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,900",
+				"to": "00:00:02,280"
+			},
+			"offsets": {
+				"from": 1900,
+				"to": 2280
+			},
+			"text": " new"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,280",
+				"to": "00:00:02,740"
+			},
+			"offsets": {
+				"from": 2280,
+				"to": 2740
+			},
+			"text": " way"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,740",
+				"to": "00:00:02,860"
+			},
+			"offsets": {
+				"from": 2740,
+				"to": 2860
+			},
+			"text": " for"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,860",
+				"to": "00:00:03,360"
+			},
+			"offsets": {
+				"from": 2860,
+				"to": 3360
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,360",
+				"to": "00:00:03,410"
+			},
+			"offsets": {
+				"from": 3360,
+				"to": 3410
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,410",
+				"to": "00:00:03,500"
+			},
+			"offsets": {
+				"from": 3410,
+				"to": 3500
+			},
+			"text": " be"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,500",
+				"to": "00:00:04,000"
+			},
+			"offsets": {
+				"from": 3500,
+				"to": 4000
+			},
+			"text": " rewarded"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,000",
+				"to": "00:00:04,600"
+			},
+			"offsets": {
+				"from": 4000,
+				"to": 4600
+			},
+			"text": " through"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,600",
+				"to": "00:00:04,830"
+			},
+			"offsets": {
+				"from": 4600,
+				"to": 4830
+			},
+			"text": " Con"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,830",
+				"to": "00:00:05,170"
+			},
+			"offsets": {
+				"from": 4830,
+				"to": 5170
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,170",
+				"to": "00:00:05,740"
+			},
+			"offsets": {
+				"from": 5170,
+				"to": 5740
+			},
+			"text": " Yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,740",
+				"to": "00:00:05,760"
+			},
+			"offsets": {
+				"from": 5740,
+				"to": 5760
+			},
+			"text": " on"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,760",
+				"to": "00:00:06,140"
+			},
+			"offsets": {
+				"from": 5760,
+				"to": 6140
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,140",
+				"to": "00:00:07,040"
+			},
+			"offsets": {
+				"from": 6140,
+				"to": 7040
+			},
+			"text": " everyday"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,040",
+				"to": "00:00:08,000"
+			},
+			"offsets": {
+				"from": 7040,
+				"to": 8000
+			},
+			"text": " shopping"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,000",
+				"to": "00:00:08,000"
+			},
+			"offsets": {
+				"from": 8000,
+				"to": 8000
+			},
+			"text": "."
+		}
+	]
+}

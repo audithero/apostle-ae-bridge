@@ -1,0 +1,252 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,440"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 440
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,440",
+				"to": "00:00:00,530"
+			},
+			"offsets": {
+				"from": 440,
+				"to": 530
+			},
+			"text": " With"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,530",
+				"to": "00:00:00,710"
+			},
+			"offsets": {
+				"from": 530,
+				"to": 710
+			},
+			"text": " D"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,710",
+				"to": "00:00:01,050"
+			},
+			"offsets": {
+				"from": 710,
+				"to": 1050
+			},
+			"text": "ine"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,050",
+				"to": "00:00:01,310"
+			},
+			"offsets": {
+				"from": 1050,
+				"to": 1310
+			},
+			"text": " in"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,310",
+				"to": "00:00:02,110"
+			},
+			"offsets": {
+				"from": 1310,
+				"to": 2110
+			},
+			"text": " Deals"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,110",
+				"to": "00:00:02,140"
+			},
+			"offsets": {
+				"from": 2110,
+				"to": 2140
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,140",
+				"to": "00:00:02,640"
+			},
+			"offsets": {
+				"from": 2140,
+				"to": 2640
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,640",
+				"to": "00:00:02,820"
+			},
+			"offsets": {
+				"from": 2640,
+				"to": 2820
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,820",
+				"to": "00:00:03,340"
+			},
+			"offsets": {
+				"from": 2820,
+				"to": 3340
+			},
+			"text": " discover"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,340",
+				"to": "00:00:03,490"
+			},
+			"offsets": {
+				"from": 3340,
+				"to": 3490
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,490",
+				"to": "00:00:03,840"
+			},
+			"offsets": {
+				"from": 3490,
+				"to": 3840
+			},
+			"text": " redeem"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,840",
+				"to": "00:00:04,530"
+			},
+			"offsets": {
+				"from": 3840,
+				"to": 4530
+			},
+			"text": " exclusive"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,530",
+				"to": "00:00:05,120"
+			},
+			"offsets": {
+				"from": 4530,
+				"to": 5120
+			},
+			"text": " offers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,120",
+				"to": "00:00:05,170"
+			},
+			"offsets": {
+				"from": 5120,
+				"to": 5170
+			},
+			"text": " at"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,170",
+				"to": "00:00:05,960"
+			},
+			"offsets": {
+				"from": 5170,
+				"to": 5960
+			},
+			"text": " participating"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,960",
+				"to": "00:00:06,670"
+			},
+			"offsets": {
+				"from": 5960,
+				"to": 6670
+			},
+			"text": " restaurants"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,670",
+				"to": "00:00:06,970"
+			},
+			"offsets": {
+				"from": 6670,
+				"to": 6970
+			},
+			"text": " across"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,970",
+				"to": "00:00:07,510"
+			},
+			"offsets": {
+				"from": 6970,
+				"to": 7510
+			},
+			"text": " Australia"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,510",
+				"to": "00:00:07,520"
+			},
+			"offsets": {
+				"from": 7510,
+				"to": 7520
+			},
+			"text": "."
+		}
+	]
+}

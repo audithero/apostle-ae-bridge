@@ -1,0 +1,318 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,020"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 20
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,020",
+				"to": "00:00:00,640"
+			},
+			"offsets": {
+				"from": 20,
+				"to": 640
+			},
+			"text": " This"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,640",
+				"to": "00:00:00,810"
+			},
+			"offsets": {
+				"from": 640,
+				"to": 810
+			},
+			"text": " means"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,810",
+				"to": "00:00:01,620"
+			},
+			"offsets": {
+				"from": 810,
+				"to": 1620
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,620",
+				"to": "00:00:01,890"
+			},
+			"offsets": {
+				"from": 1620,
+				"to": 1890
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,890",
+				"to": "00:00:02,160"
+			},
+			"offsets": {
+				"from": 1890,
+				"to": 2160
+			},
+			"text": " now"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,160",
+				"to": "00:00:02,360"
+			},
+			"offsets": {
+				"from": 2160,
+				"to": 2360
+			},
+			"text": " be"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,360",
+				"to": "00:00:03,000"
+			},
+			"offsets": {
+				"from": 2360,
+				"to": 3000
+			},
+			"text": " recognised"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,000",
+				"to": "00:00:03,440"
+			},
+			"offsets": {
+				"from": 3000,
+				"to": 3440
+			},
+			"text": " for"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,440",
+				"to": "00:00:03,510"
+			},
+			"offsets": {
+				"from": 3440,
+				"to": 3510
+			},
+			"text": " more"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,510",
+				"to": "00:00:03,790"
+			},
+			"offsets": {
+				"from": 3510,
+				"to": 3790
+			},
+			"text": " than"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,790",
+				"to": "00:00:04,170"
+			},
+			"offsets": {
+				"from": 3790,
+				"to": 4170
+			},
+			"text": " just"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,170",
+				"to": "00:00:05,020"
+			},
+			"offsets": {
+				"from": 4170,
+				"to": 5020
+			},
+			"text": " transactions"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,020",
+				"to": "00:00:05,480"
+			},
+			"offsets": {
+				"from": 5020,
+				"to": 5480
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,480",
+				"to": "00:00:05,680"
+			},
+			"offsets": {
+				"from": 5480,
+				"to": 5680
+			},
+			"text": " earning"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,680",
+				"to": "00:00:06,140"
+			},
+			"offsets": {
+				"from": 5680,
+				"to": 6140
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,140",
+				"to": "00:00:06,510"
+			},
+			"offsets": {
+				"from": 6140,
+				"to": 6510
+			},
+			"text": " across"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,510",
+				"to": "00:00:06,780"
+			},
+			"offsets": {
+				"from": 6510,
+				"to": 6780
+			},
+			"text": " a"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,780",
+				"to": "00:00:07,110"
+			},
+			"offsets": {
+				"from": 6780,
+				"to": 7110
+			},
+			"text": " broader"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,110",
+				"to": "00:00:07,310"
+			},
+			"offsets": {
+				"from": 7110,
+				"to": 7310
+			},
+			"text": " range"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,310",
+				"to": "00:00:07,440"
+			},
+			"offsets": {
+				"from": 7310,
+				"to": 7440
+			},
+			"text": " of"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,440",
+				"to": "00:00:07,860"
+			},
+			"offsets": {
+				"from": 7440,
+				"to": 7860
+			},
+			"text": " banking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,860",
+				"to": "00:00:08,480"
+			},
+			"offsets": {
+				"from": 7860,
+				"to": 8480
+			},
+			"text": " activities"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,480",
+				"to": "00:00:08,660"
+			},
+			"offsets": {
+				"from": 8480,
+				"to": 8660
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,660",
+				"to": "00:00:09,580"
+			},
+			"offsets": {
+				"from": 8660,
+				"to": 9580
+			},
+			"text": " relationships"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,580",
+				"to": "00:00:09,680"
+			},
+			"offsets": {
+				"from": 9580,
+				"to": 9680
+			},
+			"text": "."
+		}
+	]
+}

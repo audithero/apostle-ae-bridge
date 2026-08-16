@@ -1,0 +1,505 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,670"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 670
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,670",
+				"to": "00:00:00,680"
+			},
+			"offsets": {
+				"from": 670,
+				"to": 680
+			},
+			"text": " Customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,680",
+				"to": "00:00:00,910"
+			},
+			"offsets": {
+				"from": 680,
+				"to": 910
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,910",
+				"to": "00:00:01,120"
+			},
+			"offsets": {
+				"from": 910,
+				"to": 1120
+			},
+			"text": " now"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,120",
+				"to": "00:00:01,340"
+			},
+			"offsets": {
+				"from": 1120,
+				"to": 1340
+			},
+			"text": " use"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,340",
+				"to": "00:00:01,730"
+			},
+			"offsets": {
+				"from": 1340,
+				"to": 1730
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,730",
+				"to": "00:00:02,280"
+			},
+			"offsets": {
+				"from": 1730,
+				"to": 2280
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,280",
+				"to": "00:00:02,420"
+			},
+			"offsets": {
+				"from": 2280,
+				"to": 2420
+			},
+			"text": " when"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,420",
+				"to": "00:00:02,800"
+			},
+			"offsets": {
+				"from": 2420,
+				"to": 2800
+			},
+			"text": " booking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,800",
+				"to": "00:00:03,290"
+			},
+			"offsets": {
+				"from": 2800,
+				"to": 3290
+			},
+			"text": " travel"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,290",
+				"to": "00:00:03,490"
+			},
+			"offsets": {
+				"from": 3290,
+				"to": 3490
+			},
+			"text": " through"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,490",
+				"to": "00:00:03,790"
+			},
+			"offsets": {
+				"from": 3490,
+				"to": 3790
+			},
+			"text": " travel"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,790",
+				"to": "00:00:04,080"
+			},
+			"offsets": {
+				"from": 3790,
+				"to": 4080
+			},
+			"text": " booking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,080",
+				"to": "00:00:05,000"
+			},
+			"offsets": {
+				"from": 4080,
+				"to": 5000
+			},
+			"text": " including"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,000",
+				"to": "00:00:05,790"
+			},
+			"offsets": {
+				"from": 5000,
+				"to": 5790
+			},
+			"text": " flights"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,790",
+				"to": "00:00:05,810"
+			},
+			"offsets": {
+				"from": 5790,
+				"to": 5810
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,810",
+				"to": "00:00:06,520"
+			},
+			"offsets": {
+				"from": 5810,
+				"to": 6520
+			},
+			"text": " hotels"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,520",
+				"to": "00:00:06,880"
+			},
+			"offsets": {
+				"from": 6520,
+				"to": 6880
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,880",
+				"to": "00:00:07,360"
+			},
+			"offsets": {
+				"from": 6880,
+				"to": 7360
+			},
+			"text": " car"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,360",
+				"to": "00:00:08,000"
+			},
+			"offsets": {
+				"from": 7360,
+				"to": 8000
+			},
+			"text": " hire"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,000",
+				"to": "00:00:08,000"
+			},
+			"offsets": {
+				"from": 8000,
+				"to": 8000
+			},
+			"text": "."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,000",
+				"to": "00:00:08,680"
+			},
+			"offsets": {
+				"from": 8000,
+				"to": 8680
+			},
+			"text": " Whether"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,680",
+				"to": "00:00:09,030"
+			},
+			"offsets": {
+				"from": 8680,
+				"to": 9030
+			},
+			"text": " planning"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,030",
+				"to": "00:00:09,100"
+			},
+			"offsets": {
+				"from": 9030,
+				"to": 9100
+			},
+			"text": " a"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,100",
+				"to": "00:00:09,580"
+			},
+			"offsets": {
+				"from": 9100,
+				"to": 9580
+			},
+			"text": " weekend"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,580",
+				"to": "00:00:09,780"
+			},
+			"offsets": {
+				"from": 9580,
+				"to": 9780
+			},
+			"text": " get"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,780",
+				"to": "00:00:10,050"
+			},
+			"offsets": {
+				"from": 9780,
+				"to": 10050
+			},
+			"text": "away"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,050",
+				"to": "00:00:10,250"
+			},
+			"offsets": {
+				"from": 10050,
+				"to": 10250
+			},
+			"text": " or"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,250",
+				"to": "00:00:10,280"
+			},
+			"offsets": {
+				"from": 10250,
+				"to": 10280
+			},
+			"text": " a"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,280",
+				"to": "00:00:10,660"
+			},
+			"offsets": {
+				"from": 10280,
+				"to": 10660
+			},
+			"text": " larger"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,660",
+				"to": "00:00:11,010"
+			},
+			"offsets": {
+				"from": 10660,
+				"to": 11010
+			},
+			"text": " trip"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:11,010",
+				"to": "00:00:11,150"
+			},
+			"offsets": {
+				"from": 11010,
+				"to": 11150
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:11,150",
+				"to": "00:00:11,840"
+			},
+			"offsets": {
+				"from": 11150,
+				"to": 11840
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:11,840",
+				"to": "00:00:12,070"
+			},
+			"offsets": {
+				"from": 11840,
+				"to": 12070
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:12,070",
+				"to": "00:00:12,560"
+			},
+			"offsets": {
+				"from": 12070,
+				"to": 12560
+			},
+			"text": " use"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:12,560",
+				"to": "00:00:12,760"
+			},
+			"offsets": {
+				"from": 12560,
+				"to": 12760
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:12,760",
+				"to": "00:00:12,910"
+			},
+			"offsets": {
+				"from": 12760,
+				"to": 12910
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:12,910",
+				"to": "00:00:13,210"
+			},
+			"offsets": {
+				"from": 12910,
+				"to": 13210
+			},
+			"text": " help"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:13,210",
+				"to": "00:00:13,800"
+			},
+			"offsets": {
+				"from": 13210,
+				"to": 13800
+			},
+			"text": " fund"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:13,800",
+				"to": "00:00:13,890"
+			},
+			"offsets": {
+				"from": 13800,
+				"to": 13890
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:13,890",
+				"to": "00:00:14,520"
+			},
+			"offsets": {
+				"from": 13890,
+				"to": 14520
+			},
+			"text": " travel"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:14,520",
+				"to": "00:00:15,000"
+			},
+			"offsets": {
+				"from": 14520,
+				"to": 15000
+			},
+			"text": " expenses"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:15,000",
+				"to": "00:00:15,000"
+			},
+			"offsets": {
+				"from": 15000,
+				"to": 15000
+			},
+			"text": "."
+		}
+	]
+}

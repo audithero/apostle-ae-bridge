@@ -1,0 +1,186 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,410"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 410
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,410",
+				"to": "00:00:01,060"
+			},
+			"offsets": {
+				"from": 410,
+				"to": 1060
+			},
+			"text": " Customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,060",
+				"to": "00:00:01,080"
+			},
+			"offsets": {
+				"from": 1060,
+				"to": 1080
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,080",
+				"to": "00:00:01,440"
+			},
+			"offsets": {
+				"from": 1080,
+				"to": 1440
+			},
+			"text": " earn"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,440",
+				"to": "00:00:01,990"
+			},
+			"offsets": {
+				"from": 1440,
+				"to": 1990
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,990",
+				"to": "00:00:02,330"
+			},
+			"offsets": {
+				"from": 1990,
+				"to": 2330
+			},
+			"text": " when"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,330",
+				"to": "00:00:03,000"
+			},
+			"offsets": {
+				"from": 2330,
+				"to": 3000
+			},
+			"text": " shopping"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,000",
+				"to": "00:00:03,190"
+			},
+			"offsets": {
+				"from": 3000,
+				"to": 3190
+			},
+			"text": " through"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,190",
+				"to": "00:00:03,400"
+			},
+			"offsets": {
+				"from": 3190,
+				"to": 3400
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,400",
+				"to": "00:00:03,560"
+			},
+			"offsets": {
+				"from": 3400,
+				"to": 3560
+			},
+			"text": " app"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,560",
+				"to": "00:00:03,870"
+			},
+			"offsets": {
+				"from": 3560,
+				"to": 3870
+			},
+			"text": " with"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,870",
+				"to": "00:00:04,600"
+			},
+			"offsets": {
+				"from": 3870,
+				"to": 4600
+			},
+			"text": " participating"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,600",
+				"to": "00:00:05,000"
+			},
+			"offsets": {
+				"from": 4600,
+				"to": 5000
+			},
+			"text": " brands"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,000",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 5000,
+				"to": 7000
+			},
+			"text": "."
+		}
+	]
+}

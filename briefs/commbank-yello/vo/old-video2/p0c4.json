@@ -1,0 +1,450 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,580"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 580
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,580",
+				"to": "00:00:00,620"
+			},
+			"offsets": {
+				"from": 580,
+				"to": 620
+			},
+			"text": " Customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,620",
+				"to": "00:00:00,820"
+			},
+			"offsets": {
+				"from": 620,
+				"to": 820
+			},
+			"text": " who"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,820",
+				"to": "00:00:01,350"
+			},
+			"offsets": {
+				"from": 820,
+				"to": 1350
+			},
+			"text": " currently"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,350",
+				"to": "00:00:01,600"
+			},
+			"offsets": {
+				"from": 1350,
+				"to": 1600
+			},
+			"text": " earn"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,600",
+				"to": "00:00:02,020"
+			},
+			"offsets": {
+				"from": 1600,
+				"to": 2020
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,020",
+				"to": "00:00:02,400"
+			},
+			"offsets": {
+				"from": 2020,
+				"to": 2400
+			},
+			"text": " through"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,400",
+				"to": "00:00:02,420"
+			},
+			"offsets": {
+				"from": 2400,
+				"to": 2420
+			},
+			"text": " a"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,420",
+				"to": "00:00:02,570"
+			},
+			"offsets": {
+				"from": 2420,
+				"to": 2570
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,570",
+				"to": "00:00:02,770"
+			},
+			"offsets": {
+				"from": 2570,
+				"to": 2770
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,770",
+				"to": "00:00:03,140"
+			},
+			"offsets": {
+				"from": 2770,
+				"to": 3140
+			},
+			"text": " Awards"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,140",
+				"to": "00:00:03,400"
+			},
+			"offsets": {
+				"from": 3140,
+				"to": 3400
+			},
+			"text": " credit"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,400",
+				"to": "00:00:03,880"
+			},
+			"offsets": {
+				"from": 3400,
+				"to": 3880
+			},
+			"text": " card"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,880",
+				"to": "00:00:03,960"
+			},
+			"offsets": {
+				"from": 3880,
+				"to": 3960
+			},
+			"text": " will"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,960",
+				"to": "00:00:04,480"
+			},
+			"offsets": {
+				"from": 3960,
+				"to": 4480
+			},
+			"text": " transition"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,480",
+				"to": "00:00:04,560"
+			},
+			"offsets": {
+				"from": 4480,
+				"to": 4560
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,560",
+				"to": "00:00:04,800"
+			},
+			"offsets": {
+				"from": 4560,
+				"to": 4800
+			},
+			"text": " earning"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,800",
+				"to": "00:00:05,000"
+			},
+			"offsets": {
+				"from": 4800,
+				"to": 5000
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,000",
+				"to": "00:00:05,230"
+			},
+			"offsets": {
+				"from": 5000,
+				"to": 5230
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,230",
+				"to": "00:00:05,600"
+			},
+			"offsets": {
+				"from": 5230,
+				"to": 5600
+			},
+			"text": " Yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,600",
+				"to": "00:00:05,990"
+			},
+			"offsets": {
+				"from": 5600,
+				"to": 5990
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,990",
+				"to": "00:00:06,000"
+			},
+			"offsets": {
+				"from": 5990,
+				"to": 6000
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,000",
+				"to": "00:00:06,540"
+			},
+			"offsets": {
+				"from": 6000,
+				"to": 6540
+			},
+			"text": " while"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,540",
+				"to": "00:00:06,630"
+			},
+			"offsets": {
+				"from": 6540,
+				"to": 6630
+			},
+			"text": " also"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,630",
+				"to": "00:00:06,970"
+			},
+			"offsets": {
+				"from": 6630,
+				"to": 6970
+			},
+			"text": " gaining"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,970",
+				"to": "00:00:07,340"
+			},
+			"offsets": {
+				"from": 6970,
+				"to": 7340
+			},
+			"text": " access"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,340",
+				"to": "00:00:07,460"
+			},
+			"offsets": {
+				"from": 7340,
+				"to": 7460
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,460",
+				"to": "00:00:07,640"
+			},
+			"offsets": {
+				"from": 7460,
+				"to": 7640
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,640",
+				"to": "00:00:08,140"
+			},
+			"offsets": {
+				"from": 7640,
+				"to": 8140
+			},
+			"text": " broader"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,140",
+				"to": "00:00:08,400"
+			},
+			"offsets": {
+				"from": 8140,
+				"to": 8400
+			},
+			"text": " range"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,400",
+				"to": "00:00:08,490"
+			},
+			"offsets": {
+				"from": 8400,
+				"to": 8490
+			},
+			"text": " of"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,490",
+				"to": "00:00:09,020"
+			},
+			"offsets": {
+				"from": 8490,
+				"to": 9020
+			},
+			"text": " benefits"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,020",
+				"to": "00:00:09,530"
+			},
+			"offsets": {
+				"from": 9020,
+				"to": 9530
+			},
+			"text": " available"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,530",
+				"to": "00:00:09,960"
+			},
+			"offsets": {
+				"from": 9530,
+				"to": 9960
+			},
+			"text": " through"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,960",
+				"to": "00:00:10,140"
+			},
+			"offsets": {
+				"from": 9960,
+				"to": 10140
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,140",
+				"to": "00:00:10,380"
+			},
+			"offsets": {
+				"from": 10140,
+				"to": 10380
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,380",
+				"to": "00:00:10,750"
+			},
+			"offsets": {
+				"from": 10380,
+				"to": 10750
+			},
+			"text": " Yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,750",
+				"to": "00:00:11,000"
+			},
+			"offsets": {
+				"from": 10750,
+				"to": 11000
+			},
+			"text": "."
+		}
+	]
+}

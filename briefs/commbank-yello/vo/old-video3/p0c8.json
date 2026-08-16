@@ -1,0 +1,241 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 0
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:01,030"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 1030
+			},
+			"text": " This"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,030",
+				"to": "00:00:01,460"
+			},
+			"offsets": {
+				"from": 1030,
+				"to": 1460
+			},
+			"text": " introduces"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,460",
+				"to": "00:00:01,560"
+			},
+			"offsets": {
+				"from": 1460,
+				"to": 1560
+			},
+			"text": " a"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,560",
+				"to": "00:00:01,870"
+			},
+			"offsets": {
+				"from": 1560,
+				"to": 1870
+			},
+			"text": " new"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,870",
+				"to": "00:00:02,180"
+			},
+			"offsets": {
+				"from": 1870,
+				"to": 2180
+			},
+			"text": " way"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,180",
+				"to": "00:00:02,550"
+			},
+			"offsets": {
+				"from": 2180,
+				"to": 2550
+			},
+			"text": " for"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,550",
+				"to": "00:00:03,000"
+			},
+			"offsets": {
+				"from": 2550,
+				"to": 3000
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,000",
+				"to": "00:00:03,100"
+			},
+			"offsets": {
+				"from": 3000,
+				"to": 3100
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,100",
+				"to": "00:00:03,200"
+			},
+			"offsets": {
+				"from": 3100,
+				"to": 3200
+			},
+			"text": " be"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,200",
+				"to": "00:00:03,710"
+			},
+			"offsets": {
+				"from": 3200,
+				"to": 3710
+			},
+			"text": " rewarded"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,710",
+				"to": "00:00:03,840"
+			},
+			"offsets": {
+				"from": 3710,
+				"to": 3840
+			},
+			"text": " on"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,840",
+				"to": "00:00:04,020"
+			},
+			"offsets": {
+				"from": 3840,
+				"to": 4020
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,020",
+				"to": "00:00:04,440"
+			},
+			"offsets": {
+				"from": 4020,
+				"to": 4440
+			},
+			"text": " everyday"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,440",
+				"to": "00:00:04,930"
+			},
+			"offsets": {
+				"from": 4440,
+				"to": 4930
+			},
+			"text": " shopping"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,930",
+				"to": "00:00:05,100"
+			},
+			"offsets": {
+				"from": 4930,
+				"to": 5100
+			},
+			"text": " with"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,100",
+				"to": "00:00:06,980"
+			},
+			"offsets": {
+				"from": 5100,
+				"to": 6980
+			},
+			"text": " participating"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,980",
+				"to": "00:00:06,980"
+			},
+			"offsets": {
+				"from": 6980,
+				"to": 6980
+			},
+			"text": " brands"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,980",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 6980,
+				"to": 7000
+			},
+			"text": "."
+		}
+	]
+}

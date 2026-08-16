@@ -1,0 +1,333 @@
+{
+ "meta": {
+  "schemaVersion": 2,
+  "briefId": "video_003_earning_deep_dive",
+  "scriptVersion": 1,
+  "sourceScriptPath": "briefs/commbank-yello/video3-earning-deep-dive.md",
+  "title": "VIDEO_003_EARNING_DEEP_DIVE",
+  "fps": 25,
+  "resolution": [
+   1920,
+   1080
+  ],
+  "wpm": 150,
+  "layout": "gallery",
+  "masterName": "VIDEO_003_EARNING_DEEP_DIVE",
+  "rig": "auto",
+  "brandKit": "commbank-yello-3",
+  "note": "Retimed to Meg read 2026-08-07; audio placement locked in comp (layer offset +1.80)",
+  "voOffsetSec": 2.0,
+  "voFiles": [
+   "01.MEDIA/AUDIO/VO/V3/VIDEO_003_AUDIO_VOICEOVER.mp3"
+  ]
+ },
+ "sections": [
+  {
+   "id": "how",
+   "title": "How customers can earn points"
+  },
+  {
+   "id": "banking",
+   "title": "Earning through banking relationships"
+  },
+  {
+   "id": "cards",
+   "title": "Earning through credit cards"
+  },
+  {
+   "id": "partners",
+   "title": "Earning through partner stores"
+  },
+  {
+   "id": "offers",
+   "title": "Earning through bonus points offers"
+  },
+  {
+   "id": "takeaway",
+   "title": "Key takeaway"
+  }
+ ],
+ "brand": {
+  "fontHeadingPS": "CBABeaconSans-Bold",
+  "fontBodyPS": "CBABeaconSans-Regular",
+  "headingSize": 84,
+  "bodySize": 42,
+  "headingTracking": 0,
+  "bodyTracking": 0,
+  "safeMarginPct": 10,
+  "colors": {
+   "primary": "#FDFD3C",
+   "secondary": "#000000",
+   "background": "#FDFD3C",
+   "text": "#000000",
+   "surface": "#FFFFFF"
+  },
+  "logo": null
+ },
+ "beats": [
+  {
+   "id": 1,
+   "beatId": "customers-can-earn-commbank-yello-po",
+   "sectionId": "how",
+   "vo": "Customers can earn CommBank Yello points in a range of ways, creating more opportunities to be rewarded than ever before.",
+   "superText": "Earn Yello points in a range of ways.",
+   "voSpokenWords": 20,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 8.18,
+   "voWindow": [
+    0.0,
+    7.52
+   ],
+   "transitIn": "none",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 2,
+   "beatId": "one-of-the-biggest-changes-is-that-c",
+   "sectionId": "how",
+   "vo": "One of the biggest changes is that customers can now earn points based on their relationship with the bank, not just their spending.",
+   "superText": "Earn on your banking relationship.",
+   "voSpokenWords": 23,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 8.6,
+   "voWindow": [
+    7.52,
+    14.83
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 3,
+   "beatId": "eligible-customers-can-earn-points-w",
+   "sectionId": "banking",
+   "vo": "Eligible customers can earn points when taking out eligible products, renewing existing products, and reaching key banking milestones.",
+   "superText": "Earn across your banking.",
+   "voSpokenWords": 18,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 8.47,
+   "voWindow": [
+    14.83,
+    23.17
+   ],
+   "transitIn": "crane",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 4,
+   "beatId": "this-means-customers-can-be-recognis",
+   "sectionId": "banking",
+   "vo": "This means customers can be recognised for more of the ways they bank with CommBank throughout their customer journey.",
+   "superText": "Recognised for more of how you bank.",
+   "voSpokenWords": 19,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 7.45,
+   "voWindow": [
+    23.17,
+    29.99
+   ],
+   "transitIn": "whipOrbit",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 5,
+   "beatId": "customers-who-currently-earn-points",
+   "sectionId": "cards",
+   "vo": "Customers who currently earn points through a CommBank Awards credit card will transition to earning CommBank Yello points.",
+   "superText": "CommBank Awards points are changing.",
+   "voSpokenWords": 18,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 7.73,
+   "voWindow": [
+    29.99,
+    37.44
+   ],
+   "transitIn": "dollyZoom",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 6,
+   "beatId": "they-ll-continue-to-earn-points-on-e",
+   "sectionId": "cards",
+   "vo": "They'll continue to earn points on eligible purchases, with the number of points earned dependent on their CommBank Yello tier: CommBank Yello, Plus, Gold or Diamond.",
+   "superText": "Keep earning on eligible purchases.",
+   "voSpokenWords": 26,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 11.9,
+   "voWindow": [
+    37.44,
+    48.66
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 7,
+   "beatId": "in-addition-to-earning-points-throug",
+   "sectionId": "cards",
+   "vo": "In addition to earning points through their credit card, they'll also have access to the broader range of earning opportunities available through CommBank Yello.",
+   "superText": "Plus the broader range of Yello earning.",
+   "voSpokenWords": 24,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 9.64,
+   "voWindow": [
+    48.66,
+    57.56
+   ],
+   "transitIn": "crane",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 8,
+   "beatId": "customers-can-also-earn-points-when",
+   "sectionId": "partners",
+   "vo": "Customers can also earn points when shopping with participating partner stores through the CommBank Yello hub in the CommBank app.",
+   "superText": "Shop with participating partner stores.",
+   "voSpokenWords": 20,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 5.88,
+   "voWindow": [
+    57.56,
+    64.92
+   ],
+   "transitIn": "whipOrbit",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 9,
+   "beatId": "this-introduces-a-new-way-for-custom",
+   "sectionId": "partners",
+   "vo": "This introduces a new way for customers to be rewarded on their everyday shopping with participating brands.",
+   "superText": "A new way to be rewarded.",
+   "voSpokenWords": 17,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 9.25,
+   "voWindow": [
+    64.92,
+    71.91
+   ],
+   "transitIn": "dollyZoom",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 10,
+   "beatId": "the-current-cashback-feature-will-be",
+   "sectionId": "offers",
+   "vo": "The current cashback feature will be replaced by bonus points offers, allowing customers to boost their CommBank Yello points balance by activating eligible offers in the CommBank app. These offers will be regularly updated and provide even more opportunities to earn points. For customers with eligible points-earning cards, points earned through activated offers are in addition to the points they earn on eligible card purchases, creating even more ways to be rewarded.",
+   "superText": "Cashback becomes bonus points offers.",
+   "voSpokenWords": 72,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 24.85,
+   "voWindow": [
+    71.91,
+    97.95
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 11,
+   "beatId": "whether-customers-are-banking-spendi",
+   "sectionId": "takeaway",
+   "vo": "Whether customers are banking, spending, shopping, or reaching important milestones, CommBank Yello points provides more ways to earn rewards across their relationship with the bank.",
+   "superText": "More ways to earn, across the relationship.",
+   "voSpokenWords": 25,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 12.34,
+   "voWindow": [
+    97.95,
+    108.39
+   ],
+   "transitIn": "crane",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 12,
+   "beatId": "next-we-ll-explore-the-different-way",
+   "sectionId": "takeaway",
+   "vo": "Next, we'll explore the different ways customers can redeem and use their CommBank Yello points.",
+   "superText": "Next: using your points.",
+   "voSpokenWords": 15,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 5.61,
+   "voWindow": [
+    108.39,
+    114.15
+   ],
+   "transitIn": "whipOrbit",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  }
+ ]
+}

@@ -1,0 +1,285 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 0
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,330"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 330
+			},
+			"text": " We"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,330",
+				"to": "00:00:00,390"
+			},
+			"offsets": {
+				"from": 330,
+				"to": 390
+			},
+			"text": "'ll"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,390",
+				"to": "00:00:00,870"
+			},
+			"offsets": {
+				"from": 390,
+				"to": 870
+			},
+			"text": " continue"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,870",
+				"to": "00:00:01,480"
+			},
+			"offsets": {
+				"from": 870,
+				"to": 1480
+			},
+			"text": " expanding"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,480",
+				"to": "00:00:01,680"
+			},
+			"offsets": {
+				"from": 1480,
+				"to": 1680
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,680",
+				"to": "00:00:02,020"
+			},
+			"offsets": {
+				"from": 1680,
+				"to": 2020
+			},
+			"text": " range"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,020",
+				"to": "00:00:02,150"
+			},
+			"offsets": {
+				"from": 2020,
+				"to": 2150
+			},
+			"text": " of"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,150",
+				"to": "00:00:02,450"
+			},
+			"offsets": {
+				"from": 2150,
+				"to": 2450
+			},
+			"text": " rewards"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,450",
+				"to": "00:00:02,960"
+			},
+			"offsets": {
+				"from": 2450,
+				"to": 2960
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,960",
+				"to": "00:00:03,780"
+			},
+			"offsets": {
+				"from": 2960,
+				"to": 3780
+			},
+			"text": " partners"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,780",
+				"to": "00:00:03,800"
+			},
+			"offsets": {
+				"from": 3780,
+				"to": 3800
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,800",
+				"to": "00:00:03,880"
+			},
+			"offsets": {
+				"from": 3800,
+				"to": 3880
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,880",
+				"to": "00:00:04,320"
+			},
+			"offsets": {
+				"from": 3880,
+				"to": 4320
+			},
+			"text": " redemption"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,320",
+				"to": "00:00:05,190"
+			},
+			"offsets": {
+				"from": 4320,
+				"to": 5190
+			},
+			"text": " opportunities"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,190",
+				"to": "00:00:05,620"
+			},
+			"offsets": {
+				"from": 5190,
+				"to": 5620
+			},
+			"text": " available"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,620",
+				"to": "00:00:06,040"
+			},
+			"offsets": {
+				"from": 5620,
+				"to": 6040
+			},
+			"text": " through"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,040",
+				"to": "00:00:06,220"
+			},
+			"offsets": {
+				"from": 6040,
+				"to": 6220
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,220",
+				"to": "00:00:06,460"
+			},
+			"offsets": {
+				"from": 6220,
+				"to": 6460
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,460",
+				"to": "00:00:06,820"
+			},
+			"offsets": {
+				"from": 6460,
+				"to": 6820
+			},
+			"text": " Yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,820",
+				"to": "00:00:07,060"
+			},
+			"offsets": {
+				"from": 6820,
+				"to": 7060
+			},
+			"text": " over"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,060",
+				"to": "00:00:07,300"
+			},
+			"offsets": {
+				"from": 7060,
+				"to": 7300
+			},
+			"text": " time"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,300",
+				"to": "00:00:07,520"
+			},
+			"offsets": {
+				"from": 7300,
+				"to": 7520
+			},
+			"text": "."
+		}
+	]
+}

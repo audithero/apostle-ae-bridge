@@ -1,0 +1,252 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,420"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 420
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,420",
+				"to": "00:00:00,700"
+			},
+			"offsets": {
+				"from": 420,
+				"to": 700
+			},
+			"text": " Plus"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,700",
+				"to": "00:00:00,830"
+			},
+			"offsets": {
+				"from": 700,
+				"to": 830
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,830",
+				"to": "00:00:01,470"
+			},
+			"offsets": {
+				"from": 830,
+				"to": 1470
+			},
+			"text": " from"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,470",
+				"to": "00:00:02,360"
+			},
+			"offsets": {
+				"from": 1470,
+				"to": 2360
+			},
+			"text": " October"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,360",
+				"to": "00:00:03,080"
+			},
+			"offsets": {
+				"from": 2360,
+				"to": 3080
+			},
+			"text": " 1"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,080",
+				"to": "00:00:03,100"
+			},
+			"offsets": {
+				"from": 3080,
+				"to": 3100
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,100",
+				"to": "00:00:03,640"
+			},
+			"offsets": {
+				"from": 3100,
+				"to": 3640
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,640",
+				"to": "00:00:03,810"
+			},
+			"offsets": {
+				"from": 3640,
+				"to": 3810
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,810",
+				"to": "00:00:04,000"
+			},
+			"offsets": {
+				"from": 3810,
+				"to": 4000
+			},
+			"text": " use"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,000",
+				"to": "00:00:04,210"
+			},
+			"offsets": {
+				"from": 4000,
+				"to": 4210
+			},
+			"text": " and"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,210",
+				"to": "00:00:04,500"
+			},
+			"offsets": {
+				"from": 4210,
+				"to": 4500
+			},
+			"text": " earn"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,500",
+				"to": "00:00:04,720"
+			},
+			"offsets": {
+				"from": 4500,
+				"to": 4720
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,720",
+				"to": "00:00:05,010"
+			},
+			"offsets": {
+				"from": 4720,
+				"to": 5010
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,010",
+				"to": "00:00:05,450"
+			},
+			"offsets": {
+				"from": 5010,
+				"to": 5450
+			},
+			"text": " yellow"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,450",
+				"to": "00:00:06,050"
+			},
+			"offsets": {
+				"from": 5450,
+				"to": 6050
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,050",
+				"to": "00:00:06,200"
+			},
+			"offsets": {
+				"from": 6050,
+				"to": 6200
+			},
+			"text": " with"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,200",
+				"to": "00:00:06,590"
+			},
+			"offsets": {
+				"from": 6200,
+				"to": 6590
+			},
+			"text": " travel"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,590",
+				"to": "00:00:07,040"
+			},
+			"offsets": {
+				"from": 6590,
+				"to": 7040
+			},
+			"text": " booking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,040",
+				"to": "00:00:07,040"
+			},
+			"offsets": {
+				"from": 7040,
+				"to": 7040
+			},
+			"text": "."
+		}
+	]
+}

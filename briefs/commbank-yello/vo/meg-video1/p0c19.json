@@ -1,0 +1,197 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,770"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 770
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,770",
+				"to": "00:00:00,910"
+			},
+			"offsets": {
+				"from": 770,
+				"to": 910
+			},
+			"text": " Customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,910",
+				"to": "00:00:01,210"
+			},
+			"offsets": {
+				"from": 910,
+				"to": 1210
+			},
+			"text": " can"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,210",
+				"to": "00:00:01,610"
+			},
+			"offsets": {
+				"from": 1210,
+				"to": 1610
+			},
+			"text": " also"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,610",
+				"to": "00:00:02,440"
+			},
+			"offsets": {
+				"from": 1610,
+				"to": 2440
+			},
+			"text": " transfer"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,440",
+				"to": "00:00:02,590"
+			},
+			"offsets": {
+				"from": 2440,
+				"to": 2590
+			},
+			"text": " their"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,590",
+				"to": "00:00:03,040"
+			},
+			"offsets": {
+				"from": 2590,
+				"to": 3040
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,040",
+				"to": "00:00:03,190"
+			},
+			"offsets": {
+				"from": 3040,
+				"to": 3190
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,190",
+				"to": "00:00:03,520"
+			},
+			"offsets": {
+				"from": 3190,
+				"to": 3520
+			},
+			"text": " partner"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,520",
+				"to": "00:00:04,100"
+			},
+			"offsets": {
+				"from": 3520,
+				"to": 4100
+			},
+			"text": " loyalty"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,100",
+				"to": "00:00:04,850"
+			},
+			"offsets": {
+				"from": 4100,
+				"to": 4850
+			},
+			"text": " programs"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,850",
+				"to": "00:00:04,920"
+			},
+			"offsets": {
+				"from": 4850,
+				"to": 4920
+			},
+			"text": " they"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,920",
+				"to": "00:00:05,360"
+			},
+			"offsets": {
+				"from": 4920,
+				"to": 5360
+			},
+			"text": " already"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,360",
+				"to": "00:00:06,000"
+			},
+			"offsets": {
+				"from": 5360,
+				"to": 6000
+			},
+			"text": " use"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,000",
+				"to": "00:00:06,000"
+			},
+			"offsets": {
+				"from": 6000,
+				"to": 6000
+			},
+			"text": "."
+		}
+	]
+}

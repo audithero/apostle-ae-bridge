@@ -1,0 +1,417 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,000"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 0
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,420"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 420
+			},
+			"text": " For"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,420",
+				"to": "00:00:00,790"
+			},
+			"offsets": {
+				"from": 420,
+				"to": 790
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,790",
+				"to": "00:00:01,020"
+			},
+			"offsets": {
+				"from": 790,
+				"to": 1020
+			},
+			"text": " with"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,020",
+				"to": "00:00:01,520"
+			},
+			"offsets": {
+				"from": 1020,
+				"to": 1520
+			},
+			"text": " eligible"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,520",
+				"to": "00:00:01,910"
+			},
+			"offsets": {
+				"from": 1520,
+				"to": 1910
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,910",
+				"to": "00:00:02,340"
+			},
+			"offsets": {
+				"from": 1910,
+				"to": 2340
+			},
+			"text": " earning"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,340",
+				"to": "00:00:02,700"
+			},
+			"offsets": {
+				"from": 2340,
+				"to": 2700
+			},
+			"text": " cards"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,700",
+				"to": "00:00:03,010"
+			},
+			"offsets": {
+				"from": 2700,
+				"to": 3010
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,010",
+				"to": "00:00:03,080"
+			},
+			"offsets": {
+				"from": 3010,
+				"to": 3080
+			},
+			"text": " Points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,080",
+				"to": "00:00:03,370"
+			},
+			"offsets": {
+				"from": 3080,
+				"to": 3370
+			},
+			"text": " earned"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,370",
+				"to": "00:00:03,720"
+			},
+			"offsets": {
+				"from": 3370,
+				"to": 3720
+			},
+			"text": " through"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,720",
+				"to": "00:00:04,240"
+			},
+			"offsets": {
+				"from": 3720,
+				"to": 4240
+			},
+			"text": " activated"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,240",
+				"to": "00:00:04,690"
+			},
+			"offsets": {
+				"from": 4240,
+				"to": 4690
+			},
+			"text": " offers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,690",
+				"to": "00:00:04,800"
+			},
+			"offsets": {
+				"from": 4690,
+				"to": 4800
+			},
+			"text": " are"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,800",
+				"to": "00:00:04,840"
+			},
+			"offsets": {
+				"from": 4800,
+				"to": 4840
+			},
+			"text": " in"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,840",
+				"to": "00:00:05,000"
+			},
+			"offsets": {
+				"from": 4840,
+				"to": 5000
+			},
+			"text": " addition"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,000",
+				"to": "00:00:05,130"
+			},
+			"offsets": {
+				"from": 5000,
+				"to": 5130
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,130",
+				"to": "00:00:05,320"
+			},
+			"offsets": {
+				"from": 5130,
+				"to": 5320
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,320",
+				"to": "00:00:05,800"
+			},
+			"offsets": {
+				"from": 5320,
+				"to": 5800
+			},
+			"text": " points"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,800",
+				"to": "00:00:05,900"
+			},
+			"offsets": {
+				"from": 5800,
+				"to": 5900
+			},
+			"text": " they"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,900",
+				"to": "00:00:06,000"
+			},
+			"offsets": {
+				"from": 5900,
+				"to": 6000
+			},
+			"text": " earn"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,000",
+				"to": "00:00:06,180"
+			},
+			"offsets": {
+				"from": 6000,
+				"to": 6180
+			},
+			"text": " on"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,180",
+				"to": "00:00:06,680"
+			},
+			"offsets": {
+				"from": 6180,
+				"to": 6680
+			},
+			"text": " eligible"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,680",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 6680,
+				"to": 7000
+			},
+			"text": " card"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,000",
+				"to": "00:00:07,470"
+			},
+			"offsets": {
+				"from": 7000,
+				"to": 7470
+			},
+			"text": " purchases"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,470",
+				"to": "00:00:07,980"
+			},
+			"offsets": {
+				"from": 7470,
+				"to": 7980
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,980",
+				"to": "00:00:08,220"
+			},
+			"offsets": {
+				"from": 7980,
+				"to": 8220
+			},
+			"text": " creating"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,220",
+				"to": "00:00:08,510"
+			},
+			"offsets": {
+				"from": 8220,
+				"to": 8510
+			},
+			"text": " even"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,510",
+				"to": "00:00:08,800"
+			},
+			"offsets": {
+				"from": 8510,
+				"to": 8800
+			},
+			"text": " more"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,800",
+				"to": "00:00:09,090"
+			},
+			"offsets": {
+				"from": 8800,
+				"to": 9090
+			},
+			"text": " ways"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,090",
+				"to": "00:00:09,230"
+			},
+			"offsets": {
+				"from": 9090,
+				"to": 9230
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,230",
+				"to": "00:00:09,360"
+			},
+			"offsets": {
+				"from": 9230,
+				"to": 9360
+			},
+			"text": " be"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,360",
+				"to": "00:00:10,000"
+			},
+			"offsets": {
+				"from": 9360,
+				"to": 10000
+			},
+			"text": " rewarded"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,000",
+				"to": "00:00:10,000"
+			},
+			"offsets": {
+				"from": 10000,
+				"to": 10000
+			},
+			"text": "."
+		}
+	]
+}

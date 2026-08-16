@@ -1,0 +1,318 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,380"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 380
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,380",
+				"to": "00:00:00,500"
+			},
+			"offsets": {
+				"from": 380,
+				"to": 500
+			},
+			"text": " renew"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,500",
+				"to": "00:00:00,790"
+			},
+			"offsets": {
+				"from": 500,
+				"to": 790
+			},
+			"text": "ing"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,790",
+				"to": "00:00:01,580"
+			},
+			"offsets": {
+				"from": 790,
+				"to": 1580
+			},
+			"text": " existing"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,580",
+				"to": "00:00:01,950"
+			},
+			"offsets": {
+				"from": 1580,
+				"to": 1950
+			},
+			"text": " ones"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,950",
+				"to": "00:00:02,270"
+			},
+			"offsets": {
+				"from": 1950,
+				"to": 2270
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,270",
+				"to": "00:00:02,630"
+			},
+			"offsets": {
+				"from": 2270,
+				"to": 2630
+			},
+			"text": " making"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,630",
+				"to": "00:00:03,360"
+			},
+			"offsets": {
+				"from": 2630,
+				"to": 3360
+			},
+			"text": " purchases"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,360",
+				"to": "00:00:03,600"
+			},
+			"offsets": {
+				"from": 3360,
+				"to": 3600
+			},
+			"text": " on"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,600",
+				"to": "00:00:04,440"
+			},
+			"offsets": {
+				"from": 3600,
+				"to": 4440
+			},
+			"text": " eligible"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,440",
+				"to": "00:00:05,090"
+			},
+			"offsets": {
+				"from": 4440,
+				"to": 5090
+			},
+			"text": " cards"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,090",
+				"to": "00:00:05,120"
+			},
+			"offsets": {
+				"from": 5090,
+				"to": 5120
+			},
+			"text": " or"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,120",
+				"to": "00:00:05,600"
+			},
+			"offsets": {
+				"from": 5120,
+				"to": 5600
+			},
+			"text": " reaching"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,600",
+				"to": "00:00:05,880"
+			},
+			"offsets": {
+				"from": 5600,
+				"to": 5880
+			},
+			"text": " key"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,880",
+				"to": "00:00:06,340"
+			},
+			"offsets": {
+				"from": 5880,
+				"to": 6340
+			},
+			"text": " banking"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,340",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 6340,
+				"to": 7000
+			},
+			"text": " milestones"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,000",
+				"to": "00:00:07,000"
+			},
+			"offsets": {
+				"from": 7000,
+				"to": 7000
+			},
+			"text": "."
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,000",
+				"to": "00:00:07,720"
+			},
+			"offsets": {
+				"from": 7000,
+				"to": 7720
+			},
+			"text": " Customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:07,720",
+				"to": "00:00:08,070"
+			},
+			"offsets": {
+				"from": 7720,
+				"to": 8070
+			},
+			"text": " will"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,070",
+				"to": "00:00:08,360"
+			},
+			"offsets": {
+				"from": 8070,
+				"to": 8360
+			},
+			"text": " have"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,360",
+				"to": "00:00:08,680"
+			},
+			"offsets": {
+				"from": 8360,
+				"to": 8680
+			},
+			"text": " more"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:08,680",
+				"to": "00:00:09,160"
+			},
+			"offsets": {
+				"from": 8680,
+				"to": 9160
+			},
+			"text": " ways"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,160",
+				"to": "00:00:09,280"
+			},
+			"offsets": {
+				"from": 9160,
+				"to": 9280
+			},
+			"text": " to"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,280",
+				"to": "00:00:09,320"
+			},
+			"offsets": {
+				"from": 9280,
+				"to": 9320
+			},
+			"text": " be"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:09,320",
+				"to": "00:00:10,000"
+			},
+			"offsets": {
+				"from": 9320,
+				"to": 10000
+			},
+			"text": " rewarded"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:10,000",
+				"to": "00:00:10,000"
+			},
+			"offsets": {
+				"from": 10000,
+				"to": 10000
+			},
+			"text": "."
+		}
+	]
+}

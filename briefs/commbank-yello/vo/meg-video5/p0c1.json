@@ -1,0 +1,219 @@
+{
+	"systeminfo": "WHISPER : COREML = 0 | OPENVINO = 0 | MTL : EMBED_LIBRARY = 1 | CPU : NEON = 1 | ARM_FMA = 1 | FP16_VA = 1 | MATMUL_INT8 = 1 | DOTPROD = 1 | SME = 1 | ACCELERATE = 1 | OPENMP = 1 | REPACK = 1 | ",
+	"model": {
+		"type": "small",
+		"multilingual": false,
+		"vocab": 51864,
+		"audio": {
+			"ctx": 1500,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"text": {
+			"ctx": 448,
+			"state": 768,
+			"head": 12,
+			"layer": 12
+		},
+		"mels": 80,
+		"ftype": 1
+	},
+	"params": {
+		"model": "/Users/apostle_mbp/.cache/whisper-cpp/ggml-small.en.bin",
+		"language": "en",
+		"translate": false
+	},
+	"result": {
+		"language": "en"
+	},
+	"transcription": [
+		{
+			"timestamps": {
+				"from": "00:00:00,000",
+				"to": "00:00:00,440"
+			},
+			"offsets": {
+				"from": 0,
+				"to": 440
+			},
+			"text": ""
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,440",
+				"to": "00:00:00,470"
+			},
+			"offsets": {
+				"from": 440,
+				"to": 470
+			},
+			"text": " For"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:00,470",
+				"to": "00:00:01,330"
+			},
+			"offsets": {
+				"from": 470,
+				"to": 1330
+			},
+			"text": " Com"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,330",
+				"to": "00:00:01,460"
+			},
+			"offsets": {
+				"from": 1330,
+				"to": 1460
+			},
+			"text": "Bank"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:01,460",
+				"to": "00:00:02,650"
+			},
+			"offsets": {
+				"from": 1460,
+				"to": 2650
+			},
+			"text": " customers"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:02,650",
+				"to": "00:00:03,180"
+			},
+			"offsets": {
+				"from": 2650,
+				"to": 3180
+			},
+			"text": ","
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,180",
+				"to": "00:00:03,350"
+			},
+			"offsets": {
+				"from": 3180,
+				"to": 3350
+			},
+			"text": " finding"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,350",
+				"to": "00:00:03,520"
+			},
+			"offsets": {
+				"from": 3350,
+				"to": 3520
+			},
+			"text": " the"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,520",
+				"to": "00:00:03,990"
+			},
+			"offsets": {
+				"from": 3520,
+				"to": 3990
+			},
+			"text": " best"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:03,990",
+				"to": "00:00:04,260"
+			},
+			"offsets": {
+				"from": 3990,
+				"to": 4260
+			},
+			"text": " place"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,260",
+				"to": "00:00:04,370"
+			},
+			"offsets": {
+				"from": 4260,
+				"to": 4370
+			},
+			"text": " for"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,370",
+				"to": "00:00:04,680"
+			},
+			"offsets": {
+				"from": 4370,
+				"to": 4680
+			},
+			"text": " travel"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,680",
+				"to": "00:00:04,990"
+			},
+			"offsets": {
+				"from": 4680,
+				"to": 4990
+			},
+			"text": " has"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:04,990",
+				"to": "00:00:05,400"
+			},
+			"offsets": {
+				"from": 4990,
+				"to": 5400
+			},
+			"text": " never"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,400",
+				"to": "00:00:05,770"
+			},
+			"offsets": {
+				"from": 5400,
+				"to": 5770
+			},
+			"text": " been"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:05,770",
+				"to": "00:00:06,340"
+			},
+			"offsets": {
+				"from": 5770,
+				"to": 6340
+			},
+			"text": " easier"
+		},
+		{
+			"timestamps": {
+				"from": "00:00:06,340",
+				"to": "00:00:06,340"
+			},
+			"offsets": {
+				"from": 6340,
+				"to": 6340
+			},
+			"text": "."
+		}
+	]
+}
