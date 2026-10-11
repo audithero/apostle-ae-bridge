@@ -23,7 +23,12 @@ import {
 } from "./lib/bridge-core.js";
 import { collectPresetFiles } from "./lib/preset-scan.js";
 import { analyzeWavBuffer, WavAnalysis } from "./lib/wav.js";
-import { buildFrameContent, type FrameFile, type ContentBlock } from "./lib/see-frame.js";
+import {
+  buildFrameContent,
+  isCompletePng,
+  type FrameFile,
+  type ContentBlock,
+} from "./lib/see-frame.js";
 import {
   amplitudeAtTime,
   buildPeakKeyframes,
@@ -2553,7 +2558,7 @@ server.tool(
 
 // Bump this whenever the bridge .jsx protocol changes, and keep it in sync with
 // BRIDGE_VERSION in src/scripts/mcp-bridge-auto.jsx. check-bridge warns on mismatch.
-const EXPECTED_BRIDGE_VERSION = "1.10.0-mcp-enhanced";
+const EXPECTED_BRIDGE_VERSION = "1.13.0-mcp-enhanced";
 
 server.tool(
   "check-bridge",
@@ -2786,6 +2791,245 @@ server.tool(
   },
 );
 
+const PopulateTemplateBindingSchema = z.object({
+  field: z.string().describe("Key in each row supplying this binding's value."),
+  kind: z
+    .enum(["text", "footage", "property"])
+    .describe(
+      "'text': set a text layer's content (RTL auto-detected, same as localize-comp). 'footage': replace an AV layer's source with a file imported from this value (an absolute file path). 'property': set any layer or effect property to this value.",
+    ),
+  layerIndex: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe("1-based layer index at the template's top level. Ignored if `path` is given."),
+  layerName: z
+    .string()
+    .optional()
+    .describe("Layer name at the template's top level. Ignored if `path` is given."),
+  path: z
+    .array(
+      z.object({
+        layerIndex: z
+          .number()
+          .int()
+          .positive()
+          .optional()
+          .describe("1-based layer index at this nesting level."),
+        layerName: z.string().optional().describe("Layer name at this nesting level."),
+      }),
+    )
+    .min(1)
+    .optional()
+    .describe(
+      "Full path to a layer nested inside one or more precompositions, same shape as localize-comp's `path`: every segment but the last must resolve to a precomposition layer. Omit to target a top-level layer with layerIndex/layerName instead.",
+    ),
+  direction: z
+    .enum(["auto", "rtl", "ltr"])
+    .optional()
+    .describe("`text` kind only. 'auto' (default) = RTL when the value contains Arabic."),
+  alignment: z
+    .enum(["left", "center", "right"])
+    .optional()
+    .describe("`text` kind only. Defaults to 'right' when the resolved direction is RTL."),
+  propertyName: z
+    .string()
+    .optional()
+    .describe(
+      "`property` kind only: target property name or matchName (e.g. 'ADBE Opacity'). Used when propertyPath is not given, or as the effect-property fallback.",
+    ),
+  propertyPath: z
+    .array(z.union([z.string(), z.number().int().positive()]))
+    .optional()
+    .describe(
+      "`property` kind only: path to the target property, from the effect root or the layer root.",
+    ),
+  propertyIndex: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe(
+      "`property` kind only: fallback property index under the effect root (effect targeting only).",
+    ),
+  effectIndex: z
+    .number()
+    .int()
+    .positive()
+    .optional()
+    .describe(
+      "`property` kind only: 1-based effect index, to target an effect property instead of a plain layer property.",
+    ),
+  effectName: z
+    .string()
+    .optional()
+    .describe("`property` kind only: display name of the effect to target."),
+  effectMatchName: z
+    .string()
+    .optional()
+    .describe("`property` kind only: internal matchName of the effect to target."),
+});
+
+const MAX_TEMPLATE_ROWS = 500;
+const MAX_PROJECT_ITEMS_LISTED = 2000;
+const MAX_IMPORT_FILES = 200;
+
+server.tool(
+  "populate-template",
+  "Duplicate a template composition once per row of a data table, populating each duplicate from that row's values - the batch/bulk version of manually editing one composition (personalized ads, product cards, name badges, anything repeated with different content). Each row can drive text content (with the same Arabic/RTL auto-detection as localize-comp), an image/video source (imported from a file path), or any layer/effect property value (reusing the same targeting scheme animate-to-audio/animate-from-data use). Layers nested inside precompositions are reachable via `path`, and each precomposition on that path is safely duplicated per row (never edited in place), reusing the same precomp-duplication logic localize-comp uses. Chain with render-aerender afterward, once per created composition, to batch-render every variant.",
+  {
+    compName: z
+      .string()
+      .optional()
+      .describe("Template composition name (or the active comp if omitted)."),
+    compIndex: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe("1-based index among compositions, if compName is omitted."),
+    rows: z
+      .array(z.record(z.string(), z.union([z.string(), z.number().finite(), z.boolean()])))
+      .min(1)
+      .max(MAX_TEMPLATE_ROWS)
+      .describe(
+        `One entry per output composition (max ${MAX_TEMPLATE_ROWS}, one row becomes one duplicated composition). Each row is a flat {field: value} object; \`bindings\` below decides which fields drive which layers.`,
+      ),
+    bindings: z
+      .array(PopulateTemplateBindingSchema)
+      .min(1)
+      .describe("One entry per layer to populate. Applied to every row."),
+    namePattern: z
+      .string()
+      .optional()
+      .describe(
+        "Name for each created composition, with {field} placeholders substituted from that row's values (e.g. '{name} ad'). Defaults to '<template name> <row number>', also used as the fallback if a placeholder's field is missing from a row.",
+      ),
+  },
+  async (parameters) => {
+    try {
+      const result = await sendBridgeCommand("populateTemplate", parameters, 120000, 500);
+      return bridgeToolResult(result);
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: `Error populating template: ${String(error)}` }],
+        isError: true,
+      };
+    }
+  },
+);
+
+server.tool(
+  "import-footage",
+  "Import one or more files into the project as footage items, ready to use as a layer source or in populate-template's footage bindings. Files that don't exist are reported individually without failing the rest of the batch.",
+  {
+    paths: z
+      .array(z.string())
+      .min(1)
+      .max(MAX_IMPORT_FILES)
+      .describe(
+        `Absolute file paths to import (max ${MAX_IMPORT_FILES}). Each becomes one project item. If asSequence is set, provide exactly one path instead (see asSequence).`,
+      ),
+    folderName: z
+      .string()
+      .optional()
+      .describe(
+        "Name of a top-level project panel folder to place the imported item(s) in. Created if it doesn't already exist.",
+      ),
+    asSequence: z
+      .boolean()
+      .optional()
+      .describe(
+        "Import as a single image sequence item instead of one item per file. paths must contain exactly one path: the first frame. After Effects scans that file's own folder for the rest of the numbered sequence itself.",
+      ),
+  },
+  async (parameters) => {
+    if (parameters.asSequence && parameters.paths.length !== 1) {
+      return {
+        content: [
+          {
+            type: "text",
+            text: "asSequence expects exactly one path: the first frame of the sequence. After Effects finds the rest of the sequence in that same folder itself.",
+          },
+        ],
+        isError: true,
+      };
+    }
+    try {
+      const result = await sendBridgeCommand("importFootage", parameters, 30000, 250);
+      return bridgeToolResult(result);
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: `Error importing footage: ${String(error)}` }],
+        isError: true,
+      };
+    }
+  },
+);
+
+server.tool(
+  "list-project-items",
+  "List items in the project panel (compositions, footage, solids, folders), with each footage item's source file path and whether it is missing/offline. Unlike getProjectInfo (summary-only, capped at 50), this is the full, filterable inventory - use it to find broken links before a render, or to look up a footage item's id for relink-footage.",
+  {
+    type: z
+      .enum(["all", "composition", "footage", "folder", "solid", "placeholder"])
+      .optional()
+      .describe("Filter by item type (default: all)."),
+    missingOnly: z
+      .boolean()
+      .optional()
+      .describe("Only return footage items whose source file is currently missing/offline."),
+    limit: z
+      .number()
+      .int()
+      .positive()
+      .max(MAX_PROJECT_ITEMS_LISTED)
+      .optional()
+      .describe(`Maximum items to return (default and max ${MAX_PROJECT_ITEMS_LISTED}).`),
+  },
+  async (parameters) => {
+    try {
+      const result = await sendBridgeCommand("listProjectItems", parameters, 15000, 250);
+      return bridgeToolResult(result);
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: `Error listing project items: ${String(error)}` }],
+        isError: true,
+      };
+    }
+  },
+);
+
+server.tool(
+  "relink-footage",
+  "Relink a footage item's source to a different file on disk, without touching how it's used in any composition (every layer using it keeps working, now pointing at the new file). Select the item by itemId (from list-project-items, unambiguous) or itemName (must match exactly one item).",
+  {
+    itemId: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe("Project item id (from list-project-items). Preferred - unambiguous."),
+    itemName: z
+      .string()
+      .optional()
+      .describe("Project item name, if itemId is omitted. Must match exactly one project item."),
+    newPath: z.string().describe("Absolute path to the replacement file."),
+  },
+  async (parameters) => {
+    try {
+      const result = await sendBridgeCommand("relinkFootage", parameters, 15000, 250);
+      return bridgeToolResult(result);
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: `Error relinking footage: ${String(error)}` }],
+        isError: true,
+      };
+    }
+  },
+);
+
 server.tool(
   "create-camera",
   "Create a camera layer in a composition. Select the comp by compName/compIndex (or active comp).",
@@ -2882,6 +3126,150 @@ server.tool(
     } catch (error) {
       return {
         content: [{ type: "text", text: `Error deleting layer: ${String(error)}` }],
+        isError: true,
+      };
+    }
+  },
+);
+
+const MAX_PRECOMPOSE_LAYERS = 500;
+
+server.tool(
+  "set-layer-parent",
+  "Set (or clear) a layer's parent within its composition - the standard After Effects parent/child rig, where the child inherits the parent's position/rotation/scale. Select the target layer and, to set a parent, the parent layer; to remove an existing parent instead, set clearParent to true (parentLayerIndex/parentLayerName are then ignored).",
+  {
+    compName: z.string().optional().describe("Composition name (or active comp if omitted)."),
+    compIndex: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe("1-based comp index, if compName is omitted."),
+    layerIndex: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe("1-based index of the layer to parent."),
+    layerName: z
+      .string()
+      .optional()
+      .describe("Name of the layer to parent (alternative to layerIndex)."),
+    parentLayerIndex: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe("1-based index of the layer to parent to."),
+    parentLayerName: z
+      .string()
+      .optional()
+      .describe("Name of the layer to parent to (alternative to parentLayerIndex)."),
+    clearParent: z
+      .boolean()
+      .optional()
+      .describe("Remove the layer's existing parent instead of setting a new one."),
+  },
+  async (parameters) => {
+    try {
+      const result = await sendBridgeCommand("setLayerParent", parameters, 8000, 250);
+      return bridgeToolResult(result);
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: `Error setting layer parent: ${String(error)}` }],
+        isError: true,
+      };
+    }
+  },
+);
+
+server.tool(
+  "reorder-layer",
+  "Change a layer's stacking order (z-order) within its composition. Provide exactly one of toPosition, before*, or after* to say where it should move.",
+  {
+    compName: z.string().optional().describe("Composition name (or active comp if omitted)."),
+    compIndex: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe("1-based comp index, if compName is omitted."),
+    layerIndex: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe("1-based index of the layer to move."),
+    layerName: z
+      .string()
+      .optional()
+      .describe("Name of the layer to move (alternative to layerIndex)."),
+    toPosition: z
+      .enum(["top", "bottom"])
+      .optional()
+      .describe("Move to the very top (front) or bottom (back) of the stacking order."),
+    beforeLayerIndex: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe("Move directly above (in front of) this layer."),
+    beforeLayerName: z.string().optional().describe("Same as beforeLayerIndex, by name."),
+    afterLayerIndex: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe("Move directly below (behind) this layer."),
+    afterLayerName: z.string().optional().describe("Same as afterLayerIndex, by name."),
+  },
+  async (parameters) => {
+    try {
+      const result = await sendBridgeCommand("reorderLayer", parameters, 8000, 250);
+      return bridgeToolResult(result);
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: `Error reordering layer: ${String(error)}` }],
+        isError: true,
+      };
+    }
+  },
+);
+
+server.tool(
+  "precompose-layers",
+  "Bundle one or more layers into a new nested composition (Layer > Precompose), replacing them in the source comp with a single layer referencing the new precomp.",
+  {
+    compName: z
+      .string()
+      .optional()
+      .describe("Source composition name (or active comp if omitted)."),
+    compIndex: z
+      .number()
+      .int()
+      .positive()
+      .optional()
+      .describe("1-based comp index, if compName is omitted."),
+    layerIndices: z
+      .array(z.number().int().positive())
+      .min(1)
+      .max(MAX_PRECOMPOSE_LAYERS)
+      .describe("1-based indices of the layers to precompose, within the source composition."),
+    name: z.string().describe("Name for the new precomposition."),
+    moveAllAttributes: z
+      .boolean()
+      .optional()
+      .describe(
+        "Move the layer's effects/masks/blend mode into the new precomp instead of leaving them on the wrapping layer. Only valid when layerIndices has exactly one entry.",
+      ),
+  },
+  async (parameters) => {
+    try {
+      const result = await sendBridgeCommand("precomposeLayers", parameters, 15000, 250);
+      return bridgeToolResult(result);
+    } catch (error) {
+      return {
+        content: [{ type: "text", text: `Error precomposing layers: ${String(error)}` }],
         isError: true,
       };
     }
@@ -3234,13 +3622,14 @@ server.tool(
             : JSON.stringify(parsed.state)
           : undefined;
 
-      const readBase64 = (p: string): string | null => {
-        try {
-          return fs.readFileSync(p).toString("base64");
-        } catch {
-          return null;
-        }
-      };
+      const b64ByPath = new Map<string, string>();
+      const framePaths = frames.filter((f) => f && f.path).map((f) => f.path);
+      const b64Results = await Promise.all(framePaths.map((p) => readScratchPngBase64(p)));
+      framePaths.forEach((p, i) => {
+        const b64 = b64Results[i];
+        if (b64 !== null) b64ByPath.set(p, b64);
+      });
+      const readBase64 = (p: string): string | null => b64ByPath.get(p) ?? null;
 
       const content: ContentBlock[] = buildFrameContent(compName, frames, readBase64, stateJson);
       if (parsed.note) content.push({ type: "text", text: String(parsed.note) });
@@ -3264,13 +3653,34 @@ server.tool(
   },
 );
 
+// saveFrameToPng returns before the render finishes: After Effects queues the
+// frame and writes the PNG asynchronously, so the bridge result JSON usually
+// arrives before the file exists on disk, and an early read can even succeed
+// with a truncated PNG (observed on AE 2026 / Windows; the ExtendScript side
+// works around the same lag with _importWithRetry). Poll until the file is a
+// structurally complete PNG before accepting the bytes. The timeout is generous
+// because a multi-frame batch renders sequentially after the script returns.
+async function readScratchPngBase64(p: string, timeoutMs = 15000): Promise<string | null> {
+  const deadline = Date.now() + timeoutMs;
+  for (;;) {
+    try {
+      const buf = fs.readFileSync(p);
+      if (isCompletePng(buf)) return buf.toString("base64");
+    } catch {
+      // not written yet
+    }
+    if (Date.now() >= deadline) return null;
+    await new Promise((r) => setTimeout(r, 100));
+  }
+}
+
 // Read scratch PNGs listed in a bridge result into MCP image blocks, then delete
 // them. Shared by contact-sheet and match-reference.
-function imageResultFromPaths(
+async function imageResultFromPaths(
   raw: string,
   entries: Array<{ path?: string; caption: string }>,
   headerText: string,
-): { content: ContentBlock[]; isError?: boolean } {
+): Promise<{ content: ContentBlock[]; isError?: boolean }> {
   const cleanup: string[] = [];
   try {
     let parsed: any;
@@ -3283,20 +3693,16 @@ function imageResultFromPaths(
       return bridgeToolResult(raw) as { content: ContentBlock[]; isError?: boolean };
     }
     const content: ContentBlock[] = [{ type: "text", text: headerText }];
-    for (const e of entries) {
-      if (!e.path) continue;
-      cleanup.push(e.path);
-      let b64: string | null = null;
-      try {
-        b64 = fs.readFileSync(e.path).toString("base64");
-      } catch {
-        b64 = null;
-      }
+    const withPaths = entries.filter((e): e is { path: string; caption: string } => !!e.path);
+    withPaths.forEach((e) => cleanup.push(e.path));
+    const b64Results = await Promise.all(withPaths.map((e) => readScratchPngBase64(e.path)));
+    withPaths.forEach((e, i) => {
+      const b64 = b64Results[i];
       if (b64) {
         content.push({ type: "text", text: e.caption });
         content.push({ type: "image", data: b64, mimeType: "image/png" });
       }
-    }
+    });
     if (parsed.note) content.push({ type: "text", text: String(parsed.note) });
     const anyImage = content.some((b) => b.type === "image");
     return { content, isError: anyImage ? false : true };

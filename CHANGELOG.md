@@ -4,6 +4,59 @@ All notable changes to this project are documented here. The format is based on
 [Keep a Changelog](https://keepachangelog.com/en/1.1.0/), and this project aims to
 follow [Semantic Versioning](https://semver.org/spec/v2.0.0.html).
 
+## [1.13.0](https://github.com/a-y-ibrahim/after-effects-mcp/compare/v1.12.0...v1.13.0) (2026-08-15)
+
+
+### Features
+
+* add layer structure tools (set-layer-parent, reorder-layer, precompose-layers) ([87f5a81](https://github.com/a-y-ibrahim/after-effects-mcp/commit/87f5a81cfe41c289a168ef68179c5a51b9b854d8))
+
+
+### Bug Fixes
+
+* reject duplicate indices in precompose-layers up front ([acfedb5](https://github.com/a-y-ibrahim/after-effects-mcp/commit/acfedb52d1834fda0303913a9d65879ded6c2156))
+
+## [1.12.0](https://github.com/a-y-ibrahim/after-effects-mcp/compare/v1.11.1...v1.12.0) (2026-08-15)
+
+
+### Features
+
+* add project asset management tools (import-footage, list-project-items, relink-footage) ([4baa734](https://github.com/a-y-ibrahim/after-effects-mcp/commit/4baa734892f04c8c5def6cae469ea7a161a0a860))
+
+
+### Bug Fixes
+
+* correct import-footage's asSequence handling and avoid mislabeling a successful import as failed ([618d843](https://github.com/a-y-ibrahim/after-effects-mcp/commit/618d84363a5b890b110c018912b0463f5de68d4f))
+
+## [1.11.1](https://github.com/a-y-ibrahim/after-effects-mcp/compare/v1.11.0...v1.11.1) (2026-08-13)
+
+
+### Bug Fixes
+
+* wait for asynchronously written frame PNGs before reading them ([#14](https://github.com/a-y-ibrahim/after-effects-mcp/issues/14)) ([96c00e2](https://github.com/a-y-ibrahim/after-effects-mcp/commit/96c00e2ca03c29e0599637eab04f353961307e35))
+
+
+### Performance Improvements
+
+* poll scratch PNGs concurrently in see-frame/contact-sheet/match-reference ([e2cef9e](https://github.com/a-y-ibrahim/after-effects-mcp/commit/e2cef9ecdac6c0c48e804e66236992597296916f))
+
+## [1.11.0](https://github.com/a-y-ibrahim/after-effects-mcp/compare/v1.10.0...v1.11.0) (2026-08-13)
+
+
+### Features
+
+* add populate-template for bulk composition generation from data ([95edd33](https://github.com/a-y-ibrahim/after-effects-mcp/commit/95edd339900a56e51d02adc43a83547c35a34030))
+
+
+### Bug Fixes
+
+* verify release-please labeling works end-to-end in production (temporary, will be reverted) ([047c2c1](https://github.com/a-y-ibrahim/after-effects-mcp/commit/047c2c1f171841d1e6bc68013c9e8484930f12f9))
+
+
+### Reverts
+
+* remove temporary release-please verification commit ([1e21bce](https://github.com/a-y-ibrahim/after-effects-mcp/commit/1e21bceb6953f558f82bc6d87900264eda8cee34))
+
 ## [Unreleased]
 
 ## [1.10.0] - 2026-07-19

@@ -147,6 +147,68 @@ function createTextLayer(args) {
 // other layer, effect, and animation carries over untouched because the whole
 // comp (not just individual layers) is duplicated first. Translation itself is
 // the caller's job; args.translations already carries the target-language text.
+// Walk `path` (an array of {layerIndex,layerName} segments, all but the last
+// must be precomposition layers) through `startComp`. A precomp is never
+// edited in place: every precomp on the path is duplicated the first time
+// it's reached, and the layer that pointed at it is repointed to the
+// duplicate via replaceSource. `dupeState` (an object with `precompDupes`,
+// `knownDuplicateIds`, and a `suffix` string appended to each duplicate's
+// name) must be shared across every path walked in one call, so a precomp
+// referenced by more than one path is duplicated exactly once:
+//  - precompDupes: original item id -> its duplicate, for when two DIFFERENT
+//    layers both source the same original precomp (e.g. two instances of the
+//    same lower-third).
+//  - knownDuplicateIds: id of every duplicate this call has already created,
+//    for when the SAME layer is walked again by a later path - by then its
+//    `.source` IS the duplicate (the first walk already called
+//    replaceSource), not the original, so looking it up in precompDupes
+//    would miss and duplicate it a second time, silently orphaning the
+//    first path's work.
+// Returns { layer, targetComp } on success, or { failReason } if any segment
+// fails to resolve (never throws, so a caller can report a single bad path
+// without aborting the rest of a batch).
+function _resolveLayerViaDuplicatedPath(startComp, path, dupeState) {
+    var targetComp = startComp;
+    for (var p = 0; p < path.length - 1; p++) {
+        var midLayer = _resolveLayer(targetComp, path[p]);
+        if (!midLayer) return { failReason: "path[" + p + "]: layer not found" };
+        if (!(midLayer.source && midLayer.source instanceof CompItem)) {
+            return { failReason: "path[" + p + "]: not a precomposition layer" };
+        }
+        var src = midLayer.source;
+        var srcKey = String(src.id);
+        // AE auto-renames a layer to match its source whenever the layer has
+        // no custom name of its own, so replaceSource() below can silently
+        // rename e.g. "Scene" to "Scene (localized)". Capture the name now
+        // and restore it after the swap so a later path in this same call
+        // can still resolve this segment by its original layerName.
+        var midLayerName = midLayer.name;
+        var dupPrecomp;
+        if (dupeState.knownDuplicateIds[srcKey]) {
+            // Already repointed to a duplicate by an earlier path this call -
+            // reuse it as-is, nothing to do.
+            dupPrecomp = src;
+        } else if (dupeState.precompDupes[srcKey]) {
+            // The original has already been duplicated once (a different
+            // layer shares it) - point this layer at that same duplicate.
+            dupPrecomp = dupeState.precompDupes[srcKey];
+            midLayer.replaceSource(dupPrecomp, false);
+            midLayer.name = midLayerName;
+        } else {
+            dupPrecomp = src.duplicate();
+            dupPrecomp.name = src.name + dupeState.suffix;
+            dupeState.precompDupes[srcKey] = dupPrecomp;
+            dupeState.knownDuplicateIds[String(dupPrecomp.id)] = true;
+            midLayer.replaceSource(dupPrecomp, false);
+            midLayer.name = midLayerName;
+        }
+        targetComp = dupPrecomp;
+    }
+    var layer = _resolveLayer(targetComp, path[path.length - 1]);
+    if (!layer) return { failReason: "layer not found" };
+    return { layer: layer, targetComp: targetComp };
+}
+
 function localizeComp(args) {
     try {
         var comp = _resolveComp(args);
@@ -160,22 +222,7 @@ function localizeComp(args) {
         var newComp = comp.duplicate();
         newComp.name = args.newCompName || (comp.name + " (localized)");
 
-        // A precomp is never edited in place: every precomp on every path is
-        // duplicated the first time it is reached, and the layer that pointed
-        // at it is repointed to the duplicate. Two maps track this so a precomp
-        // is duplicated exactly once even when several translation paths pass
-        // through it:
-        //  - precompDupes: original item id -> its localized duplicate, for
-        //    when two DIFFERENT layers both source the same original precomp
-        //    (e.g. two instances of the same lower-third).
-        //  - knownDuplicateIds: id of every duplicate this call has already
-        //    created, for when the SAME layer is walked again by a later
-        //    translation - by then its `.source` IS the duplicate (the first
-        //    walk already called replaceSource), not the original, so looking
-        //    it up in precompDupes would miss and duplicate it a second time,
-        //    silently orphaning the first translation's work.
-        var precompDupes = {};
-        var knownDuplicateIds = {};
+        var dupeState = { precompDupes: {}, knownDuplicateIds: {}, suffix: " (localized)" };
 
         var updated = [];
         var skipped = [];
@@ -185,55 +232,13 @@ function localizeComp(args) {
             // (the same shape localize-comp shipped with originally).
             var path = t.path && t.path.length ? t.path : [{ layerIndex: t.layerIndex, layerName: t.layerName }];
 
-            var targetComp = newComp;
-            var failReason = null;
-            for (var p = 0; p < path.length - 1; p++) {
-                var midLayer = _resolveLayer(targetComp, path[p]);
-                if (!midLayer) { failReason = "path[" + p + "]: layer not found"; break; }
-                if (!(midLayer.source && midLayer.source instanceof CompItem)) {
-                    failReason = "path[" + p + "]: not a precomposition layer";
-                    break;
-                }
-                var src = midLayer.source;
-                var srcKey = String(src.id);
-                // AE auto-renames a layer to match its source whenever the layer
-                // has no custom name of its own, so replaceSource() below can
-                // silently rename e.g. "Scene" to "Scene (localized)". Capture the
-                // name now and restore it after the swap so a later translation
-                // in this same call can still resolve this path segment by its
-                // original layerName.
-                var midLayerName = midLayer.name;
-                var dupPrecomp;
-                if (knownDuplicateIds[srcKey]) {
-                    // Already repointed to a localized duplicate by an earlier
-                    // translation this call - reuse it as-is, nothing to do.
-                    dupPrecomp = src;
-                } else if (precompDupes[srcKey]) {
-                    // The original has already been duplicated once (a different
-                    // layer shares it) - point this layer at that same duplicate.
-                    dupPrecomp = precompDupes[srcKey];
-                    midLayer.replaceSource(dupPrecomp, false);
-                    midLayer.name = midLayerName;
-                } else {
-                    dupPrecomp = src.duplicate();
-                    dupPrecomp.name = src.name + " (localized)";
-                    precompDupes[srcKey] = dupPrecomp;
-                    knownDuplicateIds[String(dupPrecomp.id)] = true;
-                    midLayer.replaceSource(dupPrecomp, false);
-                    midLayer.name = midLayerName;
-                }
-                targetComp = dupPrecomp;
-            }
-            if (failReason) {
-                skipped.push({ path: path, reason: failReason });
+            var resolved = _resolveLayerViaDuplicatedPath(newComp, path, dupeState);
+            if (resolved.failReason) {
+                skipped.push({ path: path, reason: resolved.failReason });
                 continue;
             }
-
-            var layer = _resolveLayer(targetComp, path[path.length - 1]);
-            if (!layer) {
-                skipped.push({ path: path, reason: "layer not found" });
-                continue;
-            }
+            var layer = resolved.layer;
+            var targetComp = resolved.targetComp;
             if (!(layer instanceof TextLayer)) {
                 skipped.push({ path: path, reason: "not a text layer" });
                 continue;
@@ -251,8 +256,8 @@ function localizeComp(args) {
         }
 
         var precompNames = [];
-        for (var key in precompDupes) {
-            if (precompDupes.hasOwnProperty(key)) precompNames.push(precompDupes[key].name);
+        for (var key in dupeState.precompDupes) {
+            if (dupeState.precompDupes.hasOwnProperty(key)) precompNames.push(dupeState.precompDupes[key].name);
         }
 
         return JSON.stringify({
@@ -263,6 +268,385 @@ function localizeComp(args) {
             precompsDuplicated: precompNames,
             updated: updated,
             skipped: skipped
+        }, null, 2);
+    } catch (error) {
+        return JSON.stringify({ status: "error", message: error.toString() }, null, 2);
+    }
+}
+
+// Build a composition name from `pattern` (e.g. "{name} ad"), substituting
+// each {field} placeholder with that field's value from `row`. Falls back to
+// "<source name> <row number>" when no pattern is given, or when a
+// referenced field is missing from the row - never returns a name with a
+// literal unresolved "{field}" left in it, which would read as a bug to
+// whoever sees the resulting composition list.
+function _buildTemplateName(pattern, row, rowIndex, sourceName) {
+    var fallback = sourceName + " " + (rowIndex + 1);
+    if (!pattern) return fallback;
+    var missingField = false;
+    var name = pattern.replace(/\{([^{}]+)\}/g, function (match, field) {
+        if (!row.hasOwnProperty(field)) { missingField = true; return match; }
+        return String(row[field]);
+    });
+    return missingField ? fallback : name;
+}
+
+function populateTemplate(args) {
+    try {
+        var params = args || {};
+        var comp = _resolveComp(params);
+        if (!comp) return JSON.stringify({ status: "error", message: "No composition found. Provide compName or compIndex, or open a comp." });
+
+        var rows = params.rows;
+        if (!(rows instanceof Array) || rows.length === 0) {
+            return JSON.stringify({ status: "error", message: "rows must be a non-empty array of data objects." });
+        }
+        var bindings = params.bindings;
+        if (!(bindings instanceof Array) || bindings.length === 0) {
+            return JSON.stringify({ status: "error", message: "bindings must be a non-empty array." });
+        }
+
+        // Shared across every row (not reset per row): a "footage" binding whose
+        // value is the same file path in two different rows - a background image
+        // reused across every variant, say - imports that file exactly once and
+        // reuses the same project item for every replaceSource() call, rather
+        // than importing a fresh duplicate item per row.
+        var footageCache = {};
+
+        var results = [];
+        for (var r = 0; r < rows.length; r++) {
+            var row = rows[r] || {};
+            var newComp = comp.duplicate();
+            newComp.name = _buildTemplateName(params.namePattern, row, r, comp.name);
+
+            // Fresh per row: each row's precomps are duplicated independently of
+            // every other row's, never shared - only bindings WITHIN one row
+            // reuse a precomp duplicate when their paths cross the same one.
+            var dupeState = { precompDupes: {}, knownDuplicateIds: {}, suffix: " (template)" };
+            var bindingResults = [];
+
+            for (var b = 0; b < bindings.length; b++) {
+                var binding = bindings[b] || {};
+                var field = binding.field;
+                if (!field || !row.hasOwnProperty(field)) {
+                    bindingResults.push({ field: field, status: "error", message: "Row is missing field '" + field + "'." });
+                    continue;
+                }
+                var value = row[field];
+
+                var path = binding.path && binding.path.length ? binding.path : [{ layerIndex: binding.layerIndex, layerName: binding.layerName }];
+                var resolved = _resolveLayerViaDuplicatedPath(newComp, path, dupeState);
+                if (resolved.failReason) {
+                    bindingResults.push({ field: field, status: "error", message: resolved.failReason });
+                    continue;
+                }
+                var layer = resolved.layer;
+
+                try {
+                    if (binding.kind === "text") {
+                        if (!(layer instanceof TextLayer)) throw new Error("Target layer is not a text layer.");
+                        var textProp = layer.property("ADBE Text Properties").property("ADBE Text Document");
+                        var textDocument = textProp.value;
+                        var textValue = String(value);
+                        textDocument.text = textValue;
+                        var isRtl = _applyTextDirection(textDocument, textValue, binding.direction);
+                        var align = binding.alignment || (isRtl ? "right" : null);
+                        if (align === "left") { textDocument.justification = ParagraphJustification.LEFT_JUSTIFY; }
+                        else if (align === "center") { textDocument.justification = ParagraphJustification.CENTER_JUSTIFY; }
+                        else if (align === "right") { textDocument.justification = ParagraphJustification.RIGHT_JUSTIFY; }
+                        textProp.setValue(textDocument);
+                    } else if (binding.kind === "footage") {
+                        // Checked before importing anything: a layer that can't
+                        // take a replaced source shouldn't leave an unused,
+                        // never-attached import sitting in the project panel.
+                        if (!layer.source) throw new Error("Target layer has no replaceable source (not a footage-backed layer).");
+                        var footagePath = String(value);
+                        var importedItem = footageCache[footagePath];
+                        if (!importedItem) {
+                            var footageFile = new File(footagePath);
+                            if (!footageFile.exists) throw new Error("Footage file not found: " + footagePath);
+                            importedItem = app.project.importFile(new ImportOptions(footageFile));
+                            footageCache[footagePath] = importedItem;
+                        }
+                        layer.replaceSource(importedItem, false);
+                    } else if (binding.kind === "property") {
+                        var targetProperty = _resolvePropertyForKeyframing(layer, binding);
+                        if (!targetProperty) throw new Error("Target property not found. Provide propertyName, propertyPath, or an effect selector.");
+                        targetProperty.setValue(coerceScriptValue(value));
+                    } else {
+                        throw new Error("Unknown binding kind '" + binding.kind + "'. Use 'text', 'footage', or 'property'.");
+                    }
+                    bindingResults.push({ field: field, status: "success", layer: { name: layer.name, index: layer.index } });
+                } catch (bindingError) {
+                    bindingResults.push({ field: field, status: "error", message: bindingError.toString() });
+                }
+            }
+
+            results.push({
+                row: r,
+                comp: { name: newComp.name, index: newComp.index },
+                bindings: bindingResults
+            });
+        }
+
+        return JSON.stringify({
+            status: "success",
+            message: "Created " + results.length + " composition(s) from " + rows.length + " row(s).",
+            sourceComp: { name: comp.name, index: comp.index },
+            created: results
+        }, null, 2);
+    } catch (error) {
+        return JSON.stringify({ status: "error", message: error.toString() }, null, 2);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Project asset management: import footage, inventory project items, relink
+// missing/offline sources. Distinct from populateTemplate's footage binding
+// above (which swaps what a LAYER points to via replaceSource) - these
+// operate on the project panel itself.
+// ---------------------------------------------------------------------------
+
+var MAX_PROJECT_ITEMS_LISTED = 2000;
+
+function _classifyProjectItem(item) {
+    if (item instanceof CompItem) return "Composition";
+    if (item instanceof FolderItem) return "Folder";
+    if (item instanceof FootageItem) {
+        if (item.mainSource instanceof SolidSource) return "Solid";
+        if (item.mainSource instanceof PlaceholderSource) return "Placeholder";
+        return "Footage";
+    }
+    return "Unknown";
+}
+
+// Prefer the dedicated footageMissing flag on newer AE versions; fall back to
+// checking the source file directly where that property does not exist.
+function _isFootageMissing(item) {
+    if (!(item instanceof FootageItem)) return false;
+    if (typeof item.footageMissing !== "undefined") return !!item.footageMissing;
+    var source = item.mainSource;
+    if (source instanceof FileSource) {
+        try { return !source.file.exists; } catch (e) { return true; }
+    }
+    return false;
+}
+
+function _describeProjectItem(item) {
+    var info = {
+        id: item.id,
+        name: item.name,
+        type: _classifyProjectItem(item)
+    };
+    if (item instanceof FootageItem) {
+        info.missing = _isFootageMissing(item);
+        if (item.mainSource instanceof FileSource) {
+            try { info.file = item.mainSource.file.fsName; } catch (eFile) {}
+        }
+        try { info.width = item.width; info.height = item.height; } catch (eDim) {}
+        try { info.duration = item.duration; info.frameRate = item.frameRate; } catch (eDur) {}
+    } else if (item instanceof CompItem) {
+        info.width = item.width;
+        info.height = item.height;
+        info.duration = item.duration;
+        info.frameRate = item.frameRate;
+        info.numLayers = item.numLayers;
+    }
+    try {
+        info.folder = (item.parentFolder && item.parentFolder !== app.project.rootFolder) ? item.parentFolder.name : null;
+    } catch (eFolder) {}
+    return info;
+}
+
+function listProjectItems(args) {
+    try {
+        var params = args || {};
+        var typeFilter = params.type || "all";
+        var missingOnly = !!params.missingOnly;
+        var limit = (params.limit && params.limit > 0) ? Math.min(params.limit, MAX_PROJECT_ITEMS_LISTED) : MAX_PROJECT_ITEMS_LISTED;
+
+        var items = [];
+        var totalMatched = 0;
+        var truncated = false;
+        for (var i = 1; i <= app.project.numItems; i++) {
+            var item = app.project.item(i);
+            var type = _classifyProjectItem(item);
+            if (typeFilter !== "all" && type.toLowerCase() !== String(typeFilter).toLowerCase()) continue;
+            if (missingOnly && !_isFootageMissing(item)) continue;
+            totalMatched++;
+            if (items.length < limit) {
+                items.push(_describeProjectItem(item));
+            } else {
+                truncated = true;
+            }
+        }
+
+        return JSON.stringify({
+            status: "success",
+            totalItems: app.project.numItems,
+            matched: totalMatched,
+            returned: items.length,
+            truncated: truncated,
+            items: items
+        }, null, 2);
+    } catch (error) {
+        return JSON.stringify({ status: "error", message: error.toString() }, null, 2);
+    }
+}
+
+// Find-or-create a top-level folder by name. Only searches/creates at the
+// project root - nested target folders are not supported, matching
+// populateTemplate's own scope decision to keep footage handling simple.
+function _findOrCreateFolder(name) {
+    for (var i = 1; i <= app.project.numItems; i++) {
+        var it = app.project.item(i);
+        if (it instanceof FolderItem && it.name === name && it.parentFolder === app.project.rootFolder) {
+            return it;
+        }
+    }
+    return app.project.items.addFolder(name);
+}
+
+// Move an already-imported item into `folder`, if requested. Kept separate
+// from the import try/catch below: the import itself already succeeded by
+// the time this runs, so a failure here (e.g. the folder became invalid)
+// must not turn a successful import into a reported "error" - that would
+// desync the caller's success/failure count from what's actually in the
+// project (same class of bug populateTemplate's footage binding was fixed
+// for: never let a side effect that already happened get hidden behind an
+// "error" status). It surfaces as a `warning` on an otherwise-successful
+// result instead.
+function _moveToFolder(item, folder) {
+    if (!folder) return null;
+    try {
+        item.parentFolder = folder;
+        return null;
+    } catch (moveError) {
+        return "Imported, but could not move into the target folder: " + moveError.toString();
+    }
+}
+
+function importFootage(args) {
+    try {
+        var params = args || {};
+        var paths = params.paths;
+        if (!(paths instanceof Array) || paths.length === 0) {
+            return JSON.stringify({ status: "error", message: "paths must be a non-empty array of file paths." });
+        }
+
+        var folder = null;
+        if (params.folderName) {
+            folder = _findOrCreateFolder(String(params.folderName));
+        }
+
+        var results = [];
+        if (params.asSequence) {
+            // AE's sequence import takes ONE representative frame and scans that
+            // file's own folder for the rest of the numbered sequence itself - it
+            // does not take a list of files. Looping importFile once per path here
+            // (as the non-sequence branch below does) would issue one separate,
+            // overlapping "import this whole folder as a sequence" call per path
+            // instead of the single sequence item the tool description promises.
+            if (paths.length !== 1) {
+                return JSON.stringify({ status: "error", message: "asSequence expects exactly one path: the first frame of the sequence. After Effects finds the rest of the sequence in that same folder itself." });
+            }
+            var seqPath = String(paths[0]);
+            try {
+                var seqFile = new File(seqPath);
+                if (!seqFile.exists) {
+                    results.push({ path: seqPath, status: "error", message: "File not found." });
+                } else {
+                    var seqOptions = new ImportOptions(seqFile);
+                    seqOptions.sequence = true;
+                    var seqItem = app.project.importFile(seqOptions);
+                    var seqWarning = _moveToFolder(seqItem, folder);
+                    var seqResult = { path: seqPath, status: "success", item: _describeProjectItem(seqItem) };
+                    if (seqWarning) seqResult.warning = seqWarning;
+                    results.push(seqResult);
+                }
+            } catch (seqError) {
+                results.push({ path: seqPath, status: "error", message: seqError.toString() });
+            }
+        } else {
+            for (var p = 0; p < paths.length; p++) {
+                var filePath = String(paths[p]);
+                try {
+                    var file = new File(filePath);
+                    if (!file.exists) {
+                        results.push({ path: filePath, status: "error", message: "File not found." });
+                        continue;
+                    }
+                    var item = app.project.importFile(new ImportOptions(file));
+                    var warning = _moveToFolder(item, folder);
+                    var result = { path: filePath, status: "success", item: _describeProjectItem(item) };
+                    if (warning) result.warning = warning;
+                    results.push(result);
+                } catch (itemError) {
+                    results.push({ path: filePath, status: "error", message: itemError.toString() });
+                }
+            }
+        }
+
+        var succeeded = 0;
+        for (var r = 0; r < results.length; r++) { if (results[r].status === "success") succeeded++; }
+
+        return JSON.stringify({
+            status: succeeded > 0 ? "success" : "error",
+            message: "Imported " + succeeded + " of " + paths.length + " file(s).",
+            results: results
+        }, null, 2);
+    } catch (error) {
+        return JSON.stringify({ status: "error", message: error.toString() }, null, 2);
+    }
+}
+
+// Resolve a single FootageItem by id (preferred, unambiguous) or by name
+// (must match exactly one project item, and that item must be footage).
+function _resolveFootageItem(args) {
+    if (args && args.itemId !== undefined && args.itemId !== null) {
+        for (var i = 1; i <= app.project.numItems; i++) {
+            var it = app.project.item(i);
+            if (it.id === args.itemId) {
+                return (it instanceof FootageItem) ? { item: it } : { failReason: "Project item " + args.itemId + " ('" + it.name + "') is not footage." };
+            }
+        }
+        return { failReason: "No project item with id " + args.itemId + "." };
+    }
+    if (args && args.itemName) {
+        var matches = [];
+        for (var j = 1; j <= app.project.numItems; j++) {
+            var candidate = app.project.item(j);
+            if (candidate.name === args.itemName) matches.push(candidate);
+        }
+        if (matches.length === 0) return { failReason: "No project item named '" + args.itemName + "'." };
+        if (matches.length > 1) return { failReason: "Multiple project items named '" + args.itemName + "' - use itemId instead." };
+        return (matches[0] instanceof FootageItem) ? { item: matches[0] } : { failReason: "Project item '" + args.itemName + "' is not footage." };
+    }
+    return { failReason: "Provide itemId or itemName to select the footage item." };
+}
+
+function relinkFootage(args) {
+    try {
+        var params = args || {};
+        var resolved = _resolveFootageItem(params);
+        if (resolved.failReason) return JSON.stringify({ status: "error", message: resolved.failReason });
+
+        var newPath = params.newPath;
+        if (!newPath) return JSON.stringify({ status: "error", message: "newPath is required." });
+        var newFile = new File(String(newPath));
+        if (!newFile.exists) return JSON.stringify({ status: "error", message: "File not found: " + newPath });
+
+        var item = resolved.item;
+        var previousPath = null;
+        try { if (item.mainSource instanceof FileSource) previousPath = item.mainSource.file.fsName; } catch (eSrc) {}
+
+        item.replace(newFile);
+
+        return JSON.stringify({
+            status: "success",
+            message: "Relinked '" + item.name + "'.",
+            previousPath: previousPath,
+            item: _describeProjectItem(item)
         }, null, 2);
     } catch (error) {
         return JSON.stringify({ status: "error", message: error.toString() }, null, 2);
@@ -2544,7 +2928,7 @@ var currentCommandId = "";
 // command under concurrent/rapid tool dispatch). The server matches results purely
 // by _commandId, so AE never needs to write the command file at all.
 var lastProcessedCommandId = "";
-var BRIDGE_VERSION = "1.10.0-mcp-enhanced";
+var BRIDGE_VERSION = "1.13.0-mcp-enhanced";
 // Pure read-only commands: they never mutate the project, so we skip the undo
 // group for them (no empty "MCP: ping" entries cluttering Edit > Undo History).
 var READ_ONLY_COMMANDS = {
@@ -2557,7 +2941,8 @@ var READ_ONLY_COMMANDS = {
     "getLayerFull": true,
     "getCompFull": true,
     "getLayerClipFrames": true,
-    "getLayerAudioInfo": true
+    "getLayerAudioInfo": true,
+    "listProjectItems": true
 };
 // MUST mirror getAETempDir() on the Node server side. On Windows we use
 // LOCALAPPDATA (never redirected by OneDrive) so both processes resolve to the
@@ -2859,6 +3244,109 @@ function deleteLayer(args) {
         var deletedName = layer.name, deletedIndex = layer.index;
         layer.remove();
         return JSON.stringify({ status: "success", message: "Layer deleted successfully", deleted: { name: deletedName, index: deletedIndex } }, null, 2);
+    } catch (error) {
+        return JSON.stringify({ status: "error", message: error.toString() }, null, 2);
+    }
+}
+
+// ---------------------------------------------------------------------------
+// Layer structure: parenting, stacking order, precompose. All three edit the
+// layer graph itself rather than any one layer's properties - previously
+// only reachable, if at all, through execute-script.
+// ---------------------------------------------------------------------------
+
+function setLayerParent(args) {
+    try {
+        var comp = _resolveComp(args);
+        if (!comp) return JSON.stringify({ status: "error", message: "No composition found." });
+        var layer = _resolveLayer(comp, args);
+        if (!layer) return JSON.stringify({ status: "error", message: "Layer not found. Provide layerIndex or layerName." });
+
+        if (args.clearParent) {
+            layer.parent = null;
+            return JSON.stringify({ status: "success", message: "Cleared parent for '" + layer.name + "'.", layer: { name: layer.name, index: layer.index }, parent: null }, null, 2);
+        }
+
+        var parentLayer = _resolveLayer(comp, { layerIndex: args.parentLayerIndex, layerName: args.parentLayerName });
+        if (!parentLayer) return JSON.stringify({ status: "error", message: "Parent layer not found. Provide parentLayerIndex or parentLayerName, or set clearParent to remove the existing parent instead." });
+        if (parentLayer.index === layer.index) return JSON.stringify({ status: "error", message: "A layer can not be its own parent." });
+
+        layer.parent = parentLayer;
+        return JSON.stringify({ status: "success", message: "Parented '" + layer.name + "' to '" + parentLayer.name + "'.", layer: { name: layer.name, index: layer.index }, parent: { name: parentLayer.name, index: parentLayer.index } }, null, 2);
+    } catch (error) {
+        return JSON.stringify({ status: "error", message: error.toString() }, null, 2);
+    }
+}
+
+function reorderLayer(args) {
+    try {
+        var comp = _resolveComp(args);
+        if (!comp) return JSON.stringify({ status: "error", message: "No composition found." });
+        var layer = _resolveLayer(comp, args);
+        if (!layer) return JSON.stringify({ status: "error", message: "Layer not found. Provide layerIndex or layerName." });
+
+        var hasPosition = args.toPosition === "top" || args.toPosition === "bottom";
+        var hasBefore = args.beforeLayerIndex !== undefined || args.beforeLayerName !== undefined;
+        var hasAfter = args.afterLayerIndex !== undefined || args.afterLayerName !== undefined;
+        var modeCount = (hasPosition ? 1 : 0) + (hasBefore ? 1 : 0) + (hasAfter ? 1 : 0);
+        if (modeCount !== 1) {
+            return JSON.stringify({ status: "error", message: "Provide exactly one of: toPosition ('top'/'bottom'), beforeLayerIndex/beforeLayerName, or afterLayerIndex/afterLayerName." });
+        }
+
+        if (hasPosition) {
+            if (args.toPosition === "top") { layer.moveToBeginning(); } else { layer.moveToEnd(); }
+        } else if (hasBefore) {
+            var beforeLayer = _resolveLayer(comp, { layerIndex: args.beforeLayerIndex, layerName: args.beforeLayerName });
+            if (!beforeLayer) return JSON.stringify({ status: "error", message: "Reference layer (beforeLayerIndex/beforeLayerName) not found." });
+            layer.moveBefore(beforeLayer);
+        } else {
+            var afterLayer = _resolveLayer(comp, { layerIndex: args.afterLayerIndex, layerName: args.afterLayerName });
+            if (!afterLayer) return JSON.stringify({ status: "error", message: "Reference layer (afterLayerIndex/afterLayerName) not found." });
+            layer.moveAfter(afterLayer);
+        }
+
+        return JSON.stringify({ status: "success", message: "Reordered '" + layer.name + "'.", layer: { name: layer.name, index: layer.index } }, null, 2);
+    } catch (error) {
+        return JSON.stringify({ status: "error", message: error.toString() }, null, 2);
+    }
+}
+
+function precomposeLayers(args) {
+    try {
+        var comp = _resolveComp(args);
+        if (!comp) return JSON.stringify({ status: "error", message: "No composition found." });
+
+        var indices = args.layerIndices;
+        if (!(indices instanceof Array) || indices.length === 0) {
+            return JSON.stringify({ status: "error", message: "layerIndices must be a non-empty array of 1-based layer indices." });
+        }
+        var seenIndices = {};
+        for (var i = 0; i < indices.length; i++) {
+            if (typeof indices[i] !== "number" || indices[i] < 1 || indices[i] > comp.numLayers) {
+                return JSON.stringify({ status: "error", message: "Invalid layer index: " + indices[i] + ". Must be between 1 and " + comp.numLayers + "." });
+            }
+            if (seenIndices[indices[i]]) {
+                return JSON.stringify({ status: "error", message: "Duplicate layer index: " + indices[i] + ". Each layer can only appear once in layerIndices." });
+            }
+            seenIndices[indices[i]] = true;
+        }
+
+        var name = args.name;
+        if (!name) return JSON.stringify({ status: "error", message: "name is required for the new precomposition." });
+
+        var moveAllAttributes = !!args.moveAllAttributes;
+        if (moveAllAttributes && indices.length > 1) {
+            return JSON.stringify({ status: "error", message: "moveAllAttributes only works when precomposing a single layer (layerIndices has " + indices.length + " entries)." });
+        }
+
+        var newComp = comp.layers.precompose(indices, name, moveAllAttributes);
+
+        return JSON.stringify({
+            status: "success",
+            message: "Precomposed " + indices.length + " layer(s) into '" + newComp.name + "'.",
+            precomposition: { name: newComp.name, id: newComp.id, index: newComp.index },
+            sourceComp: { name: comp.name, index: comp.index }
+        }, null, 2);
     } catch (error) {
         return JSON.stringify({ status: "error", message: error.toString() }, null, 2);
     }
@@ -3642,6 +4130,26 @@ function executeCommand(command, args) {
                 result = localizeComp(args);
                 logToPanel("Returned from localizeComp.");
                 break;
+            case "populateTemplate":
+                logToPanel("Calling populateTemplate function...");
+                result = populateTemplate(args);
+                logToPanel("Returned from populateTemplate.");
+                break;
+            case "listProjectItems":
+                logToPanel("Calling listProjectItems function...");
+                result = listProjectItems(args);
+                logToPanel("Returned from listProjectItems.");
+                break;
+            case "importFootage":
+                logToPanel("Calling importFootage function...");
+                result = importFootage(args);
+                logToPanel("Returned from importFootage.");
+                break;
+            case "relinkFootage":
+                logToPanel("Calling relinkFootage function...");
+                result = relinkFootage(args);
+                logToPanel("Returned from relinkFootage.");
+                break;
             case "createShapeLayer":
                 logToPanel("Calling createShapeLayer function...");
                 result = createShapeLayer(args);
@@ -3807,6 +4315,21 @@ function executeCommand(command, args) {
                 logToPanel("Calling setLayerMask function...");
                 result = setLayerMask(args);
                 logToPanel("Returned from setLayerMask.");
+                break;
+            case "setLayerParent":
+                logToPanel("Calling setLayerParent function...");
+                result = setLayerParent(args);
+                logToPanel("Returned from setLayerParent.");
+                break;
+            case "reorderLayer":
+                logToPanel("Calling reorderLayer function...");
+                result = reorderLayer(args);
+                logToPanel("Returned from reorderLayer.");
+                break;
+            case "precomposeLayers":
+                logToPanel("Calling precomposeLayers function...");
+                result = precomposeLayers(args);
+                logToPanel("Returned from precomposeLayers.");
                 break;
             case "batchSetLayerProperties":
                 logToPanel("Calling batchSetLayerProperties function...");

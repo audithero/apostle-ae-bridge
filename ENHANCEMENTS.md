@@ -239,7 +239,102 @@ with no audio involved at all.
   this tool's own data-series-specific logic (sorting, range auto-detection, point
   construction from `values`+`interval`).
 
-Current bridge protocol: `1.10.0-mcp-enhanced` (kept in sync between `BRIDGE_VERSION` in
+### 11. `populate-template`: bulk-generate compositions from a data table (v1.11.0)
+
+Bulk/batch version of hand-editing one composition: duplicate a template comp once
+per row of a data table, populating each duplicate from that row's values -
+personalized ads, product cards, name badges, anything repeated with different
+content per instance.
+
+- One `bindings` entry per layer to populate, applied to every row. Three kinds:
+  `text` (a text layer's content, with the exact same Arabic/RTL auto-detection
+  `localize-comp` uses), `footage` (an AV layer's source, replaced with a file
+  imported from that row's value), `property` (any layer or effect property,
+  reusing the same targeting scheme `animate-to-audio`/`animate-from-data` already
+  use - matchName, `propertyPath`, or an effect selector).
+- Layers nested inside precompositions are reachable via `path`, identical shape to
+  `localize-comp`'s own `path`. Each precomposition on that path is duplicated at
+  most once **per row** (never edited in place) even when multiple bindings in that
+  row share it, and a row's precomp duplicates are never shared with any other
+  row's - this is the exact precomp-duplication invariant `localize-comp` already
+  relied on, extracted into a shared `_resolveLayerViaDuplicatedPath` helper both
+  tools now call, rather than copied. `localize-comp`'s own behavior and output are
+  unchanged by this extraction (same duplicate-naming suffix, same skip/update
+  reporting shape).
+- `namePattern` names each created composition from that row's own values (e.g.
+  `"{name} ad"`); falls back to `"<template name> <row number>"` when omitted, or
+  when a referenced field is missing from that particular row, rather than leaving
+  a literal unresolved `{field}` in the name.
+- Every binding's outcome (success or a specific failure reason) is reported per
+  row, per binding, rather than the call succeeding or failing as one unit - a
+  missing field in one row, or one bad layer path, doesn't hide whether the other
+  49 rows in a 50-row batch worked.
+- Deliberately does not render anything itself: chain with `render-aerender` once
+  per created composition afterward for batch output, the same "do one thing,
+  let the caller chain it" split `analyze-audio-waveform` /
+  `animate-to-audio` / `render-aerender` already use.
+- A `footage` binding checks the target layer can actually take a replaced
+  source _before_ importing anything, so a binding aimed at the wrong layer
+  type doesn't leave an unused, never-attached import sitting in the project
+  panel. Imports are also cached by file path across the whole call (not
+  reset per row), so 500 rows all reusing the same background image import
+  that file once, not 500 times.
+- Capped at 500 rows (`MAX_TEMPLATE_ROWS`) - each row is a full composition
+  duplication (plus any precomps on a used path, plus any footage imports), so an
+  unbounded row count would risk exactly the kind of AE slowdown the keyframe-count
+  caps on `animate-to-audio`/`animate-from-data` already guard against.
+
+### 12. `import-footage` / `list-project-items` / `relink-footage`: project asset management (v1.12.0)
+
+Every prior tool that touches media (`populate-template`'s `footage` binding, layer
+creation) imports a file into the project as a side effect of some other operation;
+there was no standalone way to get new media into the project panel, inventory what's
+already there, or recover from a moved/renamed source file. These three close that gap:
+
+- `import-footage`: imports one or more files as project items, optionally into a
+  named top-level folder (created if it doesn't exist) or as a single image
+  sequence (`asSequence`). Each file's outcome is reported individually - one bad
+  path in a batch of 50 doesn't fail the other 49, same per-item reporting shape
+  `populate-template` uses for its own rows.
+- `list-project-items`: the full, filterable project panel inventory (type, id,
+  dimensions/duration, source file path, and whether that source is currently
+  missing/offline), capped at 2000 items (`MAX_PROJECT_ITEMS_LISTED`) with an
+  explicit `truncated` flag rather than a silent cutoff. Unlike `getProjectInfo`
+  (a 50-item summary meant for a first orientation glance), this is meant to be
+  queried directly, e.g. filtered to `missingOnly: true` before a render to catch
+  broken links up front.
+- `relink-footage`: points an existing footage item at a different file on disk
+  via `FootageItem.replace()` - every layer already using that item keeps working,
+  now reading the new file, without touching any layer or composition. Select the
+  item by `itemId` (from `list-project-items`, unambiguous) or `itemName` (must be
+  the only project item with that name).
+
+Missing-footage detection prefers AE's own `footageMissing` flag where the running
+version exposes it, falling back to checking the source file's existence directly
+on older versions that don't.
+
+### 13. `set-layer-parent` / `reorder-layer` / `precompose-layers`: layer structure (v1.13.0)
+
+Every existing tool edits a layer's own properties (transform, effects, mask,
+audio...); none of them edit the layer _graph_ itself - who's parented to whom,
+what stacking order they're in, which layers are bundled into a nested comp. These
+three, previously reachable (if at all) only through `execute-script`, close that:
+
+- `set-layer-parent`: sets or clears a layer's parent (`AVLayer.parent` /
+  `Layer.parent`). Rejects a layer being parented to itself up front rather than
+  relying on the opaque error After Effects itself throws for that case; a deeper
+  parenting cycle (A → B → A) still surfaces AE's own error as-is, rather than
+  reimplementing that validation client-side.
+- `reorder-layer`: `moveToBeginning`/`moveToEnd`/`moveBefore`/`moveAfter`, selected
+  via exactly one of `toPosition`, `beforeLayer*`, or `afterLayer*` - validated as
+  mutually exclusive before touching the layer.
+- `precompose-layers`: wraps `LayerCollection.precompose()`. `moveAllAttributes`
+  (move effects/masks/blend mode into the new precomp rather than leaving them on
+  the wrapping layer) is only valid for a single source layer - After Effects
+  itself enforces this, but it's checked up front here too so the failure reason is
+  specific instead of a raw AE exception string.
+
+Current bridge protocol: `1.13.0-mcp-enhanced` (kept in sync between `BRIDGE_VERSION` in
 the `.jsx`, `EXPECTED_BRIDGE_VERSION` in `index.ts`, and the version quoted in both
 READMEs' "first test" section; `check-bridge` warns on a `BRIDGE_VERSION`/
 `EXPECTED_BRIDGE_VERSION` mismatch but the README copies aren't checked by anything -
