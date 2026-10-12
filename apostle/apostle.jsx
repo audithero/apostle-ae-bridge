@@ -19,7 +19,7 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.14.0";
+  var LIB_VERSION = "2.14.1";
 
   // Captured at load time; locates the repo for crash-recovery run snapshots
   var LIB_FILE = null;
@@ -3121,8 +3121,12 @@ var APOSTLE = (function () {
     var pos = tr.property("ADBE Position");
     pos.setValue([cx, P.bezel]);
     var overflow = item.height * sc / 100 - ih;
-    if (overflow > 4 && m.scroll !== false && win) {
-      var a = win.tIn + 1.4;
+    // Scroll only a genuinely long capture: a few % taller than the display
+    // just crops at the bottom. Start halfway through the moment so the
+    // viewer reads the screen's heading first (scrolling from tIn+1.4 had
+    // already carried "Approved" past the app's own tick in the CBA build).
+    if (overflow > ih * 0.12 && m.scroll !== false && win) {
+      var a = win.tIn + Math.max(1.4, (win.tOut - win.tIn) * 0.45);
       var b = win.tOut - 0.8;
       if (b - a > 0.8) {
         pos.setValueAtTime(a, [cx, P.bezel]);
@@ -3143,6 +3147,30 @@ var APOSTLE = (function () {
     } catch (eTM) {
       matte.moveBefore(shot);                           // legacy: matte directly above
       shot.trackMatteType = TrackMatteType.ALPHA;
+    }
+
+    // The capture's own status bar stays put while the content scrolls under
+    // it, like a real phone. Without this, scrolled text slid beneath the
+    // island ("Take a p[island]your passport"). Same footage, unscrolled,
+    // masked to the top STATUS_PX of the capture and under the same display
+    // matte, so the rounded corners stay clean.
+    var MOM_STATUS_PX = 141; // 47pt at @3x
+    if (pos.numKeys > 0) {
+      var bar = pc.layers.add(item);
+      bar.startTime = 0; // trap #2
+      bar.name = "STATUS BAR";
+      bar.moveBefore(matte);
+      var btr = bar.property("ADBE Transform Group");
+      btr.property("ADBE Anchor Point").setValue([item.width / 2, 0]);
+      btr.property("ADBE Scale").setValue([sc, sc]);
+      btr.property("ADBE Position").setValue([cx, P.bezel]);
+      bar.property("ADBE Mask Parade").addProperty("ADBE Mask Atom");
+      var mk = bar.property("ADBE Mask Parade").property(1);
+      var bs = new Shape();
+      bs.vertices = [[0, 0], [item.width, 0], [item.width, MOM_STATUS_PX], [0, MOM_STATUS_PX]];
+      bs.closed = true;
+      mk.property("ADBE Mask Shape").setValue(bs);
+      try { bar.setTrackMatte(matte, TrackMatteType.ALPHA); } catch (eBM) {}
     }
 
     if (m.degrade === "glare") {
