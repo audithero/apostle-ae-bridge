@@ -356,11 +356,12 @@
     },
     {
      "cue": "Please ensure you have removed",
-     "layout": "placeholder",
-     "asset": "Selfie capture with a hat on, crossed out (CBA to supply or approve a hat-on variant of screen 35)",
+     "layout": "screen",
      "super": "Hat or glasses on: not accepted.",
      "sub": "Remove anything covering your face.",
-     "why": "the don't of the pair; no hat-on screen exists yet, so it stays visibly unfinished"
+     "why": "the don't: screen 35 with the photo edited to add a cap (generated 2026-10-12), crossed out",
+     "shot": "35b. Taking selfie - hat on",
+     "badge": "cross"
     },
     {
      "cue": "any items that might be",
@@ -437,11 +438,11 @@
     {
      "cue": "and PIN so you can",
      "layout": "screen",
-     "shot": "script-21 access your account and the CommBank app.",
+     "shot": "23. PINCreate",
      "side": "left",
-     "super": "And a PIN.",
+     "super": "And a 6-digit PIN.",
      "sub": "To access your account and the CommBank app.",
-     "why": "the script's own PIN screen on the opposite side reads as the next step; no digit count because script and folder disagree"
+     "why": "PIN is 6 digits (Tim, 2026-10-12): the folder's 6-digit screen, not the script's 4-digit image"
     }
    ]
   },
@@ -481,7 +482,9 @@
  "assets": {
   "screens": [
    "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/00.Brief/Migrant Onboarding Video Screens - Oct 2026",
-   "/Volumes/Apostle_8TB-1/00.AAA_PROJECTS_GITHUB/ae-apostle-bridge/.apostle-runs/compile/cba-migrant-1/brief-media/migrant-onboarding-instructional-video-scrip"
+   "/Volumes/Apostle_8TB-1/00.AAA_PROJECTS_GITHUB/ae-apostle-bridge/.apostle-runs/compile/cba-migrant-1/brief-media/migrant-onboarding-instructional-video-scrip",
+   "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/01.MEDIA/GFX/Generated Screens"
   ]
- }
+ },
+ "version": "_v003"
 }

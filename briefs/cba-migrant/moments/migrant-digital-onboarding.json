@@ -1,7 +1,7 @@
 {
  "meta": {
   "briefId": "migrant-digital-onboarding",
-  "masterName": "CBA_MIGRANT_ONBOARDING_v002",
+  "masterName": "CBA_MIGRANT_ONBOARDING_v003",
   "scriptVersion": 1,
   "easeProfile": "corporate-smooth",
   "voLeadIn": 0.45,
@@ -11,7 +11,7 @@
  },
  "palette": {
   "ink": "#000000",
-  "brand": "#FAEC20",
+  "brand": "#FFCC00",
   "paper": "#FFFFFF",
   "hole": "#FFFFFF",
   "muted": "#D9D9D9",
@@ -429,10 +429,11 @@
      ]
     },
     {
-     "layout": "placeholder",
-     "asset": "Selfie capture with a hat on, crossed out (CBA to supply or approve a hat-on variant of screen 35)",
+     "layout": "screen",
      "super": "Hat or glasses on: not accepted.",
      "sub": "Remove anything covering your face.",
+     "shot": "35b. Taking selfie - hat on",
+     "badge": "cross",
      "id": "m2",
      "from": 0.4884,
      "to": 0.7182,
@@ -555,9 +556,9 @@
     },
     {
      "layout": "screen",
-     "shot": "script-21 access your account and the CommBank app.",
+     "shot": "23. PINCreate",
      "side": "left",
-     "super": "And a PIN.",
+     "super": "And a 6-digit PIN.",
      "sub": "To access your account and the CommBank app.",
      "id": "m2",
      "from": 0.351,

@@ -24,7 +24,8 @@
  "assets": {
   "screens": [
    "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/00.Brief/Migrant Onboarding Video Screens - Oct 2026",
-   "/Volumes/Apostle_8TB-1/00.AAA_PROJECTS_GITHUB/ae-apostle-bridge/.apostle-runs/compile/cba-migrant-1/brief-media/migrant-onboarding-instructional-video-scrip"
+   "/Volumes/Apostle_8TB-1/00.AAA_PROJECTS_GITHUB/ae-apostle-bridge/.apostle-runs/compile/cba-migrant-1/brief-media/migrant-onboarding-instructional-video-scrip",
+   "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/01.MEDIA/GFX/Generated Screens"
   ]
  },
  "sections": [
@@ -94,7 +95,7 @@
   "bodyTracking": 0,
   "safeMarginPct": 10,
   "colors": {
-   "primary": "#FAEC20",
+   "primary": "#FFCC00",
    "secondary": "#000000",
    "background": "#FFFFFF",
    "text": "#000000",
