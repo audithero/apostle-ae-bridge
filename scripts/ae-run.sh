@@ -11,6 +11,9 @@ TARGET="$1"
 TIMEOUT="${2:-60}"
 AE_APP="${3:-Adobe After Effects 2026}"
 RUNDIR="${AE_RUN_DIR:-${TMPDIR:-/tmp}/ae-run}"
+# Repo root, handed to scripts as $.global.APOSTLE_REPO so nothing hardcodes
+# the volume path (it has changed under us before: "Apostle_8TB 1" -> "Apostle_8TB-1").
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
 mkdir -p "$RUNDIR"
 
 TARGET_ABS="$(cd "$(dirname "$TARGET")" && pwd)/$(basename "$TARGET")"
@@ -23,6 +26,7 @@ cat > "$WRAPPER" <<EOF
   var out = new File("$RESULT");
   var res;
   try {
+    $.global.APOSTLE_REPO = "$REPO";
     var sf = new File("$TARGET_ABS");
     sf.encoding = "UTF-8"; sf.open("r"); var body = sf.read(); sf.close();
     var fn = eval("(function(){" + body + "\n})");

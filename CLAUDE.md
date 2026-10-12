@@ -64,7 +64,9 @@ Closed-loop system: Claude Code drives a live After Effects instance on macOS vi
 
 - Build server: `npm run build` (output: `build/index.js`)
 - Install bridge panel (needs sudo): `sudo npm run install-bridge`
-- Register with Claude Code (already done, local scope): `claude mcp add AfterEffectsMCP -- node "<abs path>/build/index.js"`
+- Register with Claude Code (done 2026-10-12, **user scope**, so it survives cwd and path changes): `claude mcp add -s user AfterEffectsMCP -- node "<abs path>/build/index.js"`. Re-run it if the volume path changes.
+- Repo path: the volume has been renamed under us (`/Volumes/Apostle_8TB 1` became `/Volumes/Apostle_8TB-1` by 2026-10-12). Never hardcode it. `bridge-exec.sh --file` and `ae-run.sh` set `$.global.APOSTLE_REPO` before a script runs; jsx scripts use `var REPO = $.global.APOSTLE_REPO || new File($.fileName).parent.parent.fsName;`. After a rename: re-run `scripts/install-panel.sh` and the `claude mcp add` above.
+- Unit tests hang in vitest worker startup when run on the SMB share. Run them from a local copy (`rsync` the repo, excluding `.git`, to local disk, then `npx vitest run`).
 - Bridge folder: `~/Documents/ae-mcp-bridge` (override: `AE_MCP_BRIDGE_DIR`)
 - Pull upstream fixes: `git fetch upstream && git merge upstream/main`
 

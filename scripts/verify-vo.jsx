@@ -1,6 +1,6 @@
 // Report every super's visible window in MASTER time, for VO cross-check.
 $.global.APVERIFY = function (masterName) {
-  if (typeof $.global.APOSTLE === "undefined") { $.evalFile(new File("/Volumes/Apostle_8TB 1/00.AAA_PROJECTS_GITHUB/ae-apostle-bridge/apostle/apostle.jsx")); }
+  if (typeof $.global.APOSTLE === "undefined") { $.evalFile(new File(($.global.APOSTLE_REPO || new File($.fileName).parent.parent.fsName) + "/apostle/apostle.jsx")); }
   var p=app.project, m=null;
   for (var i=1;i<=p.numItems;i++){var it=p.item(i); if (it instanceof CompItem && it.name===masterName) m=it;}
   if (!m) return {error:"not found "+masterName};

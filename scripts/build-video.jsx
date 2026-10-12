@@ -1,8 +1,9 @@
 // Full VO-locked build for one video. Driven by $.global.APCFG (JSON string):
 //   { slug, master, voMatch }  — voMatch is a substring of the imported audio item name
-$.evalFile(new File("/Volumes/Apostle_8TB 1/00.AAA_PROJECTS_GITHUB/ae-apostle-bridge/apostle/apostle.jsx"));
+var REPO = $.global.APOSTLE_REPO || new File($.fileName).parent.parent.fsName; // set by bridge-exec.sh / ae-run.sh; $.fileName works under $.evalFile
+$.evalFile(new File(REPO + "/apostle/apostle.jsx"));
 function rd(p){var f=new File(p); f.open("r"); f.encoding="UTF-8"; var s=f.read(); f.close(); return s;}
-var R="/Volumes/Apostle_8TB 1/00.AAA_PROJECTS_GITHUB/ae-apostle-bridge/";
+var R=REPO+"/";
 $.global.APBUILD = function (cfg) {
 var out = {};
 

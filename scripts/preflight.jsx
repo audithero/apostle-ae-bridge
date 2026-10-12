@@ -1,5 +1,6 @@
 // Session preflight probe — run via bridge-exec.sh or ae-run.sh
-var libPath = "/Volumes/Apostle_8TB 1/00.AAA_PROJECTS_GITHUB/ae-apostle-bridge/apostle/apostle.jsx";
+var REPO = $.global.APOSTLE_REPO || new File($.fileName).parent.parent.fsName; // set by bridge-exec.sh / ae-run.sh; $.fileName works under $.evalFile
+var libPath = REPO + "/apostle/apostle.jsx";
 $.evalFile(new File(libPath));
 var p = app.project.file;
 return {

@@ -26,7 +26,7 @@
 // If the project is ever rebuilt from scratch, those need re-running too — see
 // briefs/commbank-yello/SCRIPT-V2-CHANGES.md.
 
-var REPO = "/Volumes/Apostle_8TB 1/00.AAA_PROJECTS_GITHUB/ae-apostle-bridge";
+var REPO = $.global.APOSTLE_REPO || new File($.fileName).parent.parent.fsName; // set by bridge-exec.sh / ae-run.sh; $.fileName works under $.evalFile
 
 $.evalFile(new File(REPO + "/apostle/apostle.jsx"));                  // unconditional: pick up edits
 $.evalFile(new File(REPO + "/scripts/apply-moments-per-scene.jsx"));

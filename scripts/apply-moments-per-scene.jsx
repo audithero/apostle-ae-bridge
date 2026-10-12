@@ -14,7 +14,7 @@
 // Usage (via scripts/ae-run.sh), with the moments path in the second line:
 //   var MOMENTS_PATH = "...";
 
-var REPO = "/Volumes/Apostle_8TB 1/00.AAA_PROJECTS_GITHUB/ae-apostle-bridge";
+var REPO = $.global.APOSTLE_REPO || new File($.fileName).parent.parent.fsName; // set by bridge-exec.sh / ae-run.sh; $.fileName works under $.evalFile
 
 if (typeof $.global.APOSTLE === "undefined") {
   $.evalFile(new File(REPO + "/apostle/apostle.jsx"));

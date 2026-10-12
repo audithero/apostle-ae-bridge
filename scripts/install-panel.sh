@@ -20,8 +20,8 @@ mkdir -p "$CEP_DIR"
 rm -f "$LINK"
 ln -s "$REPO_DIR/apostle-panel" "$LINK"
 
-# unsigned-extension debug mode for every CSXS runtime AE 2024-2026 may use
-for V in 11 12; do
+# unsigned-extension debug mode for every CSXS runtime AE 2024+ may use
+for V in 11 12 13; do
   defaults write "com.adobe.CSXS.$V" PlayerDebugMode 1
 done
 

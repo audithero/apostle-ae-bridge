@@ -17,14 +17,16 @@ else
   ARGS_MODE="json"
 fi
 
+# Repo root, handed to --file scripts as $.global.APOSTLE_REPO (see ae-run.sh).
+REPO="$(cd "$(dirname "$0")/.." && pwd)"
 ID="bx-$$-$(date +%s)"
 rm -f "$BRIDGE_DIR/ae_mcp_result.json"
 
-python3 - "$ID" "$BRIDGE_DIR" "$CMD" "$ARGS_MODE" "${SCRIPT_FILE:-}" "${ARGS_JSON:-}" <<'PYEOF'
+python3 - "$ID" "$BRIDGE_DIR" "$CMD" "$ARGS_MODE" "${SCRIPT_FILE:-}" "${ARGS_JSON:-}" "$REPO" <<'PYEOF'
 import json, sys, os
-cid, bdir, cmd, mode, sfile, argsjson = sys.argv[1:7]
+cid, bdir, cmd, mode, sfile, argsjson, repo = sys.argv[1:8]
 if mode == "file":
-    args = {"script": open(sfile).read()}
+    args = {"script": "$.global.APOSTLE_REPO = " + json.dumps(repo) + ";\n" + open(sfile).read()}
 else:
     args = json.loads(argsjson) if argsjson else {}
 tmp = os.path.join(bdir, "ae_command.json.tmp")
