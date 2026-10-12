@@ -19,7 +19,7 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.14.2";
+  var LIB_VERSION = "2.15.0";
 
   // Captured at load time; locates the repo for crash-recovery run snapshots
   var LIB_FILE = null;
@@ -2850,6 +2850,12 @@ var APOSTLE = (function () {
       { t: "path", s: "ink", sw: 6, closed: false, pts: [[8, 50], [37, 50]] },
       { t: "path", s: "ink", sw: 6, closed: false, pts: [[63, 50], [92, 50]] }
     ],
+    lock: [
+      { t: "path", s: "ink", sw: 8, closed: false, pts: [[31, 47], [31, 31], [38, 19], [50, 15], [62, 19], [69, 31], [69, 47]] },
+      { t: "rect", x: 20, y: 45, w: 60, h: 44, r: 8, f: "ink" },
+      { t: "ellipse", x: 45, y: 58, w: 10, h: 10, f: "hole" },
+      { t: "rect", x: 48, y: 65, w: 4, h: 12, f: "hole" }
+    ],
     mail: [
       { t: "rect", x: 8, y: 22, w: 84, h: 56, r: 6, s: "ink", sw: 7 },
       { t: "path", s: "ink", sw: 7, closed: false, pts: [[10, 26], [50, 54], [90, 26]] }
@@ -3915,6 +3921,29 @@ var APOSTLE = (function () {
   // use in applyMoments for the history.
   var MOM_FIRST_LEAD = 0.8;
 
+  // Shape-art helpers for other Apostle builders (apostle/instructional.jsx):
+  // the MOM_GLYPHS vocabulary drawn into any comp, with a hex palette and no
+  // CONTROL linking (masterName null).
+  function drawGlyph(comp, name, glyph, cx, cy, size, palHex, remap) {
+    var l = momShapeLayer(comp, name, [{ prims: momGlyphPrims(glyph), k: size / 100, remap: remap || null }], cx, cy, momPalette(palHex), null);
+    l.comment = "apostle instr";
+    return l;
+  }
+  function drawTile(comp, name, glyph, cx, cy, size, palHex) {
+    var pal = momPalette(palHex);
+    var l = momShapeLayer(comp, name, [
+      { prims: [{ t: "ellipse", x: 0, y: 0, w: 100, h: 100, f: "brand" }], k: size / 100 },
+      { prims: momGlyphPrims(glyph), k: size * 0.52 / 100, remap: { hole: "brand" } }
+    ], cx, cy, pal, null);
+    l.comment = "apostle instr";
+    return l;
+  }
+  function drawBadge(comp, name, kind, cx, cy, size, palHex) {
+    var l = momBadge(comp, name, kind, cx, cy, size, momPalette(palHex), null);
+    l.comment = "apostle instr";
+    return l;
+  }
+
   // Import files into a named project folder (e.g. "screens"), skipping any
   // already there by name. filesJSON: array of absolute paths.
   function importAssets(folderName, filesJSON) {
@@ -4594,6 +4623,9 @@ var APOSTLE = (function () {
     applySkin: applySkin,
     applyMoments: applyMoments,
     importAssets: importAssets,
+    drawGlyph: drawGlyph,
+    drawTile: drawTile,
+    drawBadge: drawBadge,
     applyTransitions: applyTransitions,
     getProjectInfo: getProjectInfo,
     listComps: listComps,
