@@ -2175,7 +2175,7 @@ var APOSTLE = (function () {
     try {
       rqi = rq.items.add(comp);
       var om = rqi.outputModule(1);
-      var tpls = templateName ? [templateName] : ["H.264 - Match Render Settings - 15 Mbps", "High Quality", "Lossless"];
+      var tpls = templateName ? [templateName] : ["H.264 - Match Render Settings - 40 Mbps", "H.264 - Match Render Settings - 15 Mbps", "H.264 - Match Render Settings -  5 Mbps", "High Quality", "Lossless"];
       for (i = 0; i < tpls.length; i++) {
         try { om.applyTemplate(tpls[i]); report.template = tpls[i]; break; } catch (eT) {}
       }
