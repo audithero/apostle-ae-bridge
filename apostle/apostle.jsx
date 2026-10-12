@@ -2837,6 +2837,20 @@ var APOSTLE = (function () {
       { t: "path", s: "ink", sw: 11, closed: false, pts: [[20, 20], [80, 80]] },
       { t: "path", s: "ink", sw: 11, closed: false, pts: [[80, 20], [20, 80]] }
     ],
+    // ICAO ePassport chip mark, as printed on the cover: a rectangle, a
+    // circle at its centre, and a mid-height line broken by the circle.
+    // Added 2026-10-12 for the CBA Migrant video, where recognising this
+    // symbol decides the viewer's path.
+    epassport: [
+      { t: "rect", x: 8, y: 26, w: 84, h: 48, r: 6, s: "ink", sw: 6 },
+      { t: "ellipse", x: 37, y: 37, w: 26, h: 26, s: "ink", sw: 6 },
+      { t: "path", s: "ink", sw: 6, closed: false, pts: [[8, 50], [37, 50]] },
+      { t: "path", s: "ink", sw: 6, closed: false, pts: [[63, 50], [92, 50]] }
+    ],
+    mail: [
+      { t: "rect", x: 8, y: 22, w: 84, h: 56, r: 6, s: "ink", sw: 7 },
+      { t: "path", s: "ink", sw: 7, closed: false, pts: [[10, 26], [50, 54], [90, 26]] }
+    ],
     hub: [
       { t: "ellipse", x: 34, y: 34, w: 32, h: 32, f: "ink" },
       { t: "ellipse", x: 40, y: 2, w: 20, h: 20, s: "ink", sw: 6 },
