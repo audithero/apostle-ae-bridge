@@ -19,7 +19,7 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.11.0";
+  var LIB_VERSION = "2.13.1";
 
   // Captured at load time; locates the repo for crash-recovery run snapshots
   var LIB_FILE = null;
