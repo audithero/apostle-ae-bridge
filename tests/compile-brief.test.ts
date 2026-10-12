@@ -122,6 +122,36 @@ describe("compileSpec", () => {
   });
 });
 
+describe("recorded VO alignment", () => {
+  // Meg's Video 8 read: whisper heard "can own up to 5" for "can earn up to 5",
+  // and the same phrase recurs a sentence later ("can earn up to 1.5"). An
+  // unbounded probe jumped to the later one and every beat after it cascaded.
+  it("keeps a cue inside its own beat when a word is misheard", () => {
+    const say = (txt: string, t0: number) => txt.split(" ").map((w, i) => ({ w, t0: t0 + i * 0.4, t1: t0 + i * 0.4 + 0.4 }));
+    const words = [
+      ...say("Dine in Deals provided by EatClub while Com Bank Yellow customers can own up to 5 points per dollar on dining", 10),
+      ...say("As part of this change the way customers earn points will change too", 20),
+      ...say("Depending on their tier customers can earn up to 1.5 points on every dollar", 30)
+    ];
+    const tmp = path.join(TMP, "words-misheard.json");
+    fs.writeFileSync(tmp, JSON.stringify(words));
+    const spec = {
+      name: "T", slug: "t", briefId: "t", timing: { mode: "words", words: tmp }, sections: [],
+      beats: [
+        { vo: "Dine in Deals provided by EatClub, while CommBank Yello customers can earn up to 5 points per dollar on dining.",
+          moments: [{ layout: "statement", super: "Dine." }, { cue: "while CommBank Yello customers can", layout: "statement", super: "Earn." }] },
+        { vo: "As part of this change, the way customers earn points will change too.", moments: [{ layout: "statement", super: "Change." }] },
+        { vo: "Depending on their tier, customers can earn up to 1.5 points on every dollar.", moments: [{ layout: "statement", super: "1.5." }] }
+      ]
+    };
+    const r = compileSpec(spec, {});
+    expect(r.beats.beats.map((b: { voWindow: number[] }) => b.voWindow[0])).toEqual([10, 20, 30]);
+    const cueAt = r.moments.scenes[0].moments[1].voSec[0];
+    expect(cueAt).toBeGreaterThan(11);
+    expect(cueAt).toBeLessThan(20);
+  });
+});
+
 describe("validateSpec", () => {
   it("accepts a good spec", () => {
     const v = validateSpec(baseSpec(), { clientVO: VO1 + " " + VO2 });

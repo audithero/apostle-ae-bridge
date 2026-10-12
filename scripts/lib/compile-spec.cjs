@@ -98,26 +98,29 @@ function makeAligner(words) {
   });
   const end = words.length ? words[words.length - 1].t1 : 0;
   let cursor = 0;
-  const WINDOW = 2000;
-  const find = (probe) => {
+  const find = (probe, window) => {
     const at = s.indexOf(probe, cursor);
-    return (at === -1 || at - cursor > WINDOW) ? -1 : at;
+    return (at === -1 || at - cursor > window) ? -1 : at;
   };
   // Time at which `text` starts, searching forward from the last match.
   // Whisper spells some words its own way ("Com Bank" for "CommBank",
   // digits for numbers), so if the opening words miss, probe from a few
   // words in and step back that many recognised words. `expectedFrac`
-  // (0..1 through the whole script) is the last resort.
+  // (0..1 through the whole script) is the last resort. `maxAhead` caps how
+  // far past the cursor a match may land, in characters: a cue cannot be
+  // further on than the rest of its own beat, and without the cap a misheard
+  // word ("own" for "earn") lets a probe match the NEXT time the phrase is said.
   return {
     end,
-    locate(text, expectedFrac, warn) {
+    locate(text, expectedFrac, warn, maxAhead) {
+      const window = maxAhead || 2000;
       const tw = String(text || "").split(/\s+/).filter((x) => charStream(x).length);
       if (!tw.length) return null;
       for (let k = 0; k < Math.min(6, tw.length); k++) {
         let probe = charStream(tw.slice(k, k + 4).join(""));
         if (probe.length < 8 && k + 4 < tw.length) continue;
         probe = probe.slice(0, 24);
-        const at = find(probe);
+        const at = find(probe, window);
         if (at === -1) continue;
         // step back by the CHARACTERS of the skipped script words (whisper
         // may split or join them differently), then snap to the nearest
@@ -129,9 +132,10 @@ function makeAligner(words) {
         cursor = Math.max(cursor, at - 1);
         return spoken[wi].t0;
       }
+      // a miss must not move the cursor: jumping it to the guess skips past
+      // the beats that follow and turns one miss into a cascade
       const at = Math.max(cursor, Math.min(s.length - 1, Math.round(expectedFrac * s.length)));
       if (warn) warn("VO alignment: could not find \"" + String(text).slice(0, 40) + "\" in words.json; placed proportionally at " + (times[at] || 0).toFixed(2) + "s");
-      cursor = at;
       return times[at] || 0;
     }
   };
@@ -184,10 +188,13 @@ function compileSpec(spec, opts) {
       let last = 0;
       b.moments.forEach((m, k) => {
         if (k === 0 && !m.cue) { m.at = b.start; return; }
+        // the search runs from the previous anchor, so the window spans the
+        // rest of the beat measured from there, not from this cue
+        const rest = charStream(toks.slice(last).join(""));
         const idx = findCue(toks, m.cue, last);
         last = Math.max(0, idx);
         const frac = acc / total + (idx / Math.max(1, toks.length)) * (all[i] / total);
-        m.at = aligner.locate(toks.slice(idx).join(" "), frac, warn);
+        m.at = aligner.locate(toks.slice(idx).join(" "), frac, warn, Math.round(rest.length * 1.25) + 40);
       });
       acc += all[i];
     });
