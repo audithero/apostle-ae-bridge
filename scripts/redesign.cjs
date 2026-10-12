@@ -46,6 +46,25 @@ function loadPrompt(name) {
 
 // ---------------- AE transport (default: shell) ----------------
 
+// Is the file-bridge panel answering? Asked once per process with a short
+// ping: without it, every call waited its FULL timeout (up to 15 min for a
+// build) on a closed panel before falling back to DoScript.
+let bridgeAlive = null;
+function bridgeIsAlive() {
+  if (bridgeAlive !== null) return bridgeAlive;
+  const ping = path.join(os.tmpdir(), "apostle-ping-" + process.pid + ".jsx");
+  fs.writeFileSync(ping, "return 1;");
+  try {
+    execFileSync(path.join(REPO, "scripts", "bridge-exec.sh"), ["executeScript", "--file", ping, "5"], { encoding: "utf8", timeout: 15000 });
+    bridgeAlive = true;
+  } catch (e) {
+    bridgeAlive = false;
+  } finally {
+    try { fs.unlinkSync(ping); } catch (e) {}
+  }
+  return bridgeAlive;
+}
+
 function aeShellCall(fnName, args, timeoutSec) {
   const lit = (args || []).map((a) => (a === undefined || a === null) ? "null" : JSON.stringify(a)).join(", ");
   const tmp = path.join(os.tmpdir(), "apostle-redesign-" + Date.now() + ".jsx");
@@ -56,6 +75,7 @@ function aeShellCall(fnName, args, timeoutSec) {
   const t = String(timeoutSec || 90);
   let raw;
   try {
+    if (!bridgeIsAlive()) throw new Error("bridge panel closed");
     raw = execFileSync(path.join(REPO, "scripts", "bridge-exec.sh"),
       ["executeScript", "--file", tmp, t], { encoding: "utf8", timeout: (timeoutSec + 15) * 1000 });
   } catch (e) {

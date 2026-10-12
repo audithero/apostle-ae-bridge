@@ -3704,6 +3704,11 @@ var APOSTLE = (function () {
 
   // --- entry point -------------------------------------------------
 
+  // How early moment 1 of a scene starts fading up, so the camera flies INTO
+  // content instead of across ~0.5s of empty backdrop. See the note at its
+  // use in applyMoments for the history.
+  var MOM_FIRST_LEAD = 0.8;
+
   function applyMoments(momentsJSON) {
     try {
       var data = parseJSONSafe(momentsJSON);
@@ -3795,14 +3800,14 @@ var APOSTLE = (function () {
             // energy — you arrive INTO something rather than at nothing.
             // momAnimate clamps t0 at 0, so the opening beat is unaffected.
             //
-            // REVERTED to 0 for moment 1 on 2026-08-01. Leading it is still
-            // believed correct, but applying it destabilised applyMoments
-            // across every video ("ReferenceError: Object is invalid" on
-            // nearly every scene, layers already stripped), and diagnosing
-            // that hit the verification-loop iteration cap. Restored to the
-            // known-good value rather than leave the project degraded. See
-            // SCRIPT-V2-CHANGES.md "blank transits" for the open finding.
-            var lead = (mi === 0) ? 0 : 0.3;
+            // History: reverted to 0 on 2026-08-01 because applying the lead
+            // coincided with "ReferenceError: Object is invalid" across every
+            // video. That error was later traced to the stale-handle bug in
+            // momRect (CLAUDE.md trap #6), not to the lead. Re-enabled
+            // 2026-10-12 at MOM_FIRST_LEAD = 0.8 after a gap scan of VIDEO_008
+            // (frames 0.2s apart, +/-1s around all 11 transits): 31/132 frames
+            // were empty backdrop with no lead, against none with 0.8s.
+            var lead = (mi === 0) ? MOM_FIRST_LEAD : 0.3;
             var els = momLayout(comp, m, pal, masterName, (mi === 0) ? superLayer : null);
             for (var e = 0; e < els.length; e++) {
               momAnimate(els[e].layer, tIn, tOut, els[e].delay, els[e].shape, comp.duration, lead, easeName);

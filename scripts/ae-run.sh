@@ -36,8 +36,16 @@ cat > "$WRAPPER" <<EOF
     res = { status: "error", error: e.toString(), line: (e.line || null), fileName: (e.fileName || null) };
   }
   out.encoding = "UTF-8"; out.open("w");
+  // ExtendScript has no native JSON until apostle.jsx polyfills it, so a
+  // script that fails BEFORE loading the library must still be reportable
+  // (no escaped backslashes here: this heredoc is unquoted, so the shell
+  // would halve them and leave a broken regex)
+  function q(v) { var BS = String.fromCharCode(92); return '"' + String(v).split(BS).join(BS + BS).replace(/"/g, "'").replace(/[\r\n]+/g, " ") + '"'; }
   try { out.write(JSON.stringify(res)); }
-  catch (e2) { out.write('{"status":"error","error":"result not JSON-serializable: ' + String(e2).replace(/"/g, "'") + '"}'); }
+  catch (e2) {
+    out.write('{"status":"error","error":' + q(res.status === "error" ? res.error : "result not JSON-serializable: " + e2) +
+      ',"line":' + q(res.line) + ',"fileName":' + q(res.fileName) + '}');
+  }
   out.close();
 })();
 EOF
