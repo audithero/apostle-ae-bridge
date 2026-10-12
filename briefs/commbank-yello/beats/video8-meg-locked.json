@@ -1,0 +1,422 @@
+{
+ "meta": {
+  "schemaVersion": 2,
+  "briefId": "video_008_new_announcements",
+  "scriptVersion": 1,
+  "sourceScriptPath": "briefs/commbank-yello/video8-new-announcements.md",
+  "title": "VIDEO_008_NEW_ANNOUNCEMENTS",
+  "fps": 25,
+  "resolution": [
+   1920,
+   1080
+  ],
+  "wpm": 150,
+  "layout": "gallery",
+  "masterName": "VIDEO_008_NEW_ANNOUNCEMENTS",
+  "rig": "auto",
+  "brandKit": "commbank-yello-3",
+  "note": "Meg-locked 2026-08-18: durations measured from Meg word boundaries (chunked whisper, silence-split); last beat padded so total equals the master comp duration. VO wav sits at startTime meta.voOffsetSec.",
+  "voOffsetSec": 7.0,
+  "voFiles": [
+   "01.MEDIA/AUDIO/VO/MEG/Meg CommBank Pheonix Frontline Script 17.8.26/Video 8 - Yello pickup 14.8.29 Meg.wav"
+  ]
+ },
+ "sections": [
+  {
+   "id": "intro",
+   "title": "New announcements"
+  },
+  {
+   "id": "recap",
+   "title": "Recap of core changes"
+  },
+  {
+   "id": "announce",
+   "title": "More ways to be rewarded"
+  },
+  {
+   "id": "travel",
+   "title": "Travel Booking"
+  },
+  {
+   "id": "dining",
+   "title": "Dine in Deals"
+  },
+  {
+   "id": "earning",
+   "title": "Earning Yello points"
+  },
+  {
+   "id": "close",
+   "title": "Learn more"
+  }
+ ],
+ "brand": {
+  "fontHeadingPS": "CBABeaconSans-Bold",
+  "fontBodyPS": "CBABeaconSans-Regular",
+  "headingSize": 84,
+  "bodySize": 42,
+  "headingTracking": 0,
+  "bodyTracking": 0,
+  "safeMarginPct": 10,
+  "colors": {
+   "primary": "#FDFD3C",
+   "secondary": "#000000",
+   "background": "#FDFD3C",
+   "text": "#000000",
+   "surface": "#FFFFFF"
+  },
+  "logo": null
+ },
+ "beats": [
+  {
+   "id": 1,
+   "beatId": "beat-1",
+   "sectionId": "intro",
+   "vo": "",
+   "superText": "Be rewarded like never before with CommBank Yello.",
+   "voSpokenWords": 0,
+   "silent": true,
+   "stylePreset": "titleCard",
+   "durationSec": 5.25,
+   "voWindow": null,
+   "transitIn": "none",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 2,
+   "beatId": "as-you-may-have-heard-we-ve-introduc",
+   "sectionId": "intro",
+   "vo": "As you may have heard, we've introduced changes across CommBank Yello and some of our credit card products, as we evolve how customers are recognised and rewarded for their banking relationship.",
+   "superText": "Evolving how customers are recognised and rewarded.",
+   "voSpokenWords": 33,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 15.29,
+   "voWindow": [
+    0.25,
+    15.54
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 3,
+   "beatId": "to-recap-these-core-changes-from-1-o",
+   "sectionId": "recap",
+   "vo": "To recap these core changes: from 1 October, we'll be introducing CommBank Yello points, unlocking a whole new world of points and perks for our customers. Customers will have more ways to earn and use rewards across their everyday banking, travel, shopping and participating brand programs.",
+   "superText": "To recap the core changes.",
+   "voSpokenWords": 48,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 23.5,
+   "voWindow": [
+    15.54,
+    39.04
+   ],
+   "transitIn": "crane",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 4,
+   "beatId": "following-the-closure-of-the-commban",
+   "sectionId": "recap",
+   "vo": "Following the closure of the CommBank Awards program on 29 September, eligible credit card customers will transition to earning CommBank Yello points from 1 October, based on their CommBank Yello tier.",
+   "superText": "CommBank Awards closes 29 September.",
+   "voSpokenWords": 34,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 14.48,
+   "voWindow": [
+    39.04,
+    53.52
+   ],
+   "transitIn": "whipOrbit",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 5,
+   "beatId": "in-addition-to-this-we-are-excited-t",
+   "sectionId": "announce",
+   "vo": "In addition to this, we are excited to announce more ways in which we are rewarding our customers for their eligible banking and giving them choice in how they are rewarded.",
+   "superText": "More ways to be rewarded — and more choice.",
+   "voSpokenWords": 32,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 12.61,
+   "voWindow": [
+    53.52,
+    66.13
+   ],
+   "transitIn": "dollyZoom",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 6,
+   "beatId": "for-commbank-customers-finding-the-b",
+   "sectionId": "travel",
+   "vo": "For CommBank customers, finding the best place for travel has never been easier. Travel Booking lets customers search and book flights, hotels and car rentals in the CommBank app.",
+   "superText": "Finding the best place for travel has never been easier.",
+   "voSpokenWords": 31,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 13.98,
+   "voWindow": [
+    66.13,
+    80.11
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 7,
+   "beatId": "it-also-gives-customers-access-to-co",
+   "sectionId": "travel",
+   "vo": "It also gives customers access to CommBank exclusive travel offers on flights, hotels and car hire, as well as 24/7 support.",
+   "superText": "CommBank exclusive travel offers.",
+   "voSpokenWords": 24,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 10.42,
+   "voWindow": [
+    80.11,
+    90.53
+   ],
+   "transitIn": "crane",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 8,
+   "beatId": "so-from-1-october-customers-can-use-",
+   "sectionId": "travel",
+   "vo": "So, from 1 October, customers can use and earn CommBank Yello points with Travel Booking. This means they can earn 5x points per $1 spent on hotel and car rental bookings, and 2x points for every $1 spent on flight bookings.",
+   "superText": "Use and earn Yello points with Travel Booking.",
+   "voSpokenWords": 46,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 21.23,
+   "voWindow": [
+    90.53,
+    111.76
+   ],
+   "transitIn": "whipOrbit",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 9,
+   "beatId": "also-with-dine-in-deals-customers-ca",
+   "sectionId": "dining",
+   "vo": "Also, with Dine in Deals, customers can discover and redeem exclusive offers at participating restaurants across Australia.",
+   "superText": "Discover and redeem exclusive offers with Dine in Deals.",
+   "voSpokenWords": 18,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 10.01,
+   "voWindow": [
+    111.76,
+    121.77
+   ],
+   "transitIn": "dollyZoom",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 10,
+   "beatId": "from-1-october-eligible-credit-card-",
+   "sectionId": "dining",
+   "vo": "From 1 October, eligible credit card customers will receive a monthly $10 Dining Credit for Dine in Deals provided by EatClub, while CommBank Yello customers can earn up to 5 CommBank Yello points per $1 spent on eligible dining purchases, making every meal even more rewarding.",
+   "superText": "From 1 October: $10 Monthly Dining Credit.",
+   "voSpokenWords": 50,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 22.84,
+   "voWindow": [
+    121.77,
+    144.61
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 11,
+   "beatId": "as-part-of-this-exciting-change-the-",
+   "sectionId": "earning",
+   "vo": "As part of this exciting change, the way customers earn points on their CommBank credit card and broader everyday banking activity will change too.",
+   "superText": "How you earn points is changing too.",
+   "voSpokenWords": 25,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 12.24,
+   "voWindow": [
+    144.61,
+    156.85
+   ],
+   "transitIn": "crane",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 12,
+   "beatId": "from-1-october-customers-will-have-m",
+   "sectionId": "earning",
+   "vo": "From 1 October, customers will have more ways to earn and use Yello points across daily essentials, shopping and travel, plus access to a wide range of redemption partners.",
+   "superText": "More ways to earn and use Yello points.",
+   "voSpokenWords": 29,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 16.06,
+   "voWindow": [
+    156.85,
+    172.91
+   ],
+   "transitIn": "whipOrbit",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 13,
+   "beatId": "depending-on-their-tier-and-eligible",
+   "sectionId": "earning",
+   "vo": "Depending on their tier and eligible credit card type, customers can earn up to 1.5 Yello points on every $1 spent.",
+   "superText": "CommBank Yello Tiers",
+   "voSpokenWords": 22,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 9.63,
+   "voWindow": [
+    172.91,
+    182.54
+   ],
+   "transitIn": "dollyZoom",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 14,
+   "beatId": "and-regardless-of-their-tier-they-ll",
+   "sectionId": "earning",
+   "vo": "And regardless of their tier, they'll earn 2x the Yello points for every dollar spent on international transactions.",
+   "superText": "2x Yello Points on International Spend",
+   "voSpokenWords": 20,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 9.94,
+   "voWindow": [
+    182.54,
+    192.48
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 15,
+   "beatId": "these-are-some-ways-we-are-rewarding",
+   "sectionId": "close",
+   "vo": "These are some ways we are rewarding Australians with points and perks for the banking they do every day.",
+   "superText": "Points and perks for the banking you do every day.",
+   "voSpokenWords": 21,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 7.32,
+   "voWindow": [
+    192.48,
+    199.8
+   ],
+   "transitIn": "crane",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 16,
+   "beatId": "to-find-out-more-visit-commbank-com-",
+   "sectionId": "close",
+   "vo": "To find out more, visit commbank.com.au/commbankyello or search CommBank Yello on One.CBA.",
+   "superText": "Find out more.",
+   "voSpokenWords": 21,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 16.7,
+   "voWindow": [
+    199.8,
+    210.5
+   ],
+   "transitIn": "dollyZoom",
+   "motion": {
+    "ease": "curvaceous",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  }
+ ]
+}
