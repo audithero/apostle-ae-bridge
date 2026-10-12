@@ -1,5 +1,5 @@
 <!-- treatment.v1: the creative-director pass. Brief in, treatment out.
-     Placeholders: {{BRIEF}} {{ATTACHMENTS}} {{BRAND}} {{NOTES}} {{CAPABILITIES}}
+     Placeholders: {{BRIEF}} {{ASSETS}} {{ATTACHMENTS}} {{BRAND}} {{NOTES}} {{CAPABILITIES}}
      {{CLIENT_VO}} {{PRIOR}}
      Sent via `claude -p` (model pinned in config.json). The model Reads the
      attachment files itself. Output is JSON only; compile-brief.cjs renders
@@ -33,6 +33,8 @@ The films are explainer-style motion pieces: a 3D camera travels between scenes 
 
 {{CLIENT_VO}}
 
+{{ASSETS}}
+
 ## How to think about it
 
 1. **Find the one thing.** What must the viewer believe or do when the film ends? Write it as the logline. Every structural choice serves it.
@@ -40,8 +42,9 @@ The films are explainer-style motion pieces: a 3D camera travels between scenes 
 3. **Structure from the script's own logic**, not a template. Group the VO into sections that each land one point; give each an intent and a visual idea in plain words ("the four ways to earn, side by side as a row of icons").
 4. **Pace for reading.** 150 spoken words per minute is the default VO pace. A super needs roughly 2.5s on screen to be read; a list layout needs more. If the script is too dense for its target length, say so.
 5. **Pick a visual system and commit to it.** Choose the stage, the ease profile and the layouts that will carry this film. Restraint beats variety for its own sake: four or five layouts used with intent read as designed; all nine read as a demo. Say why.
-6. **Be honest about gaps.** Real product shots, partner logos and UI screenshots cannot be drawn by the library; they become `placeholder` moments and go in `assetsNeeded`. Other aspect ratios than 16:9, character animation, kinetic type styles not listed above: `libraryGaps`.
-7. **VO source.** Every video carries its full `voScript`. If the brief includes a voiceover script, `voSource` is "client": copy that video's VO into `voScript` **verbatim**, every word in order, nothing added, dropped or "improved" (split a multi-video script at the video boundaries the client set). If the brief has no script, `voSource` is "drafted": write the VO yourself in the brand's voice at the target length (words ≈ seconds × 2.5). The client approves these words, so make them good.
+6. **Use the client's real material.** If app screens are listed under Assets, an instructional film should be built on them: look at them and map each step of the script to its screen.
+7. **Be honest about gaps.** Real product shots, partner logos and UI screenshots that were not supplied cannot be drawn by the library; they become `placeholder` moments and go in `assetsNeeded`. Other aspect ratios than 16:9, character animation, kinetic type styles not listed above: `libraryGaps`.
+8. **VO source.** Every video carries its full `voScript`. If the brief includes a voiceover script, `voSource` is "client": copy that video's VO into `voScript` **verbatim**, every word in order, nothing added, dropped or "improved" (split a multi-video script at the video boundaries the client set). If the brief has no script, `voSource` is "drafted": write the VO yourself in the brand's voice at the target length (words ≈ seconds × 2.5). The client approves these words, so make them good.
 
 ## Output
 

@@ -35,6 +35,10 @@
     "tail": { "type": "number", "default": 2.5, "description": "Extra hold on the final beat (endcard)." },
     "textReveal": { "type": "boolean", "default": true, "description": "false turns the word-by-word reveal off." },
     "voFiles": { "type": "array", "items": { "type": "string" } },
+    "assets": {
+      "type": "object",
+      "properties": { "screens": { "type": "string", "description": "Folder of app screenshots. build imports the ones the spec uses into the project folder 'screens'." } }
+    },
     "titleCard": {
       "type": "object",
       "description": "Opening card the VO never says. Runs before the first spoken word and pushes the VO back by dur.",
@@ -77,7 +81,13 @@
                 "id": { "type": "string" },
                 "cue": { "type": "string", "description": "wpm/words modes: verbatim opening words of the vo where this moment starts. Not needed on a beat's first moment." },
                 "at": { "type": "number", "description": "measured mode: absolute VO second where this moment starts" },
-                "layout": { "type": "string", "enum": ["statement", "hero", "iconRow", "chipRow", "device", "compare", "hub", "endcard", "placeholder"] },
+                "layout": { "type": "string", "enum": ["statement", "hero", "iconRow", "chipRow", "device", "compare", "hub", "endcard", "placeholder", "screen"] },
+                "shot": { "type": "string", "description": "screen layout: footage name (file name without extension) in the project's 'screens' folder" },
+                "side": { "type": "string", "enum": ["left", "right"] },
+                "badge": { "type": "string", "enum": ["tick", "cross"] },
+                "degrade": { "type": "string", "enum": ["blur", "glare"] },
+                "shake": { "type": "boolean" },
+                "scroll": { "type": "boolean" },
                 "super": { "type": "string" },
                 "sub": { "type": "string" },
                 "glyph": { "type": "string", "description": "A key of MOM_GLYPHS in apostle.jsx." },

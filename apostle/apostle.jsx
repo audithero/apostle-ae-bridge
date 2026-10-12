@@ -19,7 +19,7 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.13.1";
+  var LIB_VERSION = "2.14.0";
 
   // Captured at load time; locates the repo for crash-recovery run snapshots
   var LIB_FILE = null;
@@ -3038,6 +3038,123 @@ var APOSTLE = (function () {
     return l;
   }
 
+  // ---------------------------------------------------------------
+  // SCREENS: real app screenshots inside a phone (moment layout "screen")
+  //
+  // Screenshots are footage items in the project folder MOM_SCREEN_FOLDER,
+  // brought in by importAssets (compile-brief build does it from
+  // spec.assets.screens). Each screen moment gets its own small precomp with
+  // the phone body, the shot under an alpha track matte cut to the display,
+  // and the camera island. One layer in the scene then carries the moment's
+  // entrance and exit, so frame and shot cannot drift apart, and a tall
+  // scrolling screenshot can move inside the display while its matte stays put.
+  //
+  // The display is the aspect of a 1125x2436 iPhone capture (0.4618), so a
+  // standard screenshot fills it exactly and only longer captures scroll.
+  var MOM_SCREEN_FOLDER = "screens";
+  var MOM_PHONE = { w: 400, h: 834, bezel: 14, r: 60 };
+
+  function momFolderItem(folderName, name) {
+    if (!name) return null;
+    for (var i = 1; i <= app.project.numItems; i++) {
+      var it = app.project.item(i);
+      if (!(it instanceof FootageItem)) continue;
+      if (!it.parentFolder || it.parentFolder.name !== folderName) continue;
+      var n = String(it.name).replace(/\.(png|jpg|jpeg|tif|tiff|psd|ai|pdf)$/i, "");
+      if (n === name) return it;
+    }
+    return null;
+  }
+
+  // A round do / don't stamp: tick on a brand plate, cross reversed out of ink.
+  function momBadge(comp, name, kind, cx, cy, size, pal, masterName) {
+    var isCross = (kind === "cross");
+    var plate = isCross ? "ink" : "brand";
+    var glyph = isCross ? "cross" : "check";
+    var remap = isCross ? { ink: "paper", hole: "ink" } : { hole: "brand" };
+    return momShapeLayer(comp, name, [
+      { prims: [{ t: "ellipse", x: 0, y: 0, w: 100, h: 100, f: plate }], k: size / 100 },
+      { prims: momGlyphPrims(glyph), k: size * 0.5 / 100, remap: remap }
+    ], cx, cy, pal, masterName);
+  }
+
+  // win = { tIn, tOut } in scene time; scroll and shake are timed from it.
+  function momScreenLayer(scene, mid, m, win, pal, masterName) {
+    var item = momFolderItem(MOM_SCREEN_FOLDER, m.shot);
+    if (!item) return null;
+    var P = MOM_PHONE;
+    var pcName = scene.name + " SCREEN " + mid;
+    // idempotent: applyMoments already dropped the scene layer that used it
+    for (var i = app.project.numItems; i >= 1; i--) {
+      var old = app.project.item(i);
+      if (old instanceof CompItem && old.name === pcName) old.remove();
+    }
+    var pc = app.project.items.addComp(pcName, P.w, P.h, 1, scene.duration, scene.frameRate);
+    try { pc.parentFolder = scene.parentFolder; } catch (eF) {}
+    pc.comment = MOM_TAG + " screen";
+    var cx = P.w / 2, cy = P.h / 2;
+    var iw = P.w - 2 * P.bezel, ih = P.h - 2 * P.bezel;
+
+    momRect(pc, "PHONE BODY", cx, cy, P.w, P.h, P.r, "ink", null, 0, pal, masterName);
+
+    var shot = pc.layers.add(item);
+    shot.startTime = 0; // trap #2
+    shot.name = "SHOT";
+    var sc = iw / item.width * 100;
+    var tr = shot.property("ADBE Transform Group");
+    tr.property("ADBE Anchor Point").setValue([item.width / 2, 0]);
+    tr.property("ADBE Scale").setValue([sc, sc]);
+    var pos = tr.property("ADBE Position");
+    pos.setValue([cx, P.bezel]);
+    var overflow = item.height * sc / 100 - ih;
+    if (overflow > 4 && m.scroll !== false && win) {
+      var a = win.tIn + 1.4;
+      var b = win.tOut - 0.8;
+      if (b - a > 0.8) {
+        pos.setValueAtTime(a, [cx, P.bezel]);
+        pos.setValueAtTime(b, [cx, P.bezel - overflow]);
+        applyEaseExpression(pos, "inOutQuint");
+      }
+    }
+    if (m.degrade === "blur" || m.degrade === "glare") {
+      shot.property("ADBE Effect Parade").addProperty("ADBE Gaussian Blur 2");
+      var gb = shot.property("ADBE Effect Parade").property("ADBE Gaussian Blur 2");
+      gb.property("ADBE Gaussian Blur 2-0001").setValue(m.degrade === "blur" ? 26 : 3);
+    }
+
+    var matte = momRect(pc, "DISPLAY MATTE", cx, cy, iw, ih, P.r - P.bezel, "paper", null, 0, pal, masterName);
+    try {
+      shot.setTrackMatte(matte, TrackMatteType.ALPHA); // AE 2023+
+      matte.enabled = false;
+    } catch (eTM) {
+      matte.moveBefore(shot);                           // legacy: matte directly above
+      shot.trackMatteType = TrackMatteType.ALPHA;
+    }
+
+    if (m.degrade === "glare") {
+      var glare = momShapeLayer(pc, "GLARE", [{ prims: [{ t: "ellipse", x: 0, y: 0, w: 100, h: 62, f: "paper" }], k: 2.6 }],
+        cx + 34, cy - 150, pal, masterName);
+      glare.property("ADBE Transform Group").property("ADBE Opacity").setValue(88);
+      glare.property("ADBE Effect Parade").addProperty("ADBE Gaussian Blur 2");
+      glare.property("ADBE Effect Parade").property("ADBE Gaussian Blur 2").property("ADBE Gaussian Blur 2-0001").setValue(48);
+    }
+    momRect(pc, "ISLAND", cx, P.bezel + 24, 112, 32, 16, "ink", null, 0, pal, masterName);
+
+    var L = scene.layers.add(pc);
+    L.startTime = 0; // trap #2
+    L.name = momIdTag("SCREEN", mid);
+    L.label = 8;
+    L.comment = MOM_TAG;
+    L.motionBlur = true;
+    if (m.shake && win) {
+      // a short damped buzz: the phone vibrating when the chip read succeeds
+      var t0 = win.tIn + (win.tOut - win.tIn) * 0.62;
+      L.property("ADBE Transform Group").property("ADBE Rotate Z").expression =
+        "var t = time - " + t0.toFixed(3) + "; (t > 0 && t < 0.7) ? 2.4 * Math.sin(t * 72) * (1 - t / 0.7) : 0";
+    }
+    return L;
+  }
+
   // a tile = brand plate + inset art. Pass glyph = null for a bare plate,
   // which is what a `picto` tile wants — the pictogram rides above it as its
   // own layer (opacity does not inherit through parenting, so it cannot be a
@@ -3457,7 +3574,7 @@ var APOSTLE = (function () {
   // the caller animates on the moment's window. Geometry is fixed so
   // moments of the same kind land identically across scenes.
 
-  function momLayout(comp, m, pal, masterName, superLayer) {
+  function momLayout(comp, m, pal, masterName, superLayer, win) {
     var W = comp.width, H = comp.height;
     var el = [];
     var kind = m.layout || "statement";
@@ -3643,6 +3760,32 @@ var APOSTLE = (function () {
         var cp = momPicto(comp, momIdTag("HUB CORE ART", mid), m.picto, hcx, hcy, 86);
         if (cp) el.push({ layer: cp, delay: 0.34, shape: true });
       }
+    } else if (kind === "screen") {
+      var onRight = (m.side !== "left");
+      var phX = onRight ? 1330 : 590;
+      var phY = 545;
+      var scr = momScreenLayer(comp, mid, m, win, pal, masterName);
+      if (scr) {
+        scr.property("ADBE Transform Group").property("ADBE Position").setValue([phX, phY]);
+        el.push({ layer: scr, delay: 0.24, shape: true });
+      } else {
+        // the screenshot is not in the project: an outlined phone that says
+        // which one, like placeholder, so it cannot pass for finished work
+        var ghost = momRect(comp, momIdTag("PHONE", mid), phX, phY, MOM_PHONE.w, MOM_PHONE.h, MOM_PHONE.r, "paper", "ink", 6, pal, masterName);
+        el.push({ layer: ghost, delay: 0.24, shape: true });
+        var gcap = momText(comp, "[ " + (m.shot || "screen") + " ]",
+          { name: momIdTag("SHOT MISSING", mid), role: "body", sizeMult: 0.62, pos: [phX, phY], autoFit: true }, masterName);
+        el.push({ layer: gcap, delay: 0.3, shape: false });
+      }
+      if (m.badge === "tick" || m.badge === "cross") {
+        var bdg = momBadge(comp, momIdTag("BADGE", mid), m.badge,
+          phX + MOM_PHONE.w / 2 - 4, phY - MOM_PHONE.h / 2 + 118, 150, pal, masterName);
+        el.push({ layer: bdg, delay: 0.95, shape: true });
+      }
+      var sColX = (m.textX !== undefined) ? m.textX : 640;
+      if (!onRight && m.textX === undefined) sColX = 1280;
+      addSuper(m.sub ? 450 : 510, 0.86, sColX);
+      addSub(610, sColX, 1.1);
     } else if (kind === "placeholder") {
       // A slot for artwork the build cannot draw — real card art, partner
       // logos, app screenshots. Deliberately reads as unfinished: an outlined
@@ -3708,6 +3851,42 @@ var APOSTLE = (function () {
   // content instead of across ~0.5s of empty backdrop. See the note at its
   // use in applyMoments for the history.
   var MOM_FIRST_LEAD = 0.8;
+
+  // Import files into a named project folder (e.g. "screens"), skipping any
+  // already there by name. filesJSON: array of absolute paths.
+  function importAssets(folderName, filesJSON) {
+    try {
+      var files = parseJSONSafe(filesJSON);
+      if (!files) return toJSON({ status: "error", error: "files JSON did not parse" });
+      var folder = null;
+      for (var i = 1; i <= app.project.numItems; i++) {
+        var it = app.project.item(i);
+        if (it instanceof FolderItem && it.name === folderName) { folder = it; break; }
+      }
+      var report = { status: "success", folder: folderName, imported: [], existing: [], missing: [] };
+      app.beginUndoGroup("Apostle importAssets");
+      try {
+        if (!folder) folder = app.project.items.addFolder(folderName);
+        for (var f = 0; f < files.length; f++) {
+          var file = new File(files[f]);
+          var base = decodeURI(file.name);
+          var have = false;
+          for (var k = 1; k <= folder.numItems; k++) {
+            if (folder.item(k).name === base) { have = true; break; }
+          }
+          if (have) { report.existing.push(base); continue; }
+          if (!file.exists) { report.missing.push(files[f]); continue; }
+          var item = app.project.importFile(new ImportOptions(file));
+          item.parentFolder = folder;
+          report.imported.push(base);
+        }
+      } finally {
+        app.endUndoGroup();
+      }
+      if (report.missing.length) report.status = "partial";
+      return toJSON(report);
+    } catch (e) { return errJSON("importAssets", e); }
+  }
 
   function applyMoments(momentsJSON) {
     try {
@@ -3808,7 +3987,7 @@ var APOSTLE = (function () {
             // (frames 0.2s apart, +/-1s around all 11 transits): 31/132 frames
             // were empty backdrop with no lead, against none with 0.8s.
             var lead = (mi === 0) ? MOM_FIRST_LEAD : 0.3;
-            var els = momLayout(comp, m, pal, masterName, (mi === 0) ? superLayer : null);
+            var els = momLayout(comp, m, pal, masterName, (mi === 0) ? superLayer : null, { tIn: tIn, tOut: tOut });
             for (var e = 0; e < els.length; e++) {
               momAnimate(els[e].layer, tIn, tOut, els[e].delay, els[e].shape, comp.duration, lead, easeName);
               rec.layers++;
@@ -4351,6 +4530,7 @@ var APOSTLE = (function () {
     version: LIB_VERSION,
     applySkin: applySkin,
     applyMoments: applyMoments,
+    importAssets: importAssets,
     applyTransitions: applyTransitions,
     getProjectInfo: getProjectInfo,
     listComps: listComps,

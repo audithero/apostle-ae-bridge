@@ -34,7 +34,7 @@ const REPO = path.resolve(__dirname, "..");
 // "placeholder" is a deliberate gap for artwork the build cannot draw
 // (real card art, partner logos, app screenshots) — it renders an outlined
 // frame captioned with what belongs there.
-const LAYOUTS = ["statement", "hero", "iconRow", "chipRow", "device", "compare", "hub", "endcard", "placeholder"];
+const LAYOUTS = ["statement", "hero", "iconRow", "chipRow", "device", "compare", "hub", "endcard", "placeholder", "screen"];
 
 function aeShellCall(fnName, args, timeoutSec) {
   const lit = (args || []).map((a) => (a === undefined || a === null) ? "null" : JSON.stringify(a)).join(", ");

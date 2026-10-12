@@ -25,6 +25,7 @@
  * CLI:
  *   node scripts/compile-brief.cjs treatment --client acme --brief brief.md
  *        [--attach deck.pdf,ref.png] [--brand brands/acme.json] [--notes "..."]
+ *        [--screens path/to/app-screens/]   (enables the `screen` layout)
  *        [--provider claude-cli|mock] [--model ID]
  *   node scripts/compile-brief.cjs revise    --run DIR --notes "what to change"
  *   node scripts/compile-brief.cjs approve   --run DIR [--by NAME]
@@ -165,6 +166,58 @@ function brandSection(kit, kitPath) {
   return L.join("\n");
 }
 
+// ---------------- app screens ----------------
+// A folder of app screenshots becomes the `screen` layout's vocabulary. The
+// model gets the exact names plus a numbered contact sheet it can Read, so it
+// composes from what each screen actually shows, not from its file name.
+
+const SHOT_EXT = /\.(png|jpe?g|tiff?|psd)$/i;
+
+function listScreens(dir) {
+  if (!dir) return [];
+  const d = abs(dir);
+  if (!fs.existsSync(d)) throw new Error("screens folder not found: " + dir);
+  const num = (f) => { const m = f.match(/^(\d+)/); return m ? Number(m[1]) : 1e9; };
+  return fs.readdirSync(d).filter((f) => SHOT_EXT.test(f) && f[0] !== ".")
+    .sort((a, b) => num(a) - num(b) || a.localeCompare(b))
+    .map((f) => ({ name: f.replace(SHOT_EXT, ""), file: path.join(d, f) }));
+}
+
+// numbered contact sheet via Pillow; skipped (null) if python3/PIL is missing
+function contactSheet(screens, out) {
+  if (!screens.length) return null;
+  const py = [
+    "import sys, json", "from PIL import Image, ImageDraw",
+    "items = json.load(open(sys.argv[1])); out = sys.argv[2]",
+    "W, H, cols = 180, 390, 10", "rows = (len(items) + cols - 1) // cols",
+    "sheet = Image.new('RGB', (cols * (W + 6), rows * (H + 26)), (90, 90, 90)); d = ImageDraw.Draw(sheet)",
+    "for i, it in enumerate(items):",
+    "    im = Image.open(it['file']).convert('RGB'); im.thumbnail((W, H))",
+    "    x, y = (i % cols) * (W + 6), (i // cols) * (H + 26)",
+    "    sheet.paste(im, (x + (W - im.width) // 2, y + 22))",
+    "    d.text((x + 2, y + 4), it['name'][:30], fill=(255, 255, 0))",
+    "sheet.save(out)"
+  ].join("\n");
+  const list = out + ".json";
+  fs.writeFileSync(list, JSON.stringify(screens));
+  try {
+    execFileSync("python3", ["-I", "-c", py, list, out], { timeout: 120000 });
+    return out;
+  } catch (e) {
+    return null;
+  } finally {
+    try { fs.unlinkSync(list); } catch (e) {}
+  }
+}
+
+function assetsSection(screens, sheet, dir) {
+  if (!screens.length) return "No app screens supplied. The `screen` layout is unavailable; use `device` for in-app moments and list real screens under assetsNeeded.";
+  return "## App screens (" + screens.length + ", from `" + dir + "`)\n\n" +
+    "These are the client's real app screens, the most valuable visual asset in the job. Use them with the `screen` layout for every step the viewer must do in the app. " +
+    (sheet ? "**Read the contact sheet first: `" + sheet + "`** (each tile is captioned with its name), then Read individual screens from the folder when you need detail. " : "Read the screens in the folder before composing. ") +
+    "Use `shot` names exactly as listed:\n\n" + screens.map((x) => "- `" + x.name + "`").join("\n");
+}
+
 // ---------------- model calls ----------------
 
 function resolveProvider(name) {
@@ -227,6 +280,9 @@ async function treatment(opts) {
   if (opts.briefFile) briefText = fs.readFileSync(abs(opts.briefFile), "utf8") + (briefText ? "\n\n" + briefText : "");
   if (!briefText.trim() && !(opts.attach || []).length) throw new Error("no brief: pass --brief <file> or attachments");
   const ing = ingest(briefText, opts.attach, log);
+  const screensDir = opts.screens ? abs(opts.screens) : null;
+  const screens = listScreens(screensDir);
+  const sheet = screens.length ? contactSheet(screens, path.join(runDir, "screens-sheet.png")) : null;
   const clientVO = extractClientVO(ing.text);
   fs.writeFileSync(path.join(runDir, "brief.md"), ing.text);
   if (clientVO) fs.writeFileSync(path.join(runDir, "client-vo.txt"), clientVO);
@@ -238,7 +294,8 @@ async function treatment(opts) {
     stage: "treatment", approved: null, model,
     brandKit: kitPath ? rel(abs(kitPath)) : null,
     attachments: (opts.attach || []).map((p) => abs(p)),
-    forRead: ing.forRead, clientVO: !!clientVO, notes: opts.notes || ""
+    forRead: ing.forRead, clientVO: !!clientVO, notes: opts.notes || "",
+    screensDir, screens: screens.map((x) => x.name)
   });
 
   const prior = opts.prior
@@ -255,10 +312,11 @@ async function treatment(opts) {
   const cap = capabilities();
   const res = await askJSON({
     stage: "treatment", tag: "treatment", runDir, provider, cfg, model, log,
-    addDirs: Array.from(new Set(ing.forRead.map((p) => path.dirname(p)))),
+    addDirs: Array.from(new Set(ing.forRead.map((p) => path.dirname(p)).concat(screensDir ? [screensDir, runDir] : []))),
     ctx: { briefText: ing.text, clientVO, kitPath: run.brandKit },
     buildPrompt: (errors, previous) => fill(tpl, {
       BRIEF: ing.text || "(see attachments)", ATTACHMENTS: attachments, BRAND: brandSection(kit, kitPath),
+      ASSETS: assetsSection(screens, sheet, screensDir),
       NOTES: opts.notes || "(none)", CAPABILITIES: capabilitiesMarkdown(cap), CLIENT_VO: clientVOBlock, PRIOR: prior
     }) + retryBlock(errors, previous),
     validate: (t) => validateTreatment(t, { capabilities: cap, clientVO })
@@ -284,7 +342,7 @@ async function revise(opts) {
   if (!opts.notes) throw new Error("revise needs --notes: what should change");
   return treatment({
     runDir: opts.runDir, client: run.client, brief: fs.readFileSync(path.join(opts.runDir, "brief.md"), "utf8"),
-    attach: (run.forRead || []), brand: run.brandKit, notes: run.notes,
+    attach: (run.forRead || []), brand: run.brandKit, notes: run.notes, screens: run.screensDir,
     prior: { treatment: prev, feedback: opts.notes },
     provider: opts.provider, model: opts.model, log: opts.log
   });
@@ -317,25 +375,31 @@ async function spec(opts) {
   const videos = (t.videos || []).filter((v) => !opts.video || v.slug === opts.video);
   if (!videos.length) throw new Error("no video " + (opts.video ? "'" + opts.video + "' " : "") + "in the treatment");
   const clientDir = path.join(BRIEFS_ROOT, slugify(run.client));
+  const screens = listScreens(run.screensDir);
+  const sheetPath = path.join(runDir, "screens-sheet.png");
+  const sheet = fs.existsSync(sheetPath) ? sheetPath : null;
 
   const one = async (v) => {
     const vo = String(v.voScript || "").trim();
     const voBlock = "This is the approved VO for this video. Use it **verbatim**: every word, in order, split across beats. Do not add, drop or reword anything.\n\n" + vo;
     const res = await askJSON({
       stage: "spec", tag: "spec." + v.slug, runDir, provider, cfg, model, log,
-      ctx: { treatment: t, video: v },
+      addDirs: run.screensDir ? [run.screensDir, runDir] : undefined,
+      ctx: { treatment: t, video: v, screens: screens.map((x) => x.name) },
       buildPrompt: (errors, previous) => fill(tpl, {
         TREATMENT: JSON.stringify(Object.assign({}, t, { videos: undefined }), null, 1),
         VIDEO: JSON.stringify(Object.assign({}, v, { voScript: undefined }), null, 1),
         VO: voBlock, CAPABILITIES: capabilitiesMarkdown(cap), BRAND: brandSection(kit, kitPath),
+        ASSETS: assetsSection(screens, sheet, run.screensDir),
         NOTES: opts.notes || run.notes || "(none)", NAME: v.name, SLUG: v.slug
       }) + retryBlock(errors, previous),
-      validate: (s) => validateSpec(s, { capabilities: cap, clientVO: vo, voScope: "exact", pictos: kit && kit.pictograms })
+      validate: (s) => validateSpec(s, { capabilities: cap, clientVO: vo, voScope: "exact", pictos: kit && kit.pictograms, screens: run.screensDir ? screens.map((x) => x.name) : null })
     });
     const s = res.obj;
     s.client = run.client;
     s.briefDir = rel(clientDir);
     s.sourceRun = rel(runDir);
+    if (run.screensDir) s.assets = Object.assign({}, s.assets, { screens: run.screensDir });
     writeJSON(path.join(runDir, "spec." + v.slug + ".json"), s);
     const out = compileAndPublish(s, kit, clientDir, log);
     return { slug: v.slug, name: v.name, warnings: res.warnings.concat(out.warnings), summary: out.summary, files: out.files, attempts: res.attempts };
@@ -375,7 +439,7 @@ function compileAndPublish(s, kit, clientDir, log) {
 function compileFile(opts) {
   const specPath = abs(opts.spec);
   const s = readJSON(specPath);
-  const v = validateSpec(s, {});
+  const v = validateSpec(s, { screens: s.assets && s.assets.screens ? listScreens(s.assets.screens).map((x) => x.name) : null });
   if (v.errors.length) { const e = new Error("spec is invalid:\n- " + v.errors.join("\n- ")); e.errors = v.errors; throw e; }
   const kitPath = opts.brand || s.brandKit || null;
   const kit = kitPath ? readJSON(abs(kitPath)) : null;
@@ -446,6 +510,21 @@ async function build(opts) {
     const s = await callAE("applySkin", [master, JSON.stringify(kit)], 300, opts.aeCall);
     report.steps.push({ step: "applySkin", status: s.status });
     (s.warnings || []).forEach((w) => report.warnings.push("skin: " + w));
+  }
+
+  const shots = [];
+  for (const sc of momentsDoc.scenes || []) for (const mm of sc.moments || []) if (mm.layout === "screen" && mm.shot && shots.indexOf(mm.shot) === -1) shots.push(mm.shot);
+  const screensDir = beatsDoc.assets && beatsDoc.assets.screens;
+  if (shots.length) {
+    const avail = listScreens(screensDir);
+    const files = shots.map((n) => (avail.find((x) => x.name === n) || {}).file).filter(Boolean);
+    const lost = shots.filter((n) => !avail.some((x) => x.name === n));
+    if (lost.length) report.warnings.push("screens not found in " + (screensDir || "(no assets.screens)") + ": " + lost.join(", ") + ". Those moments render as outlined placeholders");
+    if (files.length) {
+      log("Importing " + files.length + " app screens…");
+      const imp = await callAE("importAssets", ["screens", JSON.stringify(files)], 600, opts.aeCall);
+      report.steps.push({ step: "importAssets", status: imp.status, imported: (imp.imported || []).length, existing: (imp.existing || []).length });
+    }
   }
 
   log("Building moments…");
@@ -610,7 +689,7 @@ async function main() {
   if (cmd === "treatment") {
     out = await treatment(Object.assign(common, {
       client: arg(argv, "--client", "brief"), briefFile: arg(argv, "--brief"), attach: list(arg(argv, "--attach")),
-      brand: arg(argv, "--brand"), notes: arg(argv, "--notes", ""), runDir: arg(argv, "--run")
+      brand: arg(argv, "--brand"), notes: arg(argv, "--notes", ""), runDir: arg(argv, "--run"), screens: arg(argv, "--screens")
     }));
     console.log(out.markdown);
     console.error("\nrun: " + rel(out.runDir) + "\nnext: review treatment.md, then `approve --run " + rel(out.runDir) + "` (or `revise --notes ...`)");
@@ -639,7 +718,8 @@ async function main() {
     return;
   }
   if (cmd === "validate") {
-    const r = validateSpec(readJSON(abs(arg(argv, "--spec"))), {});
+    const sp = readJSON(abs(arg(argv, "--spec")));
+    const r = validateSpec(sp, { screens: sp.assets && sp.assets.screens ? listScreens(sp.assets.screens).map((x) => x.name) : null });
     r.errors.forEach((e) => console.log("ERROR " + e));
     r.warnings.forEach((w) => console.log("warn  " + w));
     console.log(r.errors.length ? "invalid" : "valid");
@@ -667,5 +747,5 @@ if (require.main === module) {
 
 module.exports = {
   treatment, revise, approve, spec, build, compileFile, compileAndPublish, listRuns, readRun,
-  treatmentMarkdown, extractClientVO, ingest, mockProvider, RUNS_ROOT, stripToJson
+  treatmentMarkdown, extractClientVO, ingest, mockProvider, RUNS_ROOT, stripToJson, listScreens
 };

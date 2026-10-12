@@ -47,6 +47,10 @@ const LAYOUTS = {
     use: "Anything happening in an app or on a phone: a flow, a feature, a list of in-app options. Phone mock-up beside the text.",
     fields: { super: "required", sub: "optional", screen: "1-5 rows of {label, glyph|picto}; label <= 20 chars" }
   },
+  screen: {
+    use: "A real app screenshot inside a phone, with the super beside it: the default for any step the viewer must do in the app. Long screenshots scroll inside the phone. badge 'tick' or 'cross' stamps a do or don't; degrade 'blur' or 'glare' shows a bad capture to pair with a cross; shake buzzes the phone (an NFC read succeeding). Only usable when screens are listed under Assets.",
+    fields: { super: "required", sub: "optional", shot: "exact screen name from the Assets list", side: "optional 'left' (phone left, text right; default phone right)", badge: "optional tick|cross", degrade: "optional blur|glare", shake: "optional true", scroll: "optional false to pin a long screenshot to its top" }
+  },
   endcard: {
     use: "The closing call to action. Last moment of the last beat only.",
     fields: { super: "required", sub: "optional", url: "optional" }

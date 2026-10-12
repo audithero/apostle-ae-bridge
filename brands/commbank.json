@@ -1,0 +1,44 @@
+{
+ "kitId": "commbank",
+ "client": "Commonwealth Bank (CommBank masterbrand, app and customer education)",
+ "note": "Built 2026-10-12 for the CBA Migrant onboarding video. Yellow #FAEC20 is sampled from the October 2026 app screens (the onboarding illustrations and the passport frame), so the film matches the screens it shows. The classic CommBank gold is #FFCC00 (logo diamond). Ask the client which one the video should carry. The stage is white like the app, with black CBA Beacon Sans type and yellow accents. The icon tiles are yellow circles with black line art, as in the app's own illustrations (screen 03). Logo: 00.ADMIN/02.Client Assets/CAN & Beacon/CBA_CAN_PRM_BCN_STK_WM_BLACK_SRGB_300425.ai.",
+ "fontHeadingPS": "CBABeaconSans-Bold",
+ "fontBodyPS": "CBABeaconSans-Regular",
+ "headingSize": 84,
+ "bodySize": 42,
+ "headingTracking": 0,
+ "bodyTracking": 0,
+ "safeMarginPct": 10,
+ "colors": {
+  "primary": "#FAEC20",
+  "secondary": "#000000",
+  "background": "#FFFFFF",
+  "text": "#000000",
+  "surface": "#F4F4F4"
+ },
+ "moments": {
+  "tileShape": "circle",
+  "tileFill": "brand",
+  "palette": {
+   "ink": "#000000",
+   "brand": "#FAEC20",
+   "paper": "#FFFFFF",
+   "hole": "#FFFFFF",
+   "muted": "#D9D9D9"
+  },
+  "plateFill": "paper",
+  "plateStroke": "ink"
+ },
+ "logo": null,
+ "defaults": {
+  "wpm": 150,
+  "fps": 25,
+  "resolution": [
+   1920,
+   1080
+  ],
+  "layout": "gallery",
+  "easeProfile": "curvaceous",
+  "handycam": "subtle"
+ }
+}

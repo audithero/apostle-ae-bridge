@@ -133,11 +133,20 @@ function validateSpec(spec, opts) {
         if (!m.toBox || !m.toBox.label) E(w + ".toBox.label is required for compare");
       }
       if (lay === "placeholder" && !m.asset) E(w + ".asset must say what artwork belongs in the frame");
+      if (lay === "screen") {
+        if (!m.shot) E(w + ".shot is required for layout screen: the exact name of an app screen");
+        else if (opts.screens && opts.screens.indexOf(m.shot) === -1) E(w + ".shot '" + m.shot + "' is not one of the available screens. Use a name exactly as listed");
+        if (m.badge && ["tick", "cross"].indexOf(m.badge) === -1) E(w + ".badge must be tick or cross");
+        if (m.degrade && ["blur", "glare"].indexOf(m.degrade) === -1) E(w + ".degrade must be blur or glare");
+        if (m.side && ["left", "right"].indexOf(m.side) === -1) E(w + ".side must be left or right");
+        if (m.degrade && m.badge !== "cross") W(w + ": a degraded capture usually wants badge 'cross' so it reads as the wrong way");
+      }
       if (lay === "endcard" && !(bi === beats.length - 1 && mi === ms.length - 1)) W(w + ": endcard is meant for the very last moment");
+      if (lay !== "screen" && (m.shot || m.badge || m.degrade)) W(w + ": shot/badge/degrade only apply to layout screen");
 
       prevLayouts.push(lay);
       const n = prevLayouts.length;
-      if (n >= 3 && prevLayouts[n - 1] === prevLayouts[n - 2] && prevLayouts[n - 2] === prevLayouts[n - 3] && lay !== "statement") {
+      if (n >= 3 && prevLayouts[n - 1] === prevLayouts[n - 2] && prevLayouts[n - 2] === prevLayouts[n - 3] && lay !== "statement" && lay !== "screen") {
         W(w + ": third '" + lay + "' in a row; vary the layouts so the film has rhythm");
       }
     });

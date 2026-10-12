@@ -1,5 +1,5 @@
 <!-- spec.v1: the composition pass. Approved treatment in, one video spec out.
-     Placeholders: {{TREATMENT}} {{VIDEO}} {{VO}} {{CAPABILITIES}} {{BRAND}}
+     Placeholders: {{TREATMENT}} {{ASSETS}} {{VIDEO}} {{VO}} {{CAPABILITIES}} {{BRAND}}
      {{NOTES}} {{ERRORS}} {{PREVIOUS}}
      Output is validated by scripts/lib/validate-spec.cjs; on errors this same
      template is re-sent with {{ERRORS}} and {{PREVIOUS}} filled in. -->
@@ -34,6 +34,8 @@ You are the motion designer at Apostle. The creative director's treatment below 
 
 {{CAPABILITIES}}
 
+{{ASSETS}}
+
 ## Craft rules (learned the hard way on shipped work)
 
 **Beats.** A beat is one scene: the camera arrives, holds while that VO is spoken, then travels on. Break the VO into beats at its natural paragraph or topic turns: usually one beat per 2-4 sentences, 6-25 seconds each. Every word of the VO belongs to exactly one beat, in order. Give each beat a `section` from the treatment's structure.
@@ -46,7 +48,8 @@ You are the motion designer at Apostle. The creative director's treatment below 
 - Several parallel things of equal weight → `iconRow` (with icons) or `chipRow` (names/tags without icons).
 - Old vs new, without vs with, A vs B → `compare` (strike the old one).
 - One thing that connects to many → `hub`.
-- Something that happens in an app or on a phone → `device`.
+- A step the viewer performs in the app, when app screens are listed → `screen` with the matching `shot`. In an instructional film this is the backbone: show the real screen for every step, in the order the viewer meets them. Use `badge: "cross"` (with `degrade` where it fits) then `badge: "tick"` for a wrong-way / right-way pair, and `shake` for a phone vibrating. Alternate `side` between beats so the camera has somewhere to travel.
+- Something that happens in an app or on a phone, with no screens supplied → `device`.
 - A single headline idea, a number, a product → `hero` (opening a section is its natural home).
 - A plain message → `statement`. It is the workhorse; it is not a failure.
 - Real artwork the library cannot draw → `placeholder`, naming the asset.

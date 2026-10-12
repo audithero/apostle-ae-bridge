@@ -253,7 +253,10 @@ function compileSpec(spec, opts) {
     usedIds[bid] = true;
     const transit = transitFor(b, i);
     let preset = b.preset;
-    if (!preset) preset = b.moments.some((m) => LIST_LAYOUTS.indexOf(m.layout) !== -1) ? "listBuild" : "titleCard";
+    if (!preset) {
+      if (b.moments.some((m) => m.layout === "screen")) preset = "uiWalkthrough";
+      else preset = b.moments.some((m) => LIST_LAYOUTS.indexOf(m.layout) !== -1) ? "listBuild" : "titleCard";
+    }
     const entrance = preset === "listBuild" ? "listCascade" : "fadeRise";
 
     const nxtB = beatsIn[i + 1];
@@ -310,6 +313,7 @@ function compileSpec(spec, opts) {
         : "durationSec is MEASURED from the recorded VO. Each beat runs to the next beat's first spoken word. VO layer sits at startTime meta.voOffsetSec.",
       voOffsetSec: round(voOffset, 2), voFiles: spec.voFiles || []
     },
+    assets: spec.assets || undefined,
     sections: spec.sections || [],
     brand,
     beats

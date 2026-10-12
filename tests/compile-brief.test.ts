@@ -176,6 +176,18 @@ describe("validateSpec", () => {
     expect(voFidelity("the dog sat", "on the mat the cat sat down", "subset")).not.toBeNull();
   });
 
+  it("checks screen moments against the supplied screens", () => {
+    const spec = baseSpec();
+    spec.beats[0].moments[0] = { layout: "screen", shot: "11. Scan info", super: "Scan your passport.", badge: "tick" } as any;
+    spec.beats[0].moments[1] = { cue: "This gives customers the flexibility", layout: "screen", shot: "14. Review", degrade: "blur", badge: "smiley", super: "Too blurry." } as any;
+    const v = validateSpec(spec, { screens: ["11. Scan info", "12. Other"] });
+    expect(v.errors.some((e: string) => e.includes("'14. Review' is not one of the available screens"))).toBe(true);
+    expect(v.errors.some((e: string) => e.includes("badge must be tick or cross"))).toBe(true);
+    expect(v.errors.filter((e: string) => e.includes("moments[0]"))).toEqual([]);
+    const r = compileSpec(spec, {});
+    expect(r.beats.beats[0].stylePreset).toBe("uiWalkthrough");
+  });
+
   it("validates every shipped CommBank spec without errors", () => {
     const dir = path.join(REPO, "briefs/commbank-yello/specs");
     for (const f of fs.readdirSync(dir)) {
