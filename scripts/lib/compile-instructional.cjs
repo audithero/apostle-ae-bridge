@@ -233,16 +233,17 @@ function compileInstructional(plan, opts) {
         case "prop": {
           phoneOff(t); ringOff(t); badgeOff(t); propOff(t);
           prop = Object.assign({ type: e.prop, events: [] }, at);
-          ["label", "nodes", "shots", "traveler"].forEach((k) => { if (e[k] !== undefined) prop[k] = e[k]; });
+          ["label", "nodes", "shots", "traveler", "value", "unit", "sub", "glyph"].forEach((k) => { if (e[k] !== undefined) prop[k] = e[k]; });
           if (e.prop === "fan") {
             prop.files = (e.shots || []).filter((s) => shotFile[s]).map((s) => { usedShots[s] = shotFile[s]; return s; });
           }
           tl.props.push(prop);
           break;
         }
-        case "label": case "pulse": case "node": case "move": case "buzz":
+        case "label": case "pulse": case "node": case "move": case "buzz": case "value":
           if (!prop) { warnings.push("beat " + (bi + 1) + ": '" + e.do + "' with no prop on screen"); break; }
-          prop.events.push(Object.assign({ t, action: e.do }, e.text ? { text: e.text } : {}, e.glyph ? { glyph: e.glyph, label: e.label } : {}));
+          prop.events.push(Object.assign({ t, action: e.do }, e.text ? { text: e.text } : {}, e.glyph ? { glyph: e.glyph, label: e.label } : {},
+            e.do === "value" ? { value: e.value, unit: e.unit, sub: e.sub } : {}));
           break;
         case "outro": {
           const tEnd = beatEnd(bi) + (plan.outro && plan.outro.hold || 3.5);

@@ -102,3 +102,22 @@ describe("validateInstructional", () => {
     expect(r.errors.some((e: string) => e.includes("overflows a grid page"))).toBe(true);
   });
 });
+
+describe("stat and hero props", () => {
+  const { validateInstructional } = require("../scripts/lib/validate-instructional.cjs");
+  const withProp = (prop: Record<string, unknown>) => {
+    const p = JSON.parse(JSON.stringify(plan));
+    p.beats[1].events = [Object.assign({ cue: "Look for a small", do: "prop" }, prop)];
+    return validateInstructional(p, { repo: REPO, kit, compile: false });
+  };
+  it("accepts figures and rejects dates or words as a stat numeral", () => {
+    for (const v of ["5x", "$10", "1.5", "40%"]) expect(withProp({ prop: "stat", value: v, unit: "points per $1" }).errors).toEqual([]);
+    for (const v of ["1 Oct", "24/7", "five"]) expect(withProp({ prop: "stat", value: v }).errors.join(" ")).toMatch(/must be a number/);
+  });
+  it("caps any one demonstration at three per film", () => {
+    const p = JSON.parse(JSON.stringify(plan));
+    p.beats[1].events = [1, 2, 3, 4].map(() => ({ cue: "Look for a small", do: "prop", prop: "hero", glyph: "star", label: "Idea" }));
+    const r = validateInstructional(p, { repo: REPO, kit, compile: false });
+    expect(r.errors.some((e: string) => /hero prop for the 4th time/.test(e))).toBe(true);
+  });
+});

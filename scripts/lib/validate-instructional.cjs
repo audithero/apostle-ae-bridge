@@ -11,8 +11,12 @@ const { compileInstructional } = require("./compile-instructional.cjs");
 const { tokens, findCue } = require("./compile-spec.cjs");
 const { voFidelity } = require("./validate-spec.cjs");
 
-const EVENTS = ["page", "item", "callout", "search", "pin", "screen", "ring", "badge", "phone", "prop", "label", "pulse", "node", "move", "buzz", "outro"];
-const PROPS = { passport: ["label", "pulse"], nfc: ["move", "buzz"], path: ["node"], fan: [] };
+const EVENTS = ["page", "item", "callout", "search", "pin", "screen", "ring", "badge", "phone", "prop", "label", "pulse", "node", "move", "buzz", "value", "outro"];
+const PROPS = { passport: ["label", "pulse"], nfc: ["move", "buzz"], path: ["node"], fan: [], stat: ["value"], hero: ["label"] };
+// a stat numeral is a figure: "5x", "$10", "1.5", "40%". "1 Oct" rendered as
+// "1Oct" (read "10ct") at the numeral's tight tracking
+const STAT_RE = /^[$€£]?\d{1,4}(\.\d{1,2})?[x%]?$/;
+const PROP_MAX = 3; // any one demonstration, per film: a fourth reads as a template
 const CAP = { grid: 4, list: 4, numbered: 5 };
 const HEAD_MAX = 22, TITLE_MAX = 34, SUB_MAX = 46;
 
@@ -50,8 +54,11 @@ function validateInstructional(plan, opts) {
   };
 
   let prop = null, slots = 0, layout = "list", phoneShot = null, hasPage = false;
+  const propUse = {};
+  let lastStepProp = null, lastStepPropStep = 0, curStep = 0;
   plan.beats.forEach((b, bi) => {
     const at = "beats[" + bi + "]";
+    if (b.chapter) curStep = b.chapter.step;
     if (!b.vo || !String(b.vo).trim()) E(at + " has no vo");
     if (b.chapter && !b.page) E(at + " is a chapter beat with no page: say what the step's layout is");
     if (b.chapter) prop = null;
@@ -70,7 +77,15 @@ function validateInstructional(plan, opts) {
         W(w + " has no cue: it fires as soon as the beat starts");
       }
       switch (e.do) {
-        case "page": checkPage(e, w); slots = 0; layout = e.items || "list"; break;
+        case "page": {
+          checkPage(e, w); slots = 0; layout = e.items || "list";
+          // a new topic keeping the last demo on screen: sometimes right (a fan
+          // of forms across a sub-page), sometimes stale (a "2x" stat under
+          // "Rewarding every day"). Flag it; do not guess.
+          const rest = (b.events || []).slice(ei + 1);
+          if (prop && !rest.some((x) => x.do === "prop" || x.do === "screen" || x.do === "phone")) W(w + ": the new page keeps the previous " + prop + " demonstration on screen; add a screen, prop or phone for the new topic unless it still fits");
+          break;
+        }
         case "item": case "callout": case "search": case "pin":
           if (!hasPage) E(w + ": no page yet");
           slots++;
@@ -104,6 +119,17 @@ function validateInstructional(plan, opts) {
             if (!Array.isArray(e.shots) || e.shots.length < 4) E(w + ".shots needs 4-9 screen names");
             else e.shots.forEach((s) => { if (screens && !screens.has(s)) E(w + ".shots: '" + s + "' is not an available screen"); });
           }
+          if (e.prop === "stat") {
+            if (!e.value) E(w + ".value is required (e.g. \"5x\", \"$10\", \"1.5\")");
+            else if (!STAT_RE.test(String(e.value))) E(w + ".value '" + e.value + "' must be a number, amount, multiplier or percentage, like 5x, $10, 1.5 or 40%; put dates and words in unit/sub");
+            if (e.unit && e.unit.length > 26) E(w + ".unit is " + e.unit.length + " chars; max 26");
+          }
+          if (e.prop === "hero" && (!e.glyph || !e.label)) E(w + ": hero needs glyph and label");
+          if (e.prop === "hero" && e.label && e.label.length > 26) E(w + ".label is " + e.label.length + " chars; max 26");
+          propUse[e.prop] = (propUse[e.prop] || 0) + 1;
+          if (propUse[e.prop] === PROP_MAX + 1) E(w + ": a " + e.prop + " prop for the " + (PROP_MAX + 1) + "th time; at most " + PROP_MAX + " of any one demonstration per film. Vary it: stat for a number, hero for one idea, path for a sequence, items or callouts otherwise");
+          if (lastStepProp === e.prop && curStep !== lastStepPropStep) W(w + ": the same " + e.prop + " demonstration as the previous step; vary it");
+          lastStepProp = e.prop; lastStepPropStep = curStep;
           if (e.prop === "path") {
             const n = (b.events || []).slice(ei + 1).filter((x) => x.do === "node").length;
             if (n < 2 || n > 3) E(w + ": a path needs 2-3 node events after it in the same beat (found " + n + ")");
@@ -113,6 +139,7 @@ function validateInstructional(plan, opts) {
           if (!prop) E(w + ": needs a prop on screen");
           else if (PROPS[prop].indexOf(e.do) === -1) E(w + ": '" + e.do + "' does not apply to a " + prop + " prop (it takes " + (PROPS[prop].join(", ") || "nothing") + ")");
           if (e.do === "node" && !e.label) E(w + ".label is required");
+          if (e.do === "value" && (!e.value || !STAT_RE.test(String(e.value)))) E(w + ".value '" + (e.value || "") + "' must be a number, amount, multiplier or percentage; put dates and words in unit/sub");
           if (e.do === "node" && e.glyph && glyphs && !glyphs.has(e.glyph)) E(w + ".glyph '" + e.glyph + "' does not exist");
           break;
         case "outro":

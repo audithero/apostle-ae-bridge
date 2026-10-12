@@ -560,6 +560,68 @@
     }
     propIn(place(pc, "PROP path", PROP.x - 40, PROP.y + 20), pr);
   }
+  // stat: the numbers a viewer must remember. A Black numeral counts up on
+  // a gold marker, with the unit and qualifier under it; each `value` event
+  // hands over to the next figure with a fresh count.
+  function splitNum(v) {
+    var m = String(v).match(/^([^0-9]*)([0-9]+(?:\.[0-9]+)?)(.*)$/);
+    if (!m) return null;
+    return { pre: m[1], n: parseFloat(m[2]), dec: (m[2].split(".")[1] || "").length, post: m[3] };
+  }
+  function propStat(pr) {
+    var pc = subComp(T.name + " PROP stat", 900, 700), cx = 450;
+    var vals = [{ t: pr.tIn + 0.35, value: pr.value, unit: pr.unit, sub: pr.sub }];
+    for (var i = 0; i < pr.events.length; i++) if (pr.events[i].action === "value") vals.push({ t: pr.events[i].t, value: pr.events[i].value, unit: pr.events[i].unit, sub: pr.events[i].sub });
+    for (var j = 0; j < vals.length; j++) {
+      var v = vals[j], nx = (j + 1 < vals.length) ? vals[j + 1].t : null, tag = "STAT " + (j + 1);
+      var num = txt(tag + " VALUE", String(v.value), F.black, 230, C.ink, cx, 330, { center: true, tracking: -20, into: pc });
+      var w = num.sourceRectAtTime(0, false).width;
+      var bar = box(tag + " MARKER", w + 30, 56, 6, C.brand, null, 0, cx - w / 2 - 15, 300, { into: pc, anchorLeft: true });
+      bar.moveAfter(num);
+      var parts = [bar, num];
+      if (v.unit) parts.push(txt(tag + " UNIT", v.unit, F.xbold, 46, C.ink, cx, 420, { center: true, tracking: -5, into: pc }));
+      if (v.sub) parts.push(txt(tag + " SUB", v.sub, F.regular, 28, C.muted, cx, 474, { center: true, into: pc }));
+      var sn = splitNum(v.value);
+      // count only bare figures, multipliers, percentages and money: a date
+      // like "1 Oct" counting up from 0 reads as a glitch
+      if (sn && !/^\s*[x%]?\s*$/i.test(sn.post)) sn = null;
+      if (sn) {
+        num.property("ADBE Text Properties").property("ADBE Text Document").expression =
+          "var t = Math.min(1, Math.max(0, (time - " + (v.t + 0.1).toFixed(2) + ") / 0.9)); var e = 1 - Math.pow(1 - t, 3);\n" +
+          JSON.stringify(sn.pre) + " + (" + sn.n + " * e).toFixed(" + sn.dec + ") + " + JSON.stringify(sn.post) + ";";
+      }
+      for (var k = 0; k < parts.length; k++) {
+        var p = P(parts[k]).value, d0 = v.t + (k === 0 ? 0.35 : (k - 1) * 0.08);
+        var segP = [[d0, [p[0], p[1] + (k === 0 ? 0 : 40)], d0 + 0.6, p, "out"]];
+        var segO = [[d0, 0, d0 + 0.3, 100, "out"]];
+        if (nx !== null) { segP.push([nx - 0.25, p, nx, [p[0], p[1] - 40], "in"]); segO.push([nx - 0.25, 100, nx, 0, "in"]); parts[k].outPoint = nx + 0.02; }
+        anim(P(parts[k]), segP); anim(O(parts[k]), segO);
+        parts[k].inPoint = Math.max(0, d0 - 0.02);
+      }
+      anim(S(bar), [[v.t + 0.45, [0, 100], v.t + 1.1, [100, 100], "out"]]);
+    }
+    propIn(place(pc, "PROP stat", PROP.x - 20, PROP.y + 20), pr);
+  }
+  // hero: one idea, one big icon
+  function propHero(pr) {
+    var pc = subComp(T.name + " PROP hero", 700, 700), cx = 350;
+    var tile = APOSTLE.drawTile(pc, "HERO TILE", pr.glyph || "star", cx, 270, 300, pal({}));
+    tile.startTime = 0;
+    anim(S(tile), [[pr.tIn + 0.2, [40, 40, 100], pr.tIn + 0.9, [100, 100, 100], "snap"]]);
+    var lbs = [{ t: pr.tIn + 0.45, text: pr.label }];
+    for (var i = 0; i < pr.events.length; i++) if (pr.events[i].action === "label") lbs.push({ t: pr.events[i].t, text: pr.events[i].text });
+    for (var j = 0; j < lbs.length; j++) {
+      if (!lbs[j].text) continue;
+      var nx = (j + 1 < lbs.length) ? lbs[j + 1].t : null;
+      var lt = txt("HERO LABEL " + (j + 1), lbs[j].text, F.xbold, 44, C.ink, cx, 540, { center: true, tracking: -5, into: pc });
+      var p = P(lt).value;
+      anim(P(lt), nx === null ? [[lbs[j].t, [p[0], p[1] + 24], lbs[j].t + 0.5, p, "out"]] : [[lbs[j].t, [p[0], p[1] + 24], lbs[j].t + 0.5, p, "out"], [nx - 0.2, p, nx, [p[0], p[1] - 16], "in"]]);
+      anim(O(lt), nx === null ? [[lbs[j].t, 0, lbs[j].t + 0.3, 100, "out"]] : [[lbs[j].t, 0, lbs[j].t + 0.3, 100, "out"], [nx - 0.2, 100, nx, 0, "in"]]);
+      lt.inPoint = lbs[j].t; if (nx !== null) lt.outPoint = nx + 0.02;
+    }
+    propIn(place(pc, "PROP hero", PROP.x, PROP.y + 10), pr);
+  }
+
   function propFan(pr) {
     var pc = subComp(T.name + " PROP fan", 1500, 1900), cols = 3, cw = 250, gap = 44;
     for (var i = 0; i < pr.files.length; i++) {
@@ -716,6 +778,8 @@
           else if (P0.type === "nfc") propNfc(P0);
           else if (P0.type === "path") propPath(P0);
           else if (P0.type === "fan") propFan(P0);
+          else if (P0.type === "stat") propStat(P0);
+          else if (P0.type === "hero") propHero(P0);
           else report.warnings.push("unknown prop " + P0.type);
         }
         for (var c = 0; c < T.cards.length; c++) card(T.cards[c], c);

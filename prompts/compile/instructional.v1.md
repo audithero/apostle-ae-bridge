@@ -63,9 +63,10 @@ The `cue` is the verbatim first 2-6 words of the VO phrase that triggers the eve
 | `pulse`, `label` (`text`) | | passport: pulse the chip mark / change the caption under it |
 | `move` (`text`), `buzz` | | nfc: the phone searches in slow circles / vibrates and reads |
 | `node` | `glyph`, `label` | path: the next node draws in, joined by a dotted line |
+| `value` | `value`, `unit`, `sub` | stat: hand over to the next figure, with a fresh count-up |
 | `outro` | | the closing card (last beat only, cued on the sign-off words) |
 
-Props: **passport** (`label`): a passport cover with the chip mark. Use it when the viewer must *recognise* something on the passport. **nfc**: a phone lands on a passport. Use it when they hold the passport to the phone; `move` on "if nothing happens", `buzz` on "vibrates". **path** (`traveler`: optional glyph that travels along, e.g. "mail"): 2-3 nodes for a sequence of places or stages (online, then a branch; card, post, your address). **fan** (`shots`: 4-9 screen names): a drifting wall of form screens, for a step that is many questions at once.
+Props: **passport** (`label`): a passport cover with the chip mark. Use it when the viewer must *recognise* something on the passport. **nfc**: a phone lands on a passport. Use it when they hold the passport to the phone; `move` on "if nothing happens", `buzz` on "vibrates". **path** (`traveler`: optional glyph that travels along, e.g. "mail"): 2-3 nodes for a sequence of places or stages (online, then a branch; card, post, your address). **fan** (`shots`: 4-9 screen names): a drifting wall of form screens, for a step that is many questions at once. **stat** (`value`: a figure only, such as "5x", "$10", "1.5", "40%", never a date or words; plus `unit` and `sub`): a huge numeral that counts up on a gold marker, for **every number the viewer must remember** (rates, amounts, dates, durations). Chain figures with `value` events. **hero** (`glyph`, `label`): one big icon and a short headline, for a single idea that deserves the whole right side.
 
 ## How to direct it (rules learned on shipped work)
 
@@ -73,11 +74,12 @@ Props: **passport** (`label`): a passport cover with the chip mark. Use it when 
 2. **Headlines are short, verb-led and two lines** ("Scan your / passport chip"), at most 22 chars a line. The highlight is the one word the step is about. It must appear in the heading exactly, punctuation included.
 3. **Items appear on the words that name them.** The cue is the first words of the phrase that introduces the item. An item's title is a distilled label, not a transcript. Use `numbered` pages for ordered actions the viewer performs, `grid` for a checklist of things to have, and `list` otherwise. Max 4 on grid and list pages, 5 on numbered. Start a new `page` when the topic turns.
 4. **Show the real screen at the moment the VO reaches it, and ring what is being said.** Before you choose rings, **Read the numbered screen sheet** listed under Assets. Every screen there is overlaid with red, numbered content blocks. Ring the block(s) holding the option, field or instruction being spoken, and move the ring as the VO moves down the screen. That is what makes the phone feel alive.
-5. **Show, don't tell.** When the VO describes a physical action or something to recognise, use a prop instead of a screen. Return to the phone (`screen` or `phone`) when the VO goes back to the app.
+5. **Show, don't tell.** When the topic changes (a new `page`), change the right side too unless the demonstration still fits. When the VO describes a physical action or something to recognise, use a prop instead of a screen. Return to the phone (`screen` or `phone`) when the VO goes back to the app.
 6. **Do / don't pairs**: the wrong way first (`badge: "cross"`, `glare: true` on a scan screen if the problem is glare), then the right way (`badge: "tick"`), each with an item that says it in words.
 7. **Prefer sharp screens.** Full-res captures read crisply. Images extracted from a Word brief (`script-NN ...`) are small and go soft, so use one only when no full-res screen shows that step. Never show a screen that contradicts what the VO is saying at that moment.
 8. **One thing on the right at a time**, and something always changing: a new item, ring, screen or prop beat every 3-6 seconds. A beat with nothing new for 8+ seconds reads as dead.
-9. Glyph names must come from this list: {{GLYPHS}}.
+9. **Vary the demonstrations.** At most 3 of any one prop per film (the validator enforces it), and never the same prop in consecutive steps. A film with no app screens lives on its props: give each number a `stat`, each sequence a `path`, a single big idea a `hero`, and carry the rest with items and callouts.
+10. Glyph names must come from this list: {{GLYPHS}}.
 
 ## Worked example
 
