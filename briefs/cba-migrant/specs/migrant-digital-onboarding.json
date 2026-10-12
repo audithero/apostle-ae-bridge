@@ -85,7 +85,7 @@
      "shot": "10. Let's open",
      "super": "Open an account online.",
      "sub": "And verify your identity, step by step.",
-     "why": "the app's own three-part journey screen tells viewers where this ends up"
+     "why": "no script image for the intro; the app's own three-part journey screen shows where this ends up"
     }
    ]
   },
@@ -115,16 +115,16 @@
        "label": "ePassport"
       }
      ],
-     "why": "four parallel essentials of equal weight; the checklist a sound-off viewer can pause on"
+     "why": "four parallel essentials of equal weight; a checklist a sound-off viewer can pause on"
     },
     {
      "cue": "This would be all Australian",
      "layout": "screen",
-     "shot": "7. Before you begin",
+     "shot": "script-02 this to help the audience with recognition",
      "side": "left",
      "super": "Any visa except a visitor visa.",
      "sub": "Plus an ePassport.",
-     "why": "the visa rule is the one exception to flag, and the app shows the same list"
+     "why": "the script's own Before you begin screen confirms the same list and carries the one exception"
     }
    ]
   },
@@ -138,15 +138,15 @@
      "glyph": "epassport",
      "super": "Look for this symbol.",
      "sub": "On the front or back cover of your passport.",
-     "why": "the chip mark drawn full size is the one thing viewers must recognise on their own passport"
+     "why": "the chip mark drawn full size is the one thing viewers must recognise; script-01 is a reference, not a screen, so the glyph carries it"
     },
     {
      "cue": "This is a chip that",
      "layout": "screen",
-     "shot": "27. Master NFC -- DAY1.5",
-     "super": "That symbol means a chip.",
+     "shot": "script-08 vibrates to indicate the scan was successful.",
+     "super": "That symbol is a chip.",
      "sub": "It stores your photo and identity details.",
-     "why": "the app's illustrated passport shows the same mark in context"
+     "why": "the script's 'A new way to verify' screen shows the same mark and says the same words in the app"
     }
    ]
   },
@@ -165,7 +165,7 @@
      "toBox": {
       "label": "Visit a branch"
      },
-     "why": "two steps in order, online then branch; nothing is struck because both are valid"
+     "why": "two steps in order, online then branch; nothing struck because both are valid"
     }
    ]
   },
@@ -176,11 +176,11 @@
    "moments": [
     {
      "layout": "screen",
-     "shot": "6. ZPO - Migrant redirect",
+     "shot": "script-03 to arrive in the next 14 days",
      "side": "left",
      "super": "Choose your status in Australia.",
      "sub": "Pick one of three options.",
-     "why": "the real options screen, so viewers recognise it on their phone"
+     "why": "the script's own options screen, so viewers recognise it on their phone"
     },
     {
      "cue": "You have lived in Australia",
@@ -194,7 +194,7 @@
      "layout": "statement",
      "super": "Arrived less than a year ago.",
      "sub": "Choose 'Recently arrived'.",
-     "why": "second option, same pattern so it reads as a set"
+     "why": "second option, same pattern so the three read as a set"
     },
     {
      "cue": "You are moving to Australia",
@@ -212,9 +212,9 @@
    "moments": [
     {
      "layout": "screen",
-     "shot": "11. ZPO - Scan licence info",
-     "super": "Take a photo of your passport.",
-     "why": "the step screen as the viewer meets it"
+     "shot": "script-04 be accepted with a tick over it.",
+     "super": "Scan your passport.",
+     "why": "the script's own Scan your passport screen, with the Scan passport button the VO names"
     },
     {
      "cue": "Ensure you’re in good lighting",
@@ -224,7 +224,7 @@
      "badge": "cross",
      "super": "Glare: not accepted.",
      "sub": "Use good light, away from reflections.",
-     "why": "the wrong way first, with the cross paired to words"
+     "why": "the wrong way first; no script image for glare, so the folder capture is degraded, cross paired with words"
     },
     {
      "cue": "Hold the photo page of",
@@ -233,7 +233,7 @@
      "badge": "tick",
      "super": "Clear and bright: accepted.",
      "sub": "Fit the photo page inside the frame.",
-     "why": "the right way, a clear capture, with the tick paired to words"
+     "why": "the right way, a clear capture, tick paired with words as the script asks"
     }
    ]
   },
@@ -244,17 +244,26 @@
    "moments": [
     {
      "layout": "screen",
-     "shot": "15. Extra details (Manual entry) v2.1",
+     "shot": "script-05 and a card arriving in the post.",
      "side": "left",
      "super": "Add your contact details.",
-     "sub": "Mobile number, email and Australian address.",
-     "why": "the form scrolls through the three fields as they are read"
+     "sub": "Your mobile number and email address.",
+     "why": "the script's own contact details screen, mobile and email fields"
     },
     {
-     "cue": "We’ll use these details to",
+     "cue": "Australian address We’ll use these",
+     "layout": "screen",
+     "shot": "script-06 and a card arriving in the post.",
+     "side": "left",
+     "super": "Add your Australian address.",
+     "sub": "We'll use these details to contact you.",
+     "why": "the script's own address screen follows as the next field"
+    },
+    {
+     "cue": "and send your debit card",
      "layout": "iconRow",
      "super": "We'll post your debit card.",
-     "sub": "So use your Australian address.",
+     "sub": "Once it's ready.",
      "tiles": [
       {
        "glyph": "card",
@@ -266,10 +275,10 @@
       },
       {
        "glyph": "home",
-       "label": "To your address"
+       "label": "To your\raddress"
       }
      ],
-     "why": "card to mail to home explains why the address matters"
+     "why": "card to mail to home stands in for the card arriving in the post and shows why the address matters"
     }
    ]
   },
@@ -280,17 +289,17 @@
    "moments": [
     {
      "layout": "screen",
-     "shot": "28. Master NFC",
+     "shot": "script-09 vibrates to indicate the scan was successful.",
      "super": "Next, verify your identity.",
-     "sub": "You'll scan your passport chip.",
-     "why": "the numbered how-to screen opens the step"
+     "sub": "By scanning the chip in your passport.",
+     "why": "the script's own Scan passport chip screen, with the numbered steps and the button"
     },
     {
      "cue": "Tap ‘Scan passport chip’",
      "layout": "statement",
      "super": "Tap 'Scan passport chip'.",
      "sub": "Then wait for 'Ready to scan'.",
-     "why": "the button names in large type, since the app text is too small to read"
+     "why": "the button and sheet names in large type, since app text is too small to read"
     },
     {
      "cue": "Hold your passport against the",
@@ -298,7 +307,7 @@
      "shot": "29. Master NFC -- DAY1.5",
      "super": "Hold your passport to your phone.",
      "sub": "Against the back of the phone.",
-     "why": "the Ready to scan sheet is the moment to place the passport"
+     "why": "no script image for the Ready to scan sheet; the folder screen is the moment to place the passport"
     },
     {
      "cue": "If nothing happens, move your",
@@ -319,26 +328,17 @@
      "glyph": "epassport",
      "super": "USA or Malaysian passport?",
      "sub": "Open it before you scan.",
-     "why": "a condition that applies only to some viewers, so it gets its own plain card"
+     "why": "a condition for some viewers only, so it gets its own plain card; same glyph, same meaning (the passport)"
     },
     {
      "cue": "Hold still until the scan",
      "layout": "screen",
-     "shot": "30. Master NFC -- DAY1.5",
+     "shot": "31. Master NFC -- DAY1.5",
      "side": "left",
-     "super": "Hold still until it's done.",
-     "why": "the 60% hold-still sheet as the viewer will see it"
-    },
-    {
-     "cue": "This may take 5-10 seconds",
-     "layout": "screen",
-     "shot": "32. .",
-     "side": "left",
-     "badge": "tick",
      "shake": true,
-     "super": "Verified in 5 to 10 seconds.",
-     "sub": "Your phone vibrates when it's done.",
-     "why": "the buzz and the verified screen close the scan, with the tick paired to words"
+     "super": "Hold still until it's done.",
+     "sub": "It may take 5 to 10 seconds.",
+     "why": "the scan sheet reaching 100% while the phone buzzes; one moment, because the time line alone is too short to hold a screen"
     }
    ]
   },
@@ -349,18 +349,18 @@
    "moments": [
     {
      "layout": "screen",
-     "shot": "34.  Selfie instructions- iOS",
+     "shot": "script-10 and the picture taken and being successful.",
      "super": "Take a photo of your face.",
-     "sub": "Use the camera on your phone.",
-     "why": "the app's selfie instructions screen"
+     "sub": "Use the camera on your device.",
+     "why": "the script's own facial recognition screen opens the step"
     },
     {
      "cue": "Please ensure you have removed",
      "layout": "placeholder",
-     "asset": "Selfie with a hat on, crossed out, CBA to supply",
+     "asset": "Selfie capture with a hat on, crossed out (CBA to supply or approve a hat-on variant of screen 35)",
      "super": "Hat or glasses on: not accepted.",
      "sub": "Remove anything covering your face.",
-     "why": "the don't of the pair; no hat-on screen exists yet"
+     "why": "the don't of the pair; no hat-on screen exists yet, so it stays visibly unfinished"
     },
     {
      "cue": "any items that might be",
@@ -368,7 +368,7 @@
      "shot": "35. 17.1 - Taking selfie",
      "badge": "tick",
      "super": "Face clear: accepted.",
-     "why": "the real capture as the do, with the tick paired to words"
+     "why": "no script image for the capture itself; the real selfie screen is the do, tick paired with words"
     }
    ]
   },
@@ -379,18 +379,18 @@
    "moments": [
     {
      "layout": "screen",
-     "shot": "37. 18.1 - Employment status",
+     "shot": "script-11 to see how we protect your information.",
      "side": "left",
      "super": "Tell us about your work.",
-     "why": "first of two short question sets"
+     "why": "the script's own employment details screen, first of two short question sets"
     },
     {
      "cue": "and information regarding your tax residency",
      "layout": "screen",
-     "shot": "43. Tax_ Confirm your tax residency",
+     "shot": "script-14 to see how we protect your information.",
      "side": "left",
      "super": "Tell us where you pay tax.",
-     "why": "second question set, one plain super each"
+     "why": "the script's own tax residency screen, one plain super each"
     }
    ]
   },
@@ -430,18 +430,18 @@
    "moments": [
     {
      "layout": "screen",
-     "shot": "18. Create password - ios",
+     "shot": "script-20 access your account and the CommBank app.",
      "super": "Create a password.",
-     "why": "the password screen as the viewer meets it"
+     "why": "the script's own password screen"
     },
     {
      "cue": "and PIN so you can",
      "layout": "screen",
-     "shot": "23. PINCreate",
+     "shot": "script-21 access your account and the CommBank app.",
      "side": "left",
-     "super": "And a 6-digit PIN.",
+     "super": "And a PIN.",
      "sub": "To access your account and the CommBank app.",
-     "why": "the PIN screen on the opposite side reads as the next step"
+     "why": "the script's own PIN screen on the opposite side reads as the next step; no digit count because script and folder disagree"
     }
    ]
   },
@@ -455,14 +455,14 @@
      "shot": "48. Review your details",
      "badge": "tick",
      "super": "Approved: your account is ready.",
-     "why": "success screen with the tick paired to words"
+     "why": "no script image for approval; the account details screen with a tick paired with words"
     },
     {
      "cue": "and your debit card will",
      "layout": "screen",
      "shot": "47. Card",
      "super": "Your debit card is on its way.",
-     "sub": "To your Australian address.",
+     "sub": "To your nominated Australian address.",
      "why": "pays off the address step from earlier"
     },
     {
@@ -479,6 +479,9 @@
  "briefDir": "briefs/cba-migrant",
  "sourceRun": ".apostle-runs/compile/cba-migrant-1",
  "assets": {
-  "screens": "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/00.Brief/Migrant Onboarding Video Screens - Oct 2026"
+  "screens": [
+   "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/00.Brief/Migrant Onboarding Video Screens - Oct 2026",
+   "/Volumes/Apostle_8TB-1/00.AAA_PROJECTS_GITHUB/ae-apostle-bridge/.apostle-runs/compile/cba-migrant-1/brief-media/migrant-onboarding-instructional-video-scrip"
+  ]
  }
 }

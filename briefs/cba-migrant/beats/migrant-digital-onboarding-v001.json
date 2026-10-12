@@ -1,0 +1,413 @@
+{
+ "meta": {
+  "schemaVersion": 2,
+  "briefId": "migrant-digital-onboarding",
+  "scriptVersion": 1,
+  "sourceScriptPath": null,
+  "title": "CBA_MIGRANT_ONBOARDING",
+  "fps": 25,
+  "resolution": [
+   1920,
+   1080
+  ],
+  "wpm": 135,
+  "layout": "corridor",
+  "masterName": "CBA_MIGRANT_ONBOARDING",
+  "rig": "auto",
+  "easeProfile": "corporate-smooth",
+  "brandKit": "commbank",
+  "timingMode": "wpm",
+  "note": "durationSec is ESTIMATED at 135 wpm (no VO recorded yet). Re-run compile with timing.mode words once it is.",
+  "voOffsetSec": 2,
+  "voFiles": []
+ },
+ "assets": {
+  "screens": "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/00.Brief/Migrant Onboarding Video Screens - Oct 2026"
+ },
+ "sections": [
+  {
+   "id": "intro",
+   "title": "What this video shows"
+  },
+  {
+   "id": "before-you-begin",
+   "title": "Have these ready"
+  },
+  {
+   "id": "epassport-check",
+   "title": "Do you have an ePassport?"
+  },
+  {
+   "id": "no-epassport",
+   "title": "No ePassport? Finish in a branch"
+  },
+  {
+   "id": "your-status",
+   "title": "Tell us where you are"
+  },
+  {
+   "id": "passport-photo",
+   "title": "Photograph your passport"
+  },
+  {
+   "id": "contact-details",
+   "title": "Your contact details"
+  },
+  {
+   "id": "chip-scan",
+   "title": "Scan your passport chip"
+  },
+  {
+   "id": "chip-hold",
+   "title": "Hold still until it's done"
+  },
+  {
+   "id": "selfie",
+   "title": "Take a photo of your face"
+  },
+  {
+   "id": "employment-tax",
+   "title": "Work and tax details"
+  },
+  {
+   "id": "why-we-ask",
+   "title": "Why we ask, and how it's protected"
+  },
+  {
+   "id": "password-pin",
+   "title": "Create a password and PIN"
+  },
+  {
+   "id": "approved-welcome",
+   "title": "Approved. Welcome to Australia"
+  }
+ ],
+ "brand": {
+  "fontHeadingPS": "CBABeaconSans-Bold",
+  "fontBodyPS": "CBABeaconSans-Regular",
+  "headingSize": 84,
+  "bodySize": 42,
+  "headingTracking": 0,
+  "bodyTracking": 0,
+  "safeMarginPct": 10,
+  "colors": {
+   "primary": "#FAEC20",
+   "secondary": "#000000",
+   "background": "#FFFFFF",
+   "text": "#000000",
+   "surface": "#F4F4F4"
+  },
+  "logo": null,
+  "kitId": "commbank"
+ },
+ "beats": [
+  {
+   "id": 1,
+   "beatId": "in-this-video-we-will-show-you-how-t",
+   "sectionId": "intro",
+   "vo": "In this video we will show you how to open an account and verify your identity online.",
+   "superText": "Open an account online.",
+   "voSpokenWords": 17,
+   "silent": false,
+   "stylePreset": "uiWalkthrough",
+   "durationSec": 8.36,
+   "voWindow": [
+    0,
+    8.36
+   ],
+   "transitIn": "none",
+   "motion": {
+    "ease": "corporate-smooth",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 2,
+   "beatId": "before-you-begin-make-sure-you-have",
+   "sectionId": "before-you-begin",
+   "vo": "Before you begin make sure you have the correct documentation: An Australian phone number An Australian address A valid Australian Visa This would be all Australian visa’s except a visitor visa. An ePassport",
+   "superText": "Have these ready.",
+   "voSpokenWords": 34,
+   "silent": false,
+   "stylePreset": "uiWalkthrough",
+   "durationSec": 15.91,
+   "voWindow": [
+    8.36,
+    24.27
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "corporate-smooth",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 3,
+   "beatId": "to-check-if-you-have-an-epassport-lo",
+   "sectionId": "epassport-check",
+   "vo": "To check if you have an ePassport look for a small rectangle with a circle and line on the front and back cover of the passport. This is a chip that stores your photo and identity details.",
+   "superText": "Look for this symbol.",
+   "voSpokenWords": 37,
+   "silent": false,
+   "stylePreset": "uiWalkthrough",
+   "durationSec": 17.24,
+   "voWindow": [
+    24.27,
+    41.51
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "corporate-smooth",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 4,
+   "beatId": "if-you-don-t-have-an-epassport-you-c",
+   "sectionId": "no-epassport",
+   "vo": "If you don’t have an ePassport, you can still start the application online with a standard passport and then visit a branch to complete your identity verification",
+   "superText": "No ePassport? Finish in a branch.",
+   "voSpokenWords": 28,
+   "silent": false,
+   "stylePreset": "listBuild",
+   "durationSec": 13.24,
+   "voWindow": [
+    41.51,
+    54.76
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "corporate-smooth",
+    "entrance": "listCascade",
+    "exit": "listCascade",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 5,
+   "beatId": "you-will-be-asked-to-select-one-of-t",
+   "sectionId": "your-status",
+   "vo": "You will be asked to select one of the options below regarding your status in Australia: You have lived in Australia for over a year. You arrived in Australia less than 1 year ago. You are moving to Australia soon – planning to arrive in the next 14 days",
+   "superText": "Choose your status in Australia.",
+   "voSpokenWords": 48,
+   "silent": false,
+   "stylePreset": "uiWalkthrough",
+   "durationSec": 22.13,
+   "voWindow": [
+    54.76,
+    76.89
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "corporate-smooth",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 6,
+   "beatId": "you-will-then-need-to-scan-a-photo-o",
+   "sectionId": "passport-photo",
+   "vo": "You will then need to scan a photo of your passport. Ensure you’re in good lighting to avoid glare or reflections. Hold the photo page of your passport up to the scanning area indicated on the screen and select scan passport.",
+   "superText": "Take a photo of your passport.",
+   "voSpokenWords": 42,
+   "silent": false,
+   "stylePreset": "uiWalkthrough",
+   "durationSec": 19.47,
+   "voWindow": [
+    76.89,
+    96.36
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "corporate-smooth",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 7,
+   "beatId": "please-provide-your-contact-details",
+   "sectionId": "contact-details",
+   "vo": "Please provide your contact details: Mobile number Email address Australian address We’ll use these details to contact you and send your debit card once it’s ready.",
+   "superText": "Add your contact details.",
+   "voSpokenWords": 28,
+   "silent": false,
+   "stylePreset": "uiWalkthrough",
+   "durationSec": 13.24,
+   "voWindow": [
+    96.36,
+    109.6
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "corporate-smooth",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 8,
+   "beatId": "you-will-be-asked-to-verify-your-ide",
+   "sectionId": "chip-scan",
+   "vo": "You will be asked to verify your identity. To complete this step, you will need to: Tap ‘Scan passport chip’ Wait until you see ‘Ready to scan’ Hold your passport against the back of your phone. If nothing happens, move your phone around slowly until it vibrates",
+   "superText": "Next, verify your identity.",
+   "voSpokenWords": 47,
+   "silent": false,
+   "stylePreset": "uiWalkthrough",
+   "durationSec": 21.69,
+   "voWindow": [
+    109.6,
+    131.29
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "corporate-smooth",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 9,
+   "beatId": "if-you-are-a-usa-or-malaysian-passpo",
+   "sectionId": "chip-hold",
+   "vo": "if you are a USA or Malaysian passport holder you will need to open your passport before scanning. Hold still until the scan finishes. This may take 5-10 seconds",
+   "superText": "USA or Malaysian passport?",
+   "voSpokenWords": 30,
+   "silent": false,
+   "stylePreset": "uiWalkthrough",
+   "durationSec": 14.13,
+   "voWindow": [
+    131.29,
+    145.42
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "corporate-smooth",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 10,
+   "beatId": "then-you-will-need-to-take-a-photo-o",
+   "sectionId": "selfie",
+   "vo": "Then you will need to take a photo of your face, using the camera on your device. Please ensure you have removed glasses, hats or any items that might be covering your face.",
+   "superText": "Take a photo of your face.",
+   "voSpokenWords": 33,
+   "silent": false,
+   "stylePreset": "uiWalkthrough",
+   "durationSec": 15.47,
+   "voWindow": [
+    145.42,
+    160.89
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "corporate-smooth",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 11,
+   "beatId": "you-will-now-need-to-provide-your-em",
+   "sectionId": "employment-tax",
+   "vo": "You will now need to provide your employment details and information regarding your tax residency.",
+   "superText": "Tell us about your work.",
+   "voSpokenWords": 15,
+   "silent": false,
+   "stylePreset": "uiWalkthrough",
+   "durationSec": 7.47,
+   "voWindow": [
+    160.89,
+    168.36
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "corporate-smooth",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 12,
+   "beatId": "australian-banks-are-required-by-law",
+   "sectionId": "why-we-ask",
+   "vo": "Australian banks are required by law to collect this information. This information is collected in line with our privacy obligations, to find out more search ‘Group Privacy Statement’ on the CommBank website to see how we protect your information.",
+   "superText": "Required by law.",
+   "voSpokenWords": 39,
+   "silent": false,
+   "stylePreset": "titleCard",
+   "durationSec": 18.13,
+   "voWindow": [
+    168.36,
+    186.49
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "corporate-smooth",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 13,
+   "beatId": "you-will-then-need-to-create-a-passw",
+   "sectionId": "password-pin",
+   "vo": "You will then need to create a password and PIN so you can securely access your account and the CommBank app.",
+   "superText": "Create a password.",
+   "voSpokenWords": 21,
+   "silent": false,
+   "stylePreset": "uiWalkthrough",
+   "durationSec": 10.13,
+   "voWindow": [
+    186.49,
+    196.62
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "corporate-smooth",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  },
+  {
+   "id": 14,
+   "beatId": "once-approved-your-account-will-be-r",
+   "sectionId": "approved-welcome",
+   "vo": "Once approved, your account will be ready to use, and your debit card will be sent to your nominated Australian address. Welcome to Australia and welcome to CommBank.",
+   "superText": "Approved: your account is ready.",
+   "voSpokenWords": 28,
+   "silent": false,
+   "stylePreset": "uiWalkthrough",
+   "durationSec": 14.94,
+   "voWindow": [
+    196.62,
+    209.07
+   ],
+   "transitIn": "lateralTruck",
+   "motion": {
+    "ease": "corporate-smooth",
+    "entrance": "fadeRise",
+    "exit": "fadeRise",
+    "handycam": "subtle"
+   }
+  }
+ ]
+}

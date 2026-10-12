@@ -1,7 +1,7 @@
 {
  "meta": {
   "briefId": "migrant-digital-onboarding",
-  "masterName": "CBA_MIGRANT_ONBOARDING_v001",
+  "masterName": "CBA_MIGRANT_ONBOARDING_v002",
   "scriptVersion": 1,
   "easeProfile": "corporate-smooth",
   "voLeadIn": 0.45,
@@ -75,7 +75,7 @@
     },
     {
      "layout": "screen",
-     "shot": "7. Before you begin",
+     "shot": "script-02 this to help the audience with recognition",
      "side": "left",
      "super": "Any visa except a visitor visa.",
      "sub": "Plus an ePassport.",
@@ -109,8 +109,8 @@
     },
     {
      "layout": "screen",
-     "shot": "27. Master NFC -- DAY1.5",
-     "super": "That symbol means a chip.",
+     "shot": "script-08 vibrates to indicate the scan was successful.",
+     "super": "That symbol is a chip.",
      "sub": "It stores your photo and identity details.",
      "id": "m2",
      "from": 0.6703,
@@ -153,7 +153,7 @@
    "moments": [
     {
      "layout": "screen",
-     "shot": "6. ZPO - Migrant redirect",
+     "shot": "script-03 to arrive in the next 14 days",
      "side": "left",
      "super": "Choose your status in Australia.",
      "sub": "Pick one of three options.",
@@ -212,8 +212,8 @@
    "moments": [
     {
      "layout": "screen",
-     "shot": "11. ZPO - Scan licence info",
-     "super": "Take a photo of your passport.",
+     "shot": "script-04 be accepted with a tick over it.",
+     "super": "Scan your passport.",
      "id": "m1",
      "from": 0,
      "to": 0.2572,
@@ -261,22 +261,37 @@
    "moments": [
     {
      "layout": "screen",
-     "shot": "15. Extra details (Manual entry) v2.1",
+     "shot": "script-05 and a card arriving in the post.",
      "side": "left",
      "super": "Add your contact details.",
-     "sub": "Mobile number, email and Australian address.",
+     "sub": "Your mobile number and email address.",
      "id": "m1",
      "from": 0,
-     "to": 0.3977,
+     "to": 0.3254,
      "voSec": [
       96.36,
-      101.62
+      100.66
      ]
+    },
+    {
+     "layout": "screen",
+     "shot": "script-06 and a card arriving in the post.",
+     "side": "left",
+     "super": "Add your Australian address.",
+     "sub": "We'll use these details to contact you.",
+     "id": "m2",
+     "from": 0.3254,
+     "to": 0.6507,
+     "voSec": [
+      100.66,
+      104.97
+     ],
+     "voCue": "Australian address We’ll use these"
     },
     {
      "layout": "iconRow",
      "super": "We'll post your debit card.",
-     "sub": "So use your Australian address.",
+     "sub": "Once it's ready.",
      "tiles": [
       {
        "glyph": "card",
@@ -288,17 +303,17 @@
       },
       {
        "glyph": "home",
-       "label": "To your address"
+       "label": "To your\raddress"
       }
      ],
-     "id": "m2",
-     "from": 0.3977,
+     "id": "m3",
+     "from": 0.6507,
      "to": 1,
      "voSec": [
-      101.62,
+      104.97,
       109.6
      ],
-     "voCue": "We’ll use these details to"
+     "voCue": "and send your debit card"
     }
    ]
   },
@@ -308,9 +323,9 @@
    "moments": [
     {
      "layout": "screen",
-     "shot": "28. Master NFC",
+     "shot": "script-09 vibrates to indicate the scan was successful.",
      "super": "Next, verify your identity.",
-     "sub": "You'll scan your passport chip.",
+     "sub": "By scanning the chip in your passport.",
      "id": "m1",
      "from": 0,
      "to": 0.3279,
@@ -380,34 +395,19 @@
     },
     {
      "layout": "screen",
-     "shot": "30. Master NFC -- DAY1.5",
+     "shot": "31. Master NFC -- DAY1.5",
      "side": "left",
+     "shake": true,
      "super": "Hold still until it's done.",
+     "sub": "It may take 5 to 10 seconds.",
      "id": "m2",
      "from": 0.5662,
-     "to": 0.7549,
-     "voSec": [
-      139.29,
-      141.96
-     ],
-     "voCue": "Hold still until the scan"
-    },
-    {
-     "layout": "screen",
-     "shot": "32. .",
-     "side": "left",
-     "badge": "tick",
-     "shake": true,
-     "super": "Verified in 5 to 10 seconds.",
-     "sub": "Your phone vibrates when it's done.",
-     "id": "m3",
-     "from": 0.7549,
      "to": 1,
      "voSec": [
-      141.96,
+      139.29,
       145.42
      ],
-     "voCue": "This may take 5-10 seconds"
+     "voCue": "Hold still until the scan"
     }
    ]
   },
@@ -417,9 +417,9 @@
    "moments": [
     {
      "layout": "screen",
-     "shot": "34.  Selfie instructions- iOS",
+     "shot": "script-10 and the picture taken and being successful.",
      "super": "Take a photo of your face.",
-     "sub": "Use the camera on your phone.",
+     "sub": "Use the camera on your device.",
      "id": "m1",
      "from": 0,
      "to": 0.4884,
@@ -430,7 +430,7 @@
     },
     {
      "layout": "placeholder",
-     "asset": "Selfie with a hat on, crossed out, CBA to supply",
+     "asset": "Selfie capture with a hat on, crossed out (CBA to supply or approve a hat-on variant of screen 35)",
      "super": "Hat or glasses on: not accepted.",
      "sub": "Remove anything covering your face.",
      "id": "m2",
@@ -464,7 +464,7 @@
    "moments": [
     {
      "layout": "screen",
-     "shot": "37. 18.1 - Employment status",
+     "shot": "script-11 to see how we protect your information.",
      "side": "left",
      "super": "Tell us about your work.",
      "id": "m1",
@@ -477,7 +477,7 @@
     },
     {
      "layout": "screen",
-     "shot": "43. Tax_ Confirm your tax residency",
+     "shot": "script-14 to see how we protect your information.",
      "side": "left",
      "super": "Tell us where you pay tax.",
      "id": "m2",
@@ -543,7 +543,7 @@
    "moments": [
     {
      "layout": "screen",
-     "shot": "18. Create password - ios",
+     "shot": "script-20 access your account and the CommBank app.",
      "super": "Create a password.",
      "id": "m1",
      "from": 0,
@@ -555,9 +555,9 @@
     },
     {
      "layout": "screen",
-     "shot": "23. PINCreate",
+     "shot": "script-21 access your account and the CommBank app.",
      "side": "left",
-     "super": "And a 6-digit PIN.",
+     "super": "And a PIN.",
      "sub": "To access your account and the CommBank app.",
      "id": "m2",
      "from": 0.351,
@@ -591,7 +591,7 @@
      "layout": "screen",
      "shot": "47. Card",
      "super": "Your debit card is on its way.",
-     "sub": "To your Australian address.",
+     "sub": "To your nominated Australian address.",
      "id": "m2",
      "from": 0.2677,
      "to": 0.6247,

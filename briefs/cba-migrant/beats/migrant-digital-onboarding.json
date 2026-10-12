@@ -22,7 +22,10 @@
   "voFiles": []
  },
  "assets": {
-  "screens": "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/00.Brief/Migrant Onboarding Video Screens - Oct 2026"
+  "screens": [
+   "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/00.Brief/Migrant Onboarding Video Screens - Oct 2026",
+   "/Volumes/Apostle_8TB-1/00.AAA_PROJECTS_GITHUB/ae-apostle-bridge/.apostle-runs/compile/cba-migrant-1/brief-media/migrant-onboarding-instructional-video-scrip"
+  ]
  },
  "sections": [
   {
@@ -216,7 +219,7 @@
    "beatId": "you-will-then-need-to-scan-a-photo-o",
    "sectionId": "passport-photo",
    "vo": "You will then need to scan a photo of your passport. Ensure you’re in good lighting to avoid glare or reflections. Hold the photo page of your passport up to the scanning area indicated on the screen and select scan passport.",
-   "superText": "Take a photo of your passport.",
+   "superText": "Scan your passport.",
    "voSpokenWords": 42,
    "silent": false,
    "stylePreset": "uiWalkthrough",

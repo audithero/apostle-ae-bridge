@@ -1,0 +1,484 @@
+{
+ "schemaVersion": 2,
+ "name": "CBA_MIGRANT_ONBOARDING",
+ "slug": "migrant-digital-onboarding",
+ "briefId": "migrant-digital-onboarding",
+ "stage": "corridor",
+ "easeProfile": "corporate-smooth",
+ "format": {
+  "resolution": [
+   1920,
+   1080
+  ],
+  "fps": 25
+ },
+ "timing": {
+  "mode": "wpm",
+  "wpm": 135
+ },
+ "tail": 2.5,
+ "sections": [
+  {
+   "id": "intro",
+   "title": "What this video shows"
+  },
+  {
+   "id": "before-you-begin",
+   "title": "Have these ready"
+  },
+  {
+   "id": "epassport-check",
+   "title": "Do you have an ePassport?"
+  },
+  {
+   "id": "no-epassport",
+   "title": "No ePassport? Finish in a branch"
+  },
+  {
+   "id": "your-status",
+   "title": "Tell us where you are"
+  },
+  {
+   "id": "passport-photo",
+   "title": "Photograph your passport"
+  },
+  {
+   "id": "contact-details",
+   "title": "Your contact details"
+  },
+  {
+   "id": "chip-scan",
+   "title": "Scan your passport chip"
+  },
+  {
+   "id": "chip-hold",
+   "title": "Hold still until it's done"
+  },
+  {
+   "id": "selfie",
+   "title": "Take a photo of your face"
+  },
+  {
+   "id": "employment-tax",
+   "title": "Work and tax details"
+  },
+  {
+   "id": "why-we-ask",
+   "title": "Why we ask, and how it's protected"
+  },
+  {
+   "id": "password-pin",
+   "title": "Create a password and PIN"
+  },
+  {
+   "id": "approved-welcome",
+   "title": "Approved. Welcome to Australia"
+  }
+ ],
+ "beats": [
+  {
+   "section": "intro",
+   "vo": "In this video we will show you how to open an account and verify your identity online.",
+   "moments": [
+    {
+     "layout": "screen",
+     "shot": "10. Let's open",
+     "super": "Open an account online.",
+     "sub": "And verify your identity, step by step.",
+     "why": "the app's own three-part journey screen tells viewers where this ends up"
+    }
+   ]
+  },
+  {
+   "section": "before-you-begin",
+   "transit": "lateralTruck",
+   "vo": "Before you begin make sure you have the correct documentation: An Australian phone number An Australian address A valid Australian Visa This would be all Australian visa’s except a visitor visa. An ePassport",
+   "moments": [
+    {
+     "layout": "iconRow",
+     "super": "Have these ready.",
+     "tiles": [
+      {
+       "glyph": "phone",
+       "label": "Australian\rphone number"
+      },
+      {
+       "glyph": "home",
+       "label": "Australian\raddress"
+      },
+      {
+       "glyph": "doc",
+       "label": "Valid Australian\rvisa"
+      },
+      {
+       "glyph": "epassport",
+       "label": "ePassport"
+      }
+     ],
+     "why": "four parallel essentials of equal weight; the checklist a sound-off viewer can pause on"
+    },
+    {
+     "cue": "This would be all Australian",
+     "layout": "screen",
+     "shot": "7. Before you begin",
+     "side": "left",
+     "super": "Any visa except a visitor visa.",
+     "sub": "Plus an ePassport.",
+     "why": "the visa rule is the one exception to flag, and the app shows the same list"
+    }
+   ]
+  },
+  {
+   "section": "epassport-check",
+   "transit": "lateralTruck",
+   "vo": "To check if you have an ePassport look for a small rectangle with a circle and line on the front and back cover of the passport. This is a chip that stores your photo and identity details.",
+   "moments": [
+    {
+     "layout": "hero",
+     "glyph": "epassport",
+     "super": "Look for this symbol.",
+     "sub": "On the front or back cover of your passport.",
+     "why": "the chip mark drawn full size is the one thing viewers must recognise on their own passport"
+    },
+    {
+     "cue": "This is a chip that",
+     "layout": "screen",
+     "shot": "27. Master NFC -- DAY1.5",
+     "super": "That symbol means a chip.",
+     "sub": "It stores your photo and identity details.",
+     "why": "the app's illustrated passport shows the same mark in context"
+    }
+   ]
+  },
+  {
+   "section": "no-epassport",
+   "transit": "lateralTruck",
+   "vo": "If you don’t have an ePassport, you can still start the application online with a standard passport and then visit a branch to complete your identity verification",
+   "moments": [
+    {
+     "layout": "compare",
+     "super": "No ePassport? Finish in a branch.",
+     "sub": "Start with a standard passport, then verify in a branch.",
+     "fromBox": {
+      "label": "Start online"
+     },
+     "toBox": {
+      "label": "Visit a branch"
+     },
+     "why": "two steps in order, online then branch; nothing is struck because both are valid"
+    }
+   ]
+  },
+  {
+   "section": "your-status",
+   "transit": "lateralTruck",
+   "vo": "You will be asked to select one of the options below regarding your status in Australia: You have lived in Australia for over a year. You arrived in Australia less than 1 year ago. You are moving to Australia soon – planning to arrive in the next 14 days",
+   "moments": [
+    {
+     "layout": "screen",
+     "shot": "6. ZPO - Migrant redirect",
+     "side": "left",
+     "super": "Choose your status in Australia.",
+     "sub": "Pick one of three options.",
+     "why": "the real options screen, so viewers recognise it on their phone"
+    },
+    {
+     "cue": "You have lived in Australia",
+     "layout": "statement",
+     "super": "Here for over a year.",
+     "sub": "Choose 'Living in Australia'.",
+     "why": "phone text is unreadable at this scale; restate the option in large type with the app's label"
+    },
+    {
+     "cue": "You arrived in Australia less",
+     "layout": "statement",
+     "super": "Arrived less than a year ago.",
+     "sub": "Choose 'Recently arrived'.",
+     "why": "second option, same pattern so it reads as a set"
+    },
+    {
+     "cue": "You are moving to Australia",
+     "layout": "statement",
+     "super": "Arriving in the next 14 days.",
+     "sub": "Choose 'Moving to Australia soon'.",
+     "why": "third option, same pattern"
+    }
+   ]
+  },
+  {
+   "section": "passport-photo",
+   "transit": "lateralTruck",
+   "vo": "You will then need to scan a photo of your passport. Ensure you’re in good lighting to avoid glare or reflections. Hold the photo page of your passport up to the scanning area indicated on the screen and select scan passport.",
+   "moments": [
+    {
+     "layout": "screen",
+     "shot": "11. ZPO - Scan licence info",
+     "super": "Take a photo of your passport.",
+     "why": "the step screen as the viewer meets it"
+    },
+    {
+     "cue": "Ensure you’re in good lighting",
+     "layout": "screen",
+     "shot": "13. Scanning Front - iOS",
+     "degrade": "glare",
+     "badge": "cross",
+     "super": "Glare: not accepted.",
+     "sub": "Use good light, away from reflections.",
+     "why": "the wrong way first, with the cross paired to words"
+    },
+    {
+     "cue": "Hold the photo page of",
+     "layout": "screen",
+     "shot": "14. 8.1 - Scan licence info",
+     "badge": "tick",
+     "super": "Clear and bright: accepted.",
+     "sub": "Fit the photo page inside the frame.",
+     "why": "the right way, a clear capture, with the tick paired to words"
+    }
+   ]
+  },
+  {
+   "section": "contact-details",
+   "transit": "lateralTruck",
+   "vo": "Please provide your contact details: Mobile number Email address Australian address We’ll use these details to contact you and send your debit card once it’s ready.",
+   "moments": [
+    {
+     "layout": "screen",
+     "shot": "15. Extra details (Manual entry) v2.1",
+     "side": "left",
+     "super": "Add your contact details.",
+     "sub": "Mobile number, email and Australian address.",
+     "why": "the form scrolls through the three fields as they are read"
+    },
+    {
+     "cue": "We’ll use these details to",
+     "layout": "iconRow",
+     "super": "We'll post your debit card.",
+     "sub": "So use your Australian address.",
+     "tiles": [
+      {
+       "glyph": "card",
+       "label": "Debit card"
+      },
+      {
+       "glyph": "mail",
+       "label": "In the post"
+      },
+      {
+       "glyph": "home",
+       "label": "To your address"
+      }
+     ],
+     "why": "card to mail to home explains why the address matters"
+    }
+   ]
+  },
+  {
+   "section": "chip-scan",
+   "transit": "lateralTruck",
+   "vo": "You will be asked to verify your identity. To complete this step, you will need to: Tap ‘Scan passport chip’ Wait until you see ‘Ready to scan’ Hold your passport against the back of your phone. If nothing happens, move your phone around slowly until it vibrates",
+   "moments": [
+    {
+     "layout": "screen",
+     "shot": "28. Master NFC",
+     "super": "Next, verify your identity.",
+     "sub": "You'll scan your passport chip.",
+     "why": "the numbered how-to screen opens the step"
+    },
+    {
+     "cue": "Tap ‘Scan passport chip’",
+     "layout": "statement",
+     "super": "Tap 'Scan passport chip'.",
+     "sub": "Then wait for 'Ready to scan'.",
+     "why": "the button names in large type, since the app text is too small to read"
+    },
+    {
+     "cue": "Hold your passport against the",
+     "layout": "screen",
+     "shot": "29. Master NFC -- DAY1.5",
+     "super": "Hold your passport to your phone.",
+     "sub": "Against the back of the phone.",
+     "why": "the Ready to scan sheet is the moment to place the passport"
+    },
+    {
+     "cue": "If nothing happens, move your",
+     "layout": "statement",
+     "super": "Nothing happening? Move slowly.",
+     "sub": "Move your phone around until it vibrates.",
+     "why": "the tip that rescues a stuck scan stands alone so scrubbers find it"
+    }
+   ]
+  },
+  {
+   "section": "chip-hold",
+   "transit": "lateralTruck",
+   "vo": "if you are a USA or Malaysian passport holder you will need to open your passport before scanning. Hold still until the scan finishes. This may take 5-10 seconds",
+   "moments": [
+    {
+     "layout": "statement",
+     "glyph": "epassport",
+     "super": "USA or Malaysian passport?",
+     "sub": "Open it before you scan.",
+     "why": "a condition that applies only to some viewers, so it gets its own plain card"
+    },
+    {
+     "cue": "Hold still until the scan",
+     "layout": "screen",
+     "shot": "30. Master NFC -- DAY1.5",
+     "side": "left",
+     "super": "Hold still until it's done.",
+     "why": "the 60% hold-still sheet as the viewer will see it"
+    },
+    {
+     "cue": "This may take 5-10 seconds",
+     "layout": "screen",
+     "shot": "32. .",
+     "side": "left",
+     "badge": "tick",
+     "shake": true,
+     "super": "Verified in 5 to 10 seconds.",
+     "sub": "Your phone vibrates when it's done.",
+     "why": "the buzz and the verified screen close the scan, with the tick paired to words"
+    }
+   ]
+  },
+  {
+   "section": "selfie",
+   "transit": "lateralTruck",
+   "vo": "Then you will need to take a photo of your face, using the camera on your device. Please ensure you have removed glasses, hats or any items that might be covering your face.",
+   "moments": [
+    {
+     "layout": "screen",
+     "shot": "34.  Selfie instructions- iOS",
+     "super": "Take a photo of your face.",
+     "sub": "Use the camera on your phone.",
+     "why": "the app's selfie instructions screen"
+    },
+    {
+     "cue": "Please ensure you have removed",
+     "layout": "placeholder",
+     "asset": "Selfie with a hat on, crossed out, CBA to supply",
+     "super": "Hat or glasses on: not accepted.",
+     "sub": "Remove anything covering your face.",
+     "why": "the don't of the pair; no hat-on screen exists yet"
+    },
+    {
+     "cue": "any items that might be",
+     "layout": "screen",
+     "shot": "35. 17.1 - Taking selfie",
+     "badge": "tick",
+     "super": "Face clear: accepted.",
+     "why": "the real capture as the do, with the tick paired to words"
+    }
+   ]
+  },
+  {
+   "section": "employment-tax",
+   "transit": "lateralTruck",
+   "vo": "You will now need to provide your employment details and information regarding your tax residency.",
+   "moments": [
+    {
+     "layout": "screen",
+     "shot": "37. 18.1 - Employment status",
+     "side": "left",
+     "super": "Tell us about your work.",
+     "why": "first of two short question sets"
+    },
+    {
+     "cue": "and information regarding your tax residency",
+     "layout": "screen",
+     "shot": "43. Tax_ Confirm your tax residency",
+     "side": "left",
+     "super": "Tell us where you pay tax.",
+     "why": "second question set, one plain super each"
+    }
+   ]
+  },
+  {
+   "section": "why-we-ask",
+   "transit": "lateralTruck",
+   "vo": "Australian banks are required by law to collect this information. This information is collected in line with our privacy obligations, to find out more search ‘Group Privacy Statement’ on the CommBank website to see how we protect your information.",
+   "moments": [
+    {
+     "layout": "hero",
+     "glyph": "bank",
+     "super": "Required by law.",
+     "sub": "All Australian banks must collect this.",
+     "why": "one reassuring headline: it is the law, not CommBank being nosy"
+    },
+    {
+     "cue": "This information is collected in",
+     "layout": "statement",
+     "glyph": "shield",
+     "super": "Your information is protected.",
+     "sub": "In line with our privacy obligations.",
+     "why": "protection gets its own card so the reassurance lands"
+    },
+    {
+     "cue": "to find out more search",
+     "layout": "statement",
+     "super": "Search 'Group Privacy Statement'.",
+     "sub": "On the CommBank website.",
+     "why": "the exact search term on screen, held long enough to copy down"
+    }
+   ]
+  },
+  {
+   "section": "password-pin",
+   "transit": "lateralTruck",
+   "vo": "You will then need to create a password and PIN so you can securely access your account and the CommBank app.",
+   "moments": [
+    {
+     "layout": "screen",
+     "shot": "18. Create password - ios",
+     "super": "Create a password.",
+     "why": "the password screen as the viewer meets it"
+    },
+    {
+     "cue": "and PIN so you can",
+     "layout": "screen",
+     "shot": "23. PINCreate",
+     "side": "left",
+     "super": "And a 6-digit PIN.",
+     "sub": "To access your account and the CommBank app.",
+     "why": "the PIN screen on the opposite side reads as the next step"
+    }
+   ]
+  },
+  {
+   "section": "approved-welcome",
+   "transit": "lateralTruck",
+   "vo": "Once approved, your account will be ready to use, and your debit card will be sent to your nominated Australian address. Welcome to Australia and welcome to CommBank.",
+   "moments": [
+    {
+     "layout": "screen",
+     "shot": "48. Review your details",
+     "badge": "tick",
+     "super": "Approved: your account is ready.",
+     "why": "success screen with the tick paired to words"
+    },
+    {
+     "cue": "and your debit card will",
+     "layout": "screen",
+     "shot": "47. Card",
+     "super": "Your debit card is on its way.",
+     "sub": "To your Australian address.",
+     "why": "pays off the address step from earlier"
+    },
+    {
+     "cue": "Welcome to Australia and welcome",
+     "layout": "endcard",
+     "super": "Welcome to Australia.",
+     "sub": "And welcome to CommBank.",
+     "why": "the warm close; the Beacon lockup is placed by hand on this card"
+    }
+   ]
+  }
+ ],
+ "client": "CBA Migrant",
+ "briefDir": "briefs/cba-migrant",
+ "sourceRun": ".apostle-runs/compile/cba-migrant-1",
+ "assets": {
+  "screens": "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/00.Brief/Migrant Onboarding Video Screens - Oct 2026"
+ }
+}

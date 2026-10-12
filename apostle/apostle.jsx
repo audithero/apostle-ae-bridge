@@ -19,7 +19,7 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.14.1";
+  var LIB_VERSION = "2.14.2";
 
   // Captured at load time; locates the repo for crash-recovery run snapshots
   var LIB_FILE = null;
@@ -461,7 +461,9 @@ var APOSTLE = (function () {
     fontGuide("FONT Body", data.brand.fontBodyPS || "HelveticaNeue", 100);
   }
 
-  function autoFitExpr(masterName) {
+  // maxWidth (optional, px): a tighter budget than the safe margin, for
+  // text that has to fit inside a shape (the placeholder caption)
+  function autoFitExpr(masterName, maxWidth) {
     // fit to the space the layer actually has from its (center-justified)
     // position to the nearest safe-margin edge — off-center text (e.g. the
     // uiWalkthrough left column) gets a proportionally smaller budget
@@ -475,6 +477,7 @@ var APOSTLE = (function () {
       // right edge 2-3px past it and checkTextSafeMargins (rightly) flags it
       'var half = Math.min(x - m, thisComp.width - m - x) - 4;\n' +
       'if (half < 1) half = 1;\n' +
+      (maxWidth ? 'half = Math.min(half, ' + (maxWidth / 2) + ');\n' : '') +
       'var s = Math.min(100, (half * 2) / w * 100);\n' +
       '[s, s];';
   }
@@ -3110,6 +3113,10 @@ var APOSTLE = (function () {
     var iw = P.w - 2 * P.bezel, ih = P.h - 2 * P.bezel;
 
     momRect(pc, "PHONE BODY", cx, cy, P.w, P.h, P.r, "ink", null, 0, pal, masterName);
+    // white display under the shot: a capture shorter than the display (the
+    // CBA script's cropped screens) ends in white like the app, not in the
+    // black phone body
+    var disp = momRect(pc, "DISPLAY", cx, cy, iw, ih, P.r - P.bezel, "paper", null, 0, pal, masterName);
 
     var shot = pc.layers.add(item);
     shot.startTime = 0; // trap #2
@@ -3120,6 +3127,20 @@ var APOSTLE = (function () {
     tr.property("ADBE Scale").setValue([sc, sc]);
     var pos = tr.property("ADBE Position");
     pos.setValue([cx, P.bezel]);
+    // the display takes the capture's OWN background (its bottom edge), not
+    // the kit's paper: CBA's surface tint left a visible seam under short
+    // captures. Sampled once by expression, then frozen to a plain value.
+    try {
+      var dv = disp.property("ADBE Root Vectors Group").property(1).property("ADBE Vectors Group");
+      for (var di = 1; di <= dv.numProperties; di++) {
+        if (dv.property(di).matchName !== "ADBE Vector Graphic - Fill") continue;
+        var dc = dv.property(di).property("ADBE Vector Fill Color");
+        dc.expression = 'var L = thisComp.layer("SHOT"); L.sampleImage([L.width / 2, L.height - 3], [6, 2], false, 0);';
+        var sampled = dc.valueAtTime(0, false);
+        dc.expression = "";
+        dc.setValue(sampled);
+      }
+    } catch (eDisp) {}
     var overflow = item.height * sc / 100 - ih;
     // Scroll only a genuinely long capture: a few % taller than the display
     // just crops at the bottom. Start halfway through the moment so the
@@ -3313,7 +3334,7 @@ var APOSTLE = (function () {
     } catch (eExpr) {}
     tl.property("ADBE Transform Group").property("ADBE Position").setValue(opts.pos);
     if (opts.autoFit) {
-      try { tl.property("ADBE Transform Group").property("ADBE Scale").expression = autoFitExpr(masterName); } catch (eFit) {}
+      try { tl.property("ADBE Transform Group").property("ADBE Scale").expression = autoFitExpr(masterName, opts.maxWidth); } catch (eFit) {}
     }
     return tl;
   }
@@ -3839,7 +3860,7 @@ var APOSTLE = (function () {
         pw, ph, 24, "paper", "ink", 4, pal, masterName);
       el.push({ layer: frame, delay: 0.16, shape: true });
       var cap = momText(comp, "[ " + (m.asset || "artwork") + " ]",
-        { name: momIdTag("ASSET LABEL", mid), role: "body", sizeMult: 0.92, pos: [W / 2, pcy + 12], autoFit: true }, masterName);
+        { name: momIdTag("ASSET LABEL", mid), role: "body", sizeMult: 0.92, pos: [W / 2, pcy + 12], autoFit: true, maxWidth: pw - 64 }, masterName);
       el.push({ layer: cap, delay: 0.3, shape: false });
       addSuper(700, 1.1);
       addSub(842, W / 2, 1.12);
