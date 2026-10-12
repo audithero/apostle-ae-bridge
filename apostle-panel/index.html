@@ -28,14 +28,42 @@
 <main>
   <!-- 01 BRIEF -->
   <section id="tab-brief" class="pane active">
-    <label class="lbl">CLIENT SCRIPT</label>
-    <textarea id="briefText" rows="9" placeholder="Paste the client script (SUPER: / VO: lines)&hellip;"></textarea>
+    <label class="lbl">BRIEF / CLIENT SCRIPT</label>
+    <textarea id="briefText" rows="9" placeholder="Paste the brief or the client script (any format; SUPER: / VO: lines also work with QUICK PARSE)&hellip;"></textarea>
     <div class="row">
       <div class="field"><label class="lbl">BRAND KIT</label><select id="brandKit"></select></div>
       <div class="field"><label class="lbl">MASTER NAME</label><input id="masterName" value="MASTER"></div>
     </div>
+
+    <label class="lbl">COMPILE WITH <span id="cmpModel">OPUS 5.5</span> <span class="dim">&mdash; treatment &rarr; your approval &rarr; moment-by-moment build</span></label>
     <div class="row">
-      <button id="btnParse" class="primary">PARSE</button>
+      <div class="field"><label class="lbl">CLIENT</label><input id="cmpClient" placeholder="e.g. acme"></div>
+      <div class="field"><label class="lbl">RUN</label><select id="cmpRun"><option value="">&mdash; new run &mdash;</option></select></div>
+    </div>
+    <div class="row">
+      <div class="field"><label class="lbl">ATTACHMENTS <span class="dim">(PDF, decks, images, Word; one path per line)</span></label><textarea id="cmpAttach" rows="2" placeholder="/path/to/brief.pdf"></textarea></div>
+      <button id="btnCmpAttach">ATTACH&hellip;</button>
+    </div>
+    <label class="lbl">DIRECTION <span class="dim">(for Opus: tone, references, must-haves; or what to change on REVISE)</span></label>
+    <textarea id="cmpNotes" rows="2" placeholder="e.g. Staff-facing, sound on. Keep it calm and confident. 90 seconds max."></textarea>
+    <div class="row">
+      <button id="btnCmpTreat" class="primary">TREATMENT</button>
+      <button id="btnCmpRevise" disabled>REVISE</button>
+      <button id="btnCmpApprove" disabled>APPROVE</button>
+      <button id="btnCmpOpen" disabled title="Open treatment.md">OPEN</button>
+    </div>
+    <div class="row">
+      <button id="btnCmpCompose" disabled>COMPOSE</button>
+      <div class="field"><select id="cmpVideo"></select></div>
+      <label class="chk"><input type="checkbox" id="cmpIris"> IRIS</label>
+      <button id="btnCmpBuild" class="primary" disabled>BUILD VIDEO</button>
+    </div>
+    <div id="cmpOut" class="out"></div>
+    <hr>
+
+    <label class="lbl">QUICK PARSE <span class="dim">&mdash; SUPER: / VO: scripts, no model</span></label>
+    <div class="row">
+      <button id="btnParse">PARSE</button>
       <button id="btnBuild" disabled>BUILD IN AE</button>
     </div>
     <div id="parseOut" class="out"></div>
@@ -170,6 +198,16 @@
       <button id="btnTermStop" disabled>END</button>
       <button id="btnFocusAE" title="Blur the terminal and hand keyboard focus back to After Effects — revives the top menu">FOCUS AE</button>
       <span id="termStatus" class="dim small"></span>
+    </div>
+    <div class="row">
+      <div class="field"><label class="lbl">MODEL <span class="dim">(terminal + one-shot; applies on start/restart)</span></label>
+        <select id="claudeModel">
+          <option value="claude-opus-5-5">OPUS 5.5</option>
+          <option value="claude-sonnet-5-5">SONNET 5.5</option>
+          <option value="claude-fable-5-1">FABLE 5.1</option>
+          <option value="">CLAUDE CODE DEFAULT</option>
+        </select>
+      </div>
     </div>
     <label class="chk"><input type="checkbox" id="skipPerms" checked> SKIP PERMISSIONS <span class="dim">(--dangerously-skip-permissions — applies on start/restart)</span></label>
     <div id="terminal"></div>

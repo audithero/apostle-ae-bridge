@@ -31,7 +31,7 @@ document.querySelectorAll(".tab").forEach((b) =>
 // ---------- Node bootstrap -------------------------------------------------
 // NB: never name a top-level binding `cep` — CEP predefines window.cep and
 // the collision is a page-killing SyntaxError (found via CDP, 2026-07-28)
-let fs, path, os, execFile, adobeCep, REPO, BRIDGE_DIR, JOBS_DIR, RENDER_DIR, parseLib, diffLib, redesignLib, provLib, beatsStore;
+let fs, path, os, execFile, adobeCep, REPO, BRIDGE_DIR, JOBS_DIR, RENDER_DIR, parseLib, diffLib, redesignLib, provLib, beatsStore, compileLib;
 let NODE_OK = false;
 try {
   if (typeof require !== "function") {
@@ -66,6 +66,7 @@ try {
   redesignLib = require(path.join(REPO, "scripts", "redesign.cjs"));
   provLib = require(path.join(REPO, "scripts", "lib", "redesign-providers.cjs"));
   beatsStore = require(path.join(REPO, "scripts", "beats-store.cjs"));
+  compileLib = require(path.join(REPO, "scripts", "compile-brief.cjs"));
   NODE_OK = true;
 } catch (bootErr) {
   panelFatal("bootstrap", bootErr);
@@ -550,6 +551,210 @@ $id("btnBuild").addEventListener("click", async () => {
   $id("parseOut").innerHTML = '<p><span class="ok">BUILT</span> ' + esc(rep.masterName) + " &middot; " + rep.totalDuration + "s &middot; " + rep.beats.length + " beats" + warn + "</p>" + $id("parseOut").innerHTML;
   status("Built " + rep.masterName + " (" + rep.totalDuration + "s). Verify before delivery: run REVIEW.", "ok");
 });
+
+// ---------- 01 BRIEF: compile with Opus -------------------------------------
+// Opus writes the treatment and, once a human approves it, the moment-by-
+// moment spec; scripts/compile-brief.cjs does every number and the AE build.
+// Same lib as the CLI, so a run started here can be finished from the shell.
+const cmp = { runDir: null, run: null, treatment: null, timer: null };
+
+function cmpButtons() {
+  const has = !!(cmp.runDir && cmp.treatment);
+  const approved = !!(cmp.run && cmp.run.approved);
+  const composed = !!(cmp.run && cmp.run.videos && cmp.run.videos.length);
+  const busy = !!cmp.timer;
+  $id("btnCmpTreat").disabled = busy;
+  $id("btnCmpRevise").disabled = busy || !has;
+  $id("btnCmpApprove").disabled = busy || !has || approved;
+  $id("btnCmpApprove").textContent = approved ? "APPROVED" : "APPROVE";
+  $id("btnCmpOpen").disabled = !has;
+  $id("btnCmpCompose").disabled = busy || !approved;
+  $id("btnCmpBuild").disabled = busy || !composed;
+}
+
+// model calls take minutes: keep a visible clock so a long wait never reads as a hang
+function cmpBusy(label) {
+  const t0 = Date.now();
+  const tick = () => {
+    const s = Math.round((Date.now() - t0) / 1000);
+    status(label + " " + Math.floor(s / 60) + "m " + String(s % 60).padStart(2, "0") + "s");
+  };
+  tick();
+  cmp.timer = setInterval(tick, 1000);
+  cmpButtons();
+}
+function cmpIdle() {
+  if (cmp.timer) clearInterval(cmp.timer);
+  cmp.timer = null;
+  cmpButtons();
+}
+
+function cmpRefreshRuns(select) {
+  const sel = $id("cmpRun");
+  sel.innerHTML = "";
+  sel.add(new Option("— new run —", ""));
+  for (const r of compileLib.listRuns()) {
+    const label = path.basename(r.runDir) + " · " + (r.title || r.client) + " · " + (r.approved ? r.stage : r.stage + " (unapproved)");
+    sel.add(new Option(label, r.runDir));
+  }
+  sel.value = select || "";
+}
+
+function cmpLoad(runDir) {
+  cmp.runDir = runDir || null;
+  cmp.run = null;
+  cmp.treatment = null;
+  if (runDir) {
+    try { cmp.run = compileLib.readRun(runDir); } catch (e) {}
+    try { cmp.treatment = JSON.parse(fs.readFileSync(path.join(runDir, "treatment.json"), "utf8")); } catch (e) {}
+    if (cmp.run && cmp.run.client) $id("cmpClient").value = cmp.run.client;
+  }
+  const vsel = $id("cmpVideo");
+  vsel.innerHTML = "";
+  for (const v of (cmp.run && cmp.run.videos) || []) vsel.add(new Option(v.name, v.slug));
+  cmpRender();
+  cmpButtons();
+}
+
+function cmpRender(extra) {
+  const t = cmp.treatment;
+  if (!t) { $id("cmpOut").innerHTML = extra || ""; return; }
+  const vs = t.visualSystem || {};
+  let h = "";
+  if (extra) h += extra;
+  h += '<div class="sectionhead">' + esc((t.title || "TREATMENT").toUpperCase()) + "</div>";
+  h += "<p>" + esc(t.logline) + "</p>";
+  h += '<p class="dim small">' + esc(t.audience) + "</p>";
+  h += '<p class="small">' + esc(vs.stage) + " · " + esc(vs.easeProfile) + " · " + esc((vs.layoutPalette || []).join(", ")) + "<br>" + esc(vs.rationale || "") + "</p>";
+  for (const v of t.videos || []) {
+    const words = parseLib.spokenWords(v.voScript || "");
+    h += '<div class="sectionhead">' + esc(v.name) + " · ~" + esc(v.targetSec) + "s · " + words + " VO words" + (t.voSource === "drafted" ? ' · <span class="warn">VO DRAFTED: CLIENT MUST APPROVE</span>' : "") + "</div>";
+    for (const s of v.structure || []) {
+      h += '<div class="beat"><span class="idx">' + esc(s.approxSec) + 's</span><span class="sup">' + esc(s.title) + '<br><span class="dim">' + esc(s.visualIdea) + "</span></span></div>";
+    }
+  }
+  const lists = [["ASSETS NEEDED", t.assetsNeeded], ["LIBRARY GAPS", (t.libraryGaps || []).map((g) => g.need + ": " + (g.suggestion || g.why))], ["RISKS", t.risks], ["OPEN QUESTIONS", t.openQuestions]];
+  for (const [label, arr] of lists) {
+    if (arr && arr.length) h += '<div class="sectionhead">' + label + "</div>" + arr.map((x) => '<p class="small">· ' + esc(x) + "</p>").join("");
+  }
+  $id("cmpOut").innerHTML = h;
+}
+
+function cmpVideosHTML(videos) {
+  let h = "";
+  for (const v of videos) {
+    h += '<p><span class="ok">COMPOSED</span> ' + esc(v.summary) + (v.attempts > 1 ? ' <span class="dim">(' + v.attempts + " attempts)</span>" : "") + "</p>";
+    try {
+      const moments = JSON.parse(fs.readFileSync(path.join(REPO, v.files.moments), "utf8"));
+      moments.scenes.forEach((sc, i) => {
+        h += '<div class="beat"><span class="idx">NO. /' + String(i + 1).padStart(2, "0") + '</span><span class="sup">' +
+          sc.moments.map((m) => esc(m["super"] || "") + ' <span class="dim">' + esc(m.layout || "statement") + "</span>").join("<br>") +
+          '</span><span class="meta">' + sc.beatDurationSec + "s</span></div>";
+      });
+    } catch (e) {}
+    for (const w of v.warnings || []) h += '<p class="small warn">' + esc(w) + "</p>";
+  }
+  return h;
+}
+
+$id("cmpRun").addEventListener("change", () => cmpLoad($id("cmpRun").value));
+
+$id("btnCmpAttach").addEventListener("click", () => {
+  const res = window.cep.fs.showOpenDialogEx(true, false, "Brief attachments", null, ["pdf", "png", "jpg", "jpeg", "webp", "md", "txt", "docx", "doc", "pages", "rtf", "json", "srt"]);
+  const have = $id("cmpAttach").value.split("\n").map((x) => x.trim()).filter(Boolean);
+  for (const f of (res && res.data) || []) if (have.indexOf(f) === -1) have.push(f);
+  $id("cmpAttach").value = have.join("\n");
+});
+
+$id("btnCmpTreat").addEventListener("click", async () => {
+  const brief = $id("briefText").value;
+  const attach = $id("cmpAttach").value.split("\n").map((x) => x.trim()).filter(Boolean);
+  if (!brief.trim() && !attach.length) return status("Paste a brief or attach files first.", "warn");
+  cmpBusy("Opus is reading the brief and writing the treatment…");
+  try {
+    const out = await compileLib.treatment({
+      client: $id("cmpClient").value.trim() || "brief", brief, attach,
+      brand: $id("brandKit").value || null, notes: $id("cmpNotes").value.trim(), log: () => {}
+    });
+    cmpIdle();
+    cmpRefreshRuns(out.runDir);
+    cmpLoad(out.runDir);
+    status("Treatment ready. Review it, then APPROVE or REVISE with notes.", "ok");
+  } catch (e) { cmpIdle(); status("Treatment failed: " + e.message, "err"); }
+});
+
+$id("btnCmpRevise").addEventListener("click", async () => {
+  const notes = $id("cmpNotes").value.trim();
+  if (!notes) return status("Write what should change in DIRECTION, then REVISE.", "warn");
+  cmpBusy("Opus is revising the treatment…");
+  try {
+    await compileLib.revise({ runDir: cmp.runDir, notes, log: () => {} });
+    cmpIdle();
+    cmpLoad(cmp.runDir);
+    status("Revised treatment ready.", "ok");
+  } catch (e) { cmpIdle(); status("Revise failed: " + e.message, "err"); }
+});
+
+$id("btnCmpApprove").addEventListener("click", () => {
+  try {
+    compileLib.approve({ runDir: cmp.runDir });
+    cmpRefreshRuns(cmp.runDir);
+    cmpLoad(cmp.runDir);
+    status("Treatment approved. COMPOSE lays out every moment.", "ok");
+  } catch (e) { status("Approve failed: " + e.message, "err"); }
+});
+
+$id("btnCmpOpen").addEventListener("click", () => {
+  if (cmp.runDir) execFile("/usr/bin/open", [path.join(cmp.runDir, "treatment.md")], () => {});
+});
+
+$id("btnCmpCompose").addEventListener("click", async () => {
+  const n = (cmp.treatment && cmp.treatment.videos || []).length;
+  cmpBusy("Opus is composing " + n + " video" + (n === 1 ? "" : "s") + " moment by moment…");
+  try {
+    const out = await compileLib.spec({ runDir: cmp.runDir, notes: $id("cmpNotes").value.trim() || undefined, log: () => {} });
+    cmpIdle();
+    cmpLoad(cmp.runDir);
+    cmpRender(cmpVideosHTML(out.videos));
+    status("Composed and validated. Pick a video and BUILD.", "ok");
+  } catch (e) {
+    cmpIdle();
+    status("Compose failed: " + e.message.split("\n")[0], "err");
+    if (e.errors) cmpRender('<p class="err">' + e.errors.map(esc).join("<br>") + "</p>");
+  }
+});
+
+$id("btnCmpBuild").addEventListener("click", async () => {
+  const slug = $id("cmpVideo").value;
+  cmpBusy("Building " + slug + " in After Effects…");
+  try {
+    const rep = await compileLib.build({
+      runDir: cmp.runDir, video: slug, transitions: $id("cmpIris").checked ? "iris" : null,
+      aeCall: rdAeCall, log: (m) => status(m)
+    });
+    cmpIdle();
+    const v = cmp.run.videos.find((x) => x.slug === slug);
+    try { state.docs[rep.master] = JSON.parse(fs.readFileSync(path.join(REPO, v.files.beats), "utf8")); } catch (e) {}
+    state.master = rep.master;
+    store.save();
+    await refreshMasters();
+    const c = rep.checks || {};
+    const cls = rep.status === "success" ? "ok" : "warn";
+    cmpRender('<p><span class="' + cls + '">' + (rep.status === "success" ? "BUILT" : "BUILT, NEEDS REVIEW") + "</span> " + esc(rep.master) + " · " + rep.totalDuration + "s · " +
+      c.expressionErrors + " expression errors · " + c.safeMarginViolations + " margin violations · " + rep.warnings.length + " warnings</p>" +
+      '<p class="dim small">' + esc(rep.next) + "</p>");
+    status("Built " + rep.master + ". Verify motion before delivery: run REVIEW.", cls);
+  } catch (e) { cmpIdle(); status("Build failed: " + e.message, "err"); }
+});
+
+if (NODE_OK) {
+  try {
+    cmpRefreshRuns();
+    cmpButtons();
+    const m = JSON.parse(fs.readFileSync(path.join(REPO, "prompts", "compile", "config.json"), "utf8")).model || "";
+    $id("cmpModel").textContent = m === "claude-opus-5-5" ? "OPUS 5.5" : (m.toUpperCase() || "CLAUDE");
+  } catch (e) { panelFatal("compile", e); }
+}
 
 $id("btnDiff").addEventListener("click", () => {
   const raw = $id("revText").value;
@@ -1136,7 +1341,10 @@ function relayEnsure() {
 function termStatus(msg, cls) { const el = $id("termStatus"); el.textContent = msg; el.className = "small " + (cls || "dim"); }
 
 function claudeArgs() {
-  return $id("skipPerms").checked ? "--dangerously-skip-permissions" : "";
+  const a = [];
+  if ($id("skipPerms").checked) a.push("--dangerously-skip-permissions");
+  if ($id("claudeModel").value) a.push("--model", $id("claudeModel").value);
+  return a.join(" ");
 }
 
 function termConnect(attempt) {
@@ -1259,7 +1467,8 @@ $id("btnAsk").addEventListener("click", () => {
     ? "AE project currently open: " + state.projectInfo.name + (state.projectInfo.file ? " (" + state.projectInfo.file + ")" : " (unsaved)") + ".\n\n"
     : "";
   // login shell so PATH finds the claude CLI
-  execFile("/bin/zsh", ["-lc", "claude -p " + JSON.stringify(projCtx + prompt)], { timeout: 120000, cwd: REPO, maxBuffer: 4 * 1024 * 1024 },
+  const model = $id("claudeModel").value;
+  execFile("/bin/zsh", ["-lc", "claude -p " + (model ? "--model " + model + " " : "") + JSON.stringify(projCtx + prompt)], { timeout: 300000, cwd: REPO, maxBuffer: 4 * 1024 * 1024 },
     (err, stdout, stderr) => {
       $id("claudeOut").textContent = err ? ("ERROR: " + (stderr || err.message)) : stdout;
     });

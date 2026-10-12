@@ -1,0 +1,13 @@
+{
+  "comment": "Model wiring for the brief compiler (scripts/compile-brief.cjs). Swap models and prompt versions here, never in code.",
+  "provider": "claude-cli",
+  "model": "claude-opus-5-5",
+  "effort": { "treatment": "high", "spec": "high" },
+  "timeoutSec": { "treatment": 900, "spec": 1200 },
+  "retries": 2,
+  "prompts": {
+    "treatment": "treatment.v1.md",
+    "spec": "spec.v1.md"
+  },
+  "defaults": { "wpm": 150, "stage": "gallery", "easeProfile": "curvaceous", "tail": 2.5 }
+}

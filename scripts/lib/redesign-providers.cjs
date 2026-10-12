@@ -155,11 +155,14 @@ function resolveClaudeBin() {
 const claudeCliPlanProvider = {
   name: "claude-cli",
   available() { return true; },
-  plan({ prompt, model, timeoutSec, cwd, log }) {
+  // addDirs: folders outside cwd the model may Read (brief attachments)
+  plan({ prompt, model, timeoutSec, cwd, log, addDirs, effort }) {
     return new Promise((resolve, reject) => {
       const bin = resolveClaudeBin();
       const args = ["-p", "--output-format", "text", "--allowedTools", "Read"];
       if (model) args.push("--model", model);
+      if (effort) args.push("--effort", effort);
+      for (const d of addDirs || []) args.push("--add-dir", d);
       log && log("claude-cli: running " + path.basename(bin) + " -p (" + Math.round(prompt.length / 1024) + " KB prompt)");
       const child = spawn(bin, args, { cwd: cwd || process.cwd(), stdio: ["pipe", "pipe", "pipe"] });
       let out = "", err = "";

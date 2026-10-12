@@ -1,0 +1,103 @@
+{
+  "$schema": "http://json-schema.org/draft-07/schema#",
+  "$id": "apostle-video-spec-schema",
+  "title": "Apostle video spec",
+  "description": "What the model writes in the compile pipeline (scripts/compile-brief.cjs, prompts/compile/spec.v1.md) and what a human edits by hand. scripts/lib/compile-spec.cjs turns it into a beats doc (beats-schema.json) and a moments doc (applyMoments). Structural checks live here; the semantic ones (cues found in the VO, glyph names, VO verbatim, per-layout payloads) are in scripts/lib/validate-spec.cjs. The CommBank specs in briefs/commbank-yello/specs/ are the measured-timing form of the same format.",
+  "type": "object",
+  "required": ["name", "slug", "briefId", "beats"],
+  "properties": {
+    "schemaVersion": { "type": "number", "const": 2 },
+    "name": { "type": "string", "pattern": "^[A-Z][A-Z0-9_]*$", "description": "Master comp base name; the build appends _vNNN." },
+    "slug": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$", "description": "File name for specs/, beats/ and moments/." },
+    "briefId": { "type": "string" },
+    "client": { "type": "string" },
+    "briefDir": { "type": "string", "description": "Repo-relative briefs/<client> folder outputs are written to." },
+    "script": { "type": "string", "description": "Repo-relative path of the source script, for provenance." },
+    "brandKit": { "type": "string", "description": "Repo-relative brands/<kit>.json. The CLI --brand flag overrides it." },
+    "stage": { "type": "string", "enum": ["corridor", "gallery", "carousel", "stack"], "default": "gallery" },
+    "easeProfile": { "type": "string", "description": "A key of EASE_PROFILES in apostle.jsx (corporate-smooth, snappy, playful, curvaceous)." },
+    "format": {
+      "type": "object",
+      "properties": {
+        "resolution": { "type": "array", "items": { "type": "number" }, "default": [1920, 1080], "description": "Only 1920x1080 is supported: moment layouts are drawn in fixed 1080p geometry." },
+        "fps": { "type": "number", "default": 25 }
+      }
+    },
+    "timing": {
+      "type": "object",
+      "properties": {
+        "mode": { "type": "string", "enum": ["wpm", "words", "measured"], "description": "wpm: estimate from word counts (no VO yet). words: align to a vo-align.py words.json. measured: beats[].start and spec.end in seconds (the CommBank form). Default: measured when spec.end is set, else wpm." },
+        "wpm": { "type": "number", "default": 150 },
+        "words": { "type": "string", "description": "words mode: repo-relative path to words.json" }
+      }
+    },
+    "end": { "type": "number", "description": "measured mode: second at which speech ends" },
+    "tail": { "type": "number", "default": 2.5, "description": "Extra hold on the final beat (endcard)." },
+    "textReveal": { "type": "boolean", "default": true, "description": "false turns the word-by-word reveal off." },
+    "voFiles": { "type": "array", "items": { "type": "string" } },
+    "titleCard": {
+      "type": "object",
+      "description": "Opening card the VO never says. Runs before the first spoken word and pushes the VO back by dur.",
+      "required": ["super", "dur"],
+      "properties": {
+        "super": { "type": "string" },
+        "sub": { "type": "string" },
+        "layout": { "type": "string", "default": "statement" },
+        "dur": { "type": "number" }
+      }
+    },
+    "sections": {
+      "type": "array",
+      "items": {
+        "type": "object",
+        "required": ["id", "title"],
+        "properties": { "id": { "type": "string", "pattern": "^[a-z0-9][a-z0-9-]*$" }, "title": { "type": "string" } }
+      }
+    },
+    "beats": {
+      "type": "array",
+      "minItems": 1,
+      "items": {
+        "type": "object",
+        "required": ["moments"],
+        "properties": {
+          "id": { "type": "string", "description": "Optional fixed beatId. Default: slug of the first words of vo (stable across rebuilds)." },
+          "section": { "type": "string" },
+          "vo": { "type": "string", "description": "Verbatim VO for this beat. Every word of the video's VO belongs to exactly one beat, in order." },
+          "start": { "type": "number", "description": "measured mode only: absolute VO second where this beat's first word is spoken" },
+          "holdSec": { "type": "number", "description": "wpm mode only: duration of a beat with no vo" },
+          "transit": { "type": "string", "enum": ["dollyPush", "lateralTruck", "whipOrbit", "crane", "dollyZoom", "none"], "description": "Omit for the house rotation." },
+          "preset": { "type": "string", "enum": ["titleCard", "listBuild", "uiWalkthrough", "endcard"], "description": "Omit to infer: listBuild when any moment uses a list layout." },
+          "moments": {
+            "type": "array",
+            "minItems": 1,
+            "items": {
+              "type": "object",
+              "properties": {
+                "id": { "type": "string" },
+                "cue": { "type": "string", "description": "wpm/words modes: verbatim opening words of the vo where this moment starts. Not needed on a beat's first moment." },
+                "at": { "type": "number", "description": "measured mode: absolute VO second where this moment starts" },
+                "layout": { "type": "string", "enum": ["statement", "hero", "iconRow", "chipRow", "device", "compare", "hub", "endcard", "placeholder"] },
+                "super": { "type": "string" },
+                "sub": { "type": "string" },
+                "glyph": { "type": "string", "description": "A key of MOM_GLYPHS in apostle.jsx." },
+                "picto": { "type": "string", "description": "Name of a footage item in the project's 'pictograms' folder; falls back to glyph." },
+                "tiles": { "type": "array", "items": { "type": "object", "properties": { "glyph": { "type": "string" }, "picto": { "type": "string" }, "label": { "type": "string" } } } },
+                "chips": { "type": "array", "items": { "type": "string" } },
+                "spokes": { "type": "array", "items": { "type": "object", "properties": { "glyph": { "type": "string" }, "picto": { "type": "string" } } } },
+                "screen": { "type": "array", "items": { "type": "object", "properties": { "label": { "type": "string" }, "glyph": { "type": "string" }, "picto": { "type": "string" } } } },
+                "fromBox": { "type": "object", "properties": { "label": { "type": "string" }, "strike": { "type": "boolean" } } },
+                "toBox": { "type": "object", "properties": { "label": { "type": "string" } } },
+                "url": { "type": "string" },
+                "asset": { "type": "string" },
+                "deviceX": { "type": "number" },
+                "textX": { "type": "number" },
+                "why": { "type": "string", "description": "The model's reason for this moment. Stripped before build." }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

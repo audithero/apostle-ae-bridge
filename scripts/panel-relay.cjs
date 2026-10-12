@@ -151,11 +151,18 @@ const server = net.createServer((sock) => {
       // per-session claude flags via query string (?args=...), whitelisted —
       // the panel's SKIP PERMISSIONS toggle rides in here
       const ALLOWED_FLAGS = new Set(["--dangerously-skip-permissions", "--continue", "--resume"]);
+      // flags that take one value, with the shape that value must have
+      const ALLOWED_VALUED = { "--model": /^[a-z0-9][a-z0-9.\-[\]]*$/i, "--effort": /^(low|medium|high|xhigh|max)$/ };
       let extraArgs = [];
       try {
         const q = ((head.split("\r\n")[0].split(" ")[1] || "").split("?")[1] || "");
         for (const kv of q.split("&")) {
-          if (kv.indexOf("args=") === 0) extraArgs = decodeURIComponent(kv.slice(5)).split(" ").filter((a) => ALLOWED_FLAGS.has(a));
+          if (kv.indexOf("args=") !== 0) continue;
+          const toks = decodeURIComponent(kv.slice(5)).split(" ").filter(Boolean);
+          for (let i = 0; i < toks.length; i++) {
+            if (ALLOWED_FLAGS.has(toks[i])) extraArgs.push(toks[i]);
+            else if (ALLOWED_VALUED[toks[i]] && ALLOWED_VALUED[toks[i]].test(toks[i + 1] || "")) { extraArgs.push(toks[i], toks[i + 1]); i++; }
+          }
         }
       } catch (e) {}
       sock.write("HTTP/1.1 101 Switching Protocols\r\nUpgrade: websocket\r\nConnection: Upgrade\r\nSec-WebSocket-Accept: " + wsAccept(keyMatch[1]) + "\r\n\r\n");
