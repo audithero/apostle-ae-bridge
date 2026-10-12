@@ -561,7 +561,8 @@ const cmp = { runDir: null, run: null, treatment: null, timer: null };
 function cmpButtons() {
   const has = !!(cmp.runDir && cmp.treatment);
   const approved = !!(cmp.run && cmp.run.approved);
-  const composed = !!(cmp.run && cmp.run.videos && cmp.run.videos.length);
+  const instr = $id("cmpStyle").value === "instructional";
+  const composed = !!(cmp.run && (instr ? (cmp.run.plans && cmp.run.plans.length) : (cmp.run.videos && cmp.run.videos.length)));
   const busy = !!cmp.timer;
   $id("btnCmpTreat").disabled = busy;
   $id("btnCmpRevise").disabled = busy || !has;
@@ -609,9 +610,7 @@ function cmpLoad(runDir) {
     try { cmp.treatment = JSON.parse(fs.readFileSync(path.join(runDir, "treatment.json"), "utf8")); } catch (e) {}
     if (cmp.run && cmp.run.client) $id("cmpClient").value = cmp.run.client;
   }
-  const vsel = $id("cmpVideo");
-  vsel.innerHTML = "";
-  for (const v of (cmp.run && cmp.run.videos) || []) vsel.add(new Option(v.name, v.slug));
+  cmpVideos();
   cmpRender();
   cmpButtons();
 }
@@ -657,6 +656,16 @@ function cmpVideosHTML(videos) {
   return h;
 }
 
+function cmpVideos() {
+  const vsel = $id("cmpVideo");
+  vsel.innerHTML = "";
+  if ($id("cmpStyle").value === "instructional") {
+    for (const v of (cmp.run && cmp.run.plans) || []) vsel.add(new Option(v.slug + " (plan)", v.slug));
+  } else {
+    for (const v of (cmp.run && cmp.run.videos) || []) vsel.add(new Option(v.name, v.slug));
+  }
+}
+$id("cmpStyle").addEventListener("change", () => { cmpVideos(); cmpButtons(); });
 $id("cmpRun").addEventListener("change", () => cmpLoad($id("cmpRun").value));
 
 $id("btnCmpAttach").addEventListener("click", () => {
@@ -710,6 +719,23 @@ $id("btnCmpOpen").addEventListener("click", () => {
 
 $id("btnCmpCompose").addEventListener("click", async () => {
   const n = (cmp.treatment && cmp.treatment.videos || []).length;
+  if ($id("cmpStyle").value === "instructional") {
+    cmpBusy("Opus is directing " + n + " video" + (n === 1 ? "" : "s") + ": screens, rings, props, chapters…");
+    try {
+      const out = await compileLib.direct({ runDir: cmp.runDir, notes: $id("cmpNotes").value.trim() || undefined, log: () => {} });
+      cmpIdle();
+      cmpLoad(cmp.runDir);
+      cmpRender(out.videos.map((v) => '<p><span class="ok">DIRECTED</span> ' + esc(v.slug) + " &middot; " + v.steps + " steps &middot; " + v.beats + " beats" +
+        (v.attempts > 1 ? ' <span class="dim">(' + v.attempts + " attempts)</span>" : "") + '</p><p class="dim small">' + esc(v.plan) + "</p>" +
+        v.warnings.map((w) => '<p class="small warn">' + esc(w) + "</p>").join("")).join(""));
+      status("Directed and validated. BUILD VIDEO builds it in After Effects.", "ok");
+    } catch (e) {
+      cmpIdle();
+      status("Direct failed: " + e.message.split("\n")[0], "err");
+      if (e.errors) cmpRender('<p class="err">' + e.errors.map(esc).join("<br>") + "</p>");
+    }
+    return;
+  }
   cmpBusy("Opus is composing " + n + " video" + (n === 1 ? "" : "s") + " moment by moment…");
   try {
     const out = await compileLib.spec({ runDir: cmp.runDir, notes: $id("cmpNotes").value.trim() || undefined, log: () => {} });
@@ -726,6 +752,21 @@ $id("btnCmpCompose").addEventListener("click", async () => {
 
 $id("btnCmpBuild").addEventListener("click", async () => {
   const slug = $id("cmpVideo").value;
+  if ($id("cmpStyle").value === "instructional") {
+    const pl = (cmp.run.plans || []).find((x) => x.slug === slug);
+    cmpBusy("Building " + slug + " in After Effects…");
+    try {
+      const rep = await compileLib.buildPlan({ plan: path.join(REPO, pl.plan), replace: true, aeCall: rdAeCall, log: (m) => status(m) });
+      cmpIdle();
+      await refreshMasters();
+      const ok = rep.status === "success";
+      cmpRender('<p><span class="' + (ok ? "ok" : "warn") + '">' + (ok ? "BUILT" : "BUILD ISSUE") + "</span> " + esc(rep.master || "") + " &middot; " + rep.duration + "s &middot; " + rep.layers + " layers</p>" +
+        (rep.warnings || []).concat(rep.compileWarnings || []).map((w) => '<p class="small warn">' + esc(w) + "</p>").join("") +
+        '<p class="dim small">Verify motion before delivery: render a strip across a chapter card and a prop.</p>');
+      status(ok ? "Built " + rep.master + "." : "Build reported a problem.", ok ? "ok" : "warn");
+    } catch (e) { cmpIdle(); status("Build failed: " + e.message, "err"); }
+    return;
+  }
   cmpBusy("Building " + slug + " in After Effects…");
   try {
     const rep = await compileLib.build({

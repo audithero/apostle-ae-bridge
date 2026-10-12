@@ -97,12 +97,11 @@
     {
      "cue": "A valid Australian Visa",
      "do": "ring",
-     "rect": [
-      40,
-      1262,
-      1045,
-      160
-     ]
+     "ring": {
+      "bands": [
+       4
+      ]
+     }
     },
     {
      "cue": "An ePassport",
@@ -114,12 +113,11 @@
     {
      "cue": "An ePassport",
      "do": "ring",
-     "rect": [
-      40,
-      1458,
-      1045,
-      220
-     ]
+     "ring": {
+      "bands": [
+       5
+      ]
+     }
     }
    ]
   },
@@ -215,12 +213,11 @@
     {
      "cue": "You have lived in Australia",
      "do": "ring",
-     "rect": [
-      40,
-      640,
-      1045,
-      180
-     ]
+     "ring": {
+      "bands": [
+       3
+      ]
+     }
     },
     {
      "cue": "You arrived in Australia less",
@@ -230,12 +227,11 @@
     {
      "cue": "You arrived in Australia less",
      "do": "ring",
-     "rect": [
-      40,
-      905,
-      1045,
-      255
-     ]
+     "ring": {
+      "bands": [
+       4
+      ]
+     }
     },
     {
      "cue": "You are moving to Australia soon",
@@ -245,12 +241,11 @@
     {
      "cue": "You are moving to Australia soon",
      "do": "ring",
-     "rect": [
-      40,
-      1240,
-      1045,
-      255
-     ]
+     "ring": {
+      "bands": [
+       5
+      ]
+     }
     }
    ]
   },
@@ -330,12 +325,12 @@
     {
      "cue": "Mobile number",
      "do": "ring",
-     "rect": [
-      40,
-      842,
-      1045,
-      230
-     ]
+     "ring": {
+      "bands": [
+       4,
+       5
+      ]
+     }
     },
     {
      "cue": "Email address",
@@ -346,12 +341,12 @@
     {
      "cue": "Email address",
      "do": "ring",
-     "rect": [
-      40,
-      1238,
-      1045,
-      230
-     ]
+     "ring": {
+      "bands": [
+       6,
+       7
+      ]
+     }
     },
     {
      "cue": "Australian address",
@@ -362,12 +357,11 @@
     {
      "cue": "Australian address",
      "do": "ring",
-     "rect": [
-      40,
-      1492,
-      1045,
-      372
-     ]
+     "ring": {
+      "bands": [
+       8
+      ]
+     }
     },
     {
      "cue": "Well use these details",
@@ -423,7 +417,12 @@
     {
      "cue": "Tap Scan passport chip",
      "do": "screen",
-     "shot": "28. Master NFC"
+     "shot": "28. Master NFC",
+     "ring": {
+      "bands": [
+       5
+      ]
+     }
     },
     {
      "cue": "Wait until you see",

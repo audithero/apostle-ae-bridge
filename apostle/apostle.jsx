@@ -19,7 +19,7 @@
 
 var APOSTLE = (function () {
 
-  var LIB_VERSION = "2.15.0";
+  var LIB_VERSION = "2.16.0";
 
   // Captured at load time; locates the repo for crash-recovery run snapshots
   var LIB_FILE = null;
@@ -3944,6 +3944,16 @@ var APOSTLE = (function () {
     return l;
   }
 
+  // The 2D instructional stage lives in its own file; load it from beside
+  // this library and build a compiled timeline (see build-instructional.cjs).
+  function buildInstructional(timelinePath, replace) {
+    try {
+      if (!LIB_FILE || !LIB_FILE.exists) return toJSON({ status: "error", error: "apostle.jsx cannot locate itself to load instructional.jsx" });
+      $.evalFile(new File(LIB_FILE.parent.fsName + "/instructional.jsx"));
+      return $.global.APOSTLE_INSTR.build(timelinePath, { replace: !!replace });
+    } catch (e) { return errJSON("buildInstructional", e); }
+  }
+
   // Import files into a named project folder (e.g. "screens"), skipping any
   // already there by name. filesJSON: array of absolute paths.
   function importAssets(folderName, filesJSON) {
@@ -4626,6 +4636,7 @@ var APOSTLE = (function () {
     drawGlyph: drawGlyph,
     drawTile: drawTile,
     drawBadge: drawBadge,
+    buildInstructional: buildInstructional,
     applyTransitions: applyTransitions,
     getProjectInfo: getProjectInfo,
     listComps: listComps,

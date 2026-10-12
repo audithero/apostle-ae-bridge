@@ -19,6 +19,7 @@
 const fs = require("fs");
 const path = require("path");
 const { tokens, findCue, makeAligner } = require("./compile-spec.cjs");
+const { bandsToRect } = require("./screen-bands.cjs");
 
 const R = (x) => Math.round(x * 100) / 100;
 
@@ -58,7 +59,8 @@ function captionChunks(vo) {
 function compileInstructional(plan, opts) {
   opts = opts || {};
   const repo = opts.repo || path.resolve(__dirname, "..", "..");
-  const kit = opts.kit || JSON.parse(fs.readFileSync(path.join(repo, plan.kit), "utf8"));
+  // no kit (a brief without a brand yet): neutral defaults, CommBank-free
+  const kit = opts.kit || (plan.kit ? JSON.parse(fs.readFileSync(path.isAbsolute(plan.kit) ? plan.kit : path.join(repo, plan.kit), "utf8")) : { colors: {} });
   const warnings = [];
   const timing = plan.timing || { mode: "wpm" };
   const wpm = timing.wpm || 150;
@@ -122,6 +124,18 @@ function compileInstructional(plan, opts) {
   };
 
   // screens: name -> file across the plan's folders
+  // a ring is a rect in capture pixels, or { bands: [n, ...] } naming the
+  // numbered content blocks of that screen (screen-bands.cjs)
+  const bandsMap = opts.bands || (plan.bandsFile && fs.existsSync(path.join(repo, plan.bandsFile)) ? JSON.parse(fs.readFileSync(path.join(repo, plan.bandsFile), "utf8")) : {});
+  const ringRect = (r, shot, where) => {
+    if (Array.isArray(r) && r.length === 4) return r;
+    if (r && r.bands) {
+      const rect = bandsToRect(bandsMap[shot], r.bands);
+      if (!rect) warnings.push(where + ": bands " + JSON.stringify(r.bands) + " not found on screen " + shot);
+      return rect;
+    }
+    return null;
+  };
   const SHOT = /\.(png|jpe?g)$/i;
   const shotFile = {};
   for (const d0 of [].concat(plan.screens || [])) {
@@ -196,14 +210,18 @@ function compileInstructional(plan, opts) {
           if (!phoneOn) { phoneOn = { tIn: t, tOut: null }; tl.phone.push(phoneOn); }
           ringOff(t); badgeOff(t);
           tl.shots.push({ t, shot: e.shot, glare: !!e.glare });
-          if (e.ring) tl.rings.push({ tIn: R(t + 0.5), tOut: null, rect: e.ring, shot: e.shot });
+          if (e.ring) {
+            const rr = ringRect(e.ring, e.shot, "beat " + (bi + 1));
+            if (rr) tl.rings.push({ tIn: R(t + 0.5), tOut: null, rect: rr, shot: e.shot });
+          }
           if (e.badge) tl.badges.push({ tIn: R(t + 0.6), tOut: null, kind: e.badge });
           break;
         }
         case "ring": {
           ringOff(t);
           const cur = tl.shots[tl.shots.length - 1];
-          tl.rings.push({ tIn: t, tOut: null, rect: e.rect, shot: cur && cur.shot });
+          const rr = ringRect(e.rect || e.ring || (e.bands ? { bands: e.bands } : null), cur && cur.shot, "beat " + (bi + 1));
+          if (rr) tl.rings.push({ tIn: t, tOut: null, rect: rr, shot: cur && cur.shot });
           break;
         }
         case "badge": badgeOff(t); tl.badges.push({ tIn: t, tOut: null, kind: e.kind }); break;

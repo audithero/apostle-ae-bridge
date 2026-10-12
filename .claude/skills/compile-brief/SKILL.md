@@ -38,6 +38,11 @@ node scripts/compile-brief.cjs compile  --spec briefs/acme/specs/x.json --brand 
 node scripts/compile-brief.cjs build    --beats briefs/acme/beats/x.json --moments briefs/acme/moments/x.json --brand brands/acme.json
 ```
 
+## Two styles
+
+- **Instructional (2D)**: step-by-step how-to films with real app screens. After approval run `direct`, not `spec`, then `build-plan --plan briefs/<client>/instructional/<slug>.plan.json --replace`. Before you edit a plan by hand, read `prompts/compile/instructional.v1.md` (grammar, events, craft rules), and choose rings from the numbered sheet in `<run>/bands/screens-bands.png`.
+- **Explainer (camera corridor)**: `spec` then `build`, as below.
+
 ## Hard rules
 
 1. **No build without an approved treatment.** Show the treatment (logline,

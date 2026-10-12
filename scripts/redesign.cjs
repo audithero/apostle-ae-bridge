@@ -68,8 +68,11 @@ function bridgeIsAlive() {
 function aeShellCall(fnName, args, timeoutSec) {
   const lit = (args || []).map((a) => (a === undefined || a === null) ? "null" : JSON.stringify(a)).join(", ");
   const tmp = path.join(os.tmpdir(), "apostle-redesign-" + Date.now() + ".jsx");
+  // reload when the function is missing, not only when nothing is loaded:
+  // an AE session keeps whatever library version it first loaded, so new
+  // entry points were invisible until a restart
   const loader =
-    'if (typeof $.global.APOSTLE === "undefined") { $.evalFile(new File(' +
+    'if (typeof $.global.APOSTLE === "undefined" || typeof $.global.APOSTLE.' + fnName + ' !== "function") { $.evalFile(new File(' +
     JSON.stringify(path.join(REPO, "apostle", "apostle.jsx")) + ")); }\n";
   fs.writeFileSync(tmp, loader + "var r = $.global.APOSTLE." + fnName + "(" + lit + ");\nreturn r;");
   const t = String(timeoutSec || 90);

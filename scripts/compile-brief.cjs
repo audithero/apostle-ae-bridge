@@ -30,6 +30,8 @@
  *   node scripts/compile-brief.cjs revise    --run DIR --notes "what to change"
  *   node scripts/compile-brief.cjs approve   --run DIR [--by NAME]
  *   node scripts/compile-brief.cjs spec      --run DIR [--video slug] [--notes "..."]
+ *   node scripts/compile-brief.cjs direct    --run DIR [--video slug]   (2D instructional plan)
+ *   node scripts/compile-brief.cjs build-plan --plan briefs/acme/instructional/x.plan.json [--version v002] [--replace]
  *   node scripts/compile-brief.cjs compile   --spec briefs/acme/specs/x.json [--brand kit.json]
  *   node scripts/compile-brief.cjs build     --run DIR --video slug [--transitions iris]
  *   node scripts/compile-brief.cjs build     --beats b.json --moments m.json [--brand kit.json]
@@ -50,6 +52,9 @@ const { capabilities, capabilitiesMarkdown } = require("./lib/capabilities.cjs")
 const { compileSpec } = require("./lib/compile-spec.cjs");
 const { validateSpec, validateTreatment } = require("./lib/validate-spec.cjs");
 const { parseBrief, spokenWords } = require("./parse-brief.cjs");
+const { screenBands } = require("./lib/screen-bands.cjs");
+const { validateInstructional } = require("./lib/validate-instructional.cjs");
+const { compileInstructional } = require("./lib/compile-instructional.cjs");
 
 const REPO = path.resolve(__dirname, "..");
 const PROMPTS = path.join(REPO, "prompts", "compile");
@@ -496,6 +501,100 @@ async function spec(opts) {
   return { runDir, videos: results };
 }
 
+// ---------------- 2b. instructional plan (the 2D stage) ----------------
+
+// numbered content blocks for every screen, cached per run
+function runBands(runDir, screens, log) {
+  const dir = path.join(runDir, "bands");
+  const cached = path.join(dir, "bands.json");
+  if (fs.existsSync(cached)) {
+    const b = readJSON(cached);
+    if (screens.every((s) => b[s.name])) return { bands: b, sheet: fs.existsSync(path.join(dir, "screens-bands.png")) ? path.join(dir, "screens-bands.png") : null };
+  }
+  log && log("numbering content blocks on " + screens.length + " screens…");
+  return screenBands(screens, dir);
+}
+
+async function direct(opts) {
+  const log = opts.log;
+  const cfg = loadConfig();
+  const runDir = opts.runDir;
+  const run = readRun(runDir);
+  if (!run.approved && !opts.force) throw new Error("treatment is not approved yet. Review treatment.md, then run approve (or pass --force)");
+  const t = readJSON(path.join(runDir, "treatment.json"));
+  const provider = resolveProvider(opts.provider || cfg.provider);
+  const model = opts.model || cfg.model;
+  const kitPath = t.brandKit || run.brandKit;
+  const kit = kitPath && fs.existsSync(abs(kitPath)) ? readJSON(abs(kitPath)) : null;
+  const cap = capabilities();
+  const tpl = loadPrompt(cfg.prompts.instructional);
+  const example = fs.readFileSync(path.join(PROMPTS, cfg.prompts.instructionalExample), "utf8");
+  const screens = listScreens(run.screensDir);
+  const { bands, sheet } = runBands(runDir, screens, log);
+  const videos = (t.videos || []).filter((v) => !opts.video || v.slug === opts.video);
+  if (!videos.length) throw new Error("no video " + (opts.video ? "'" + opts.video + "' " : "") + "in the treatment");
+  const clientDir = path.join(BRIEFS_ROOT, slugify(run.client));
+  const sheetNote = sheet
+    ? "\n\n### Numbered screen sheet\n\n**Read `" + sheet + "` before choosing any ring.** Each screen is shown as the phone displays it, with its content blocks outlined in red and numbered 1, 2, 3 down the screen. A ring is `{ \"bands\": [n] }` (or several adjacent blocks, `[4, 5]`)."
+    : "\n\n(No numbered screen sheet could be made; omit rings.)";
+  const results = [];
+  for (const v of videos) {
+    const vo = String(v.voScript || "").trim();
+    const name = (v.name || slugify(v.slug).toUpperCase().replace(/-/g, "_"));
+    const res = await askJSON({
+      stage: "instructional", tag: "instructional." + v.slug, runDir, provider, cfg, model, log,
+      addDirs: [].concat(run.screensDir || [], [runDir]),
+      ctx: { treatment: t, video: v },
+      buildPrompt: (errors, previous) => fill(tpl, {
+        TREATMENT: JSON.stringify(Object.assign({}, t, { videos: undefined }), null, 1),
+        VIDEO: JSON.stringify(Object.assign({}, v, { voScript: undefined }), null, 1),
+        VO: vo, BRAND: brandSection(kit, kitPath), NOTES: opts.notes || run.notes || "(none)",
+        ASSETS: assetsSection(screens, path.join(runDir, "screens-sheet.png"), run.screensDir, run.briefMedia) + sheetNote,
+        GLYPHS: cap.glyphs.join(", "), EXAMPLE: example, NAME: name
+      }) + retryBlock(errors, previous),
+      validate: (p) => {
+        Object.assign(p, { kit: kitPath, screens: [].concat(run.screensDir || []) });
+        return validateInstructional(p, { voScript: vo, screens: screens.map((x) => x.name), bands, glyphs: cap.glyphs, repo: REPO, kit });
+      }
+    });
+    const p = res.obj;
+    p.name = p.name || name;
+    p.kit = kitPath;
+    p.screens = [].concat(run.screensDir || []);
+    p.label = p.label || (String(p.name).replace(/_/g, " ") + "  ·  FOR REVIEW");
+    p.timing = p.timing || { mode: "wpm", wpm: 150, gap: 0.45 };
+    p.sourceRun = rel(runDir);
+    const out = path.join(clientDir, "instructional", v.slug + ".plan.json");
+    writeJSON(out, p);
+    log && log("plan written: " + rel(out));
+    results.push({ slug: v.slug, plan: rel(out), warnings: res.warnings, attempts: res.attempts, beats: p.beats.length, steps: p.totalSteps });
+  }
+  run.stage = "direct";
+  run.plans = results.map((r) => ({ slug: r.slug, plan: r.plan }));
+  writeRun(runDir, run);
+  return { runDir, videos: results };
+}
+
+// plan -> timeline -> AE (through the injected transport, so the panel works)
+async function buildPlan(opts) {
+  const log = opts.log || (() => {});
+  const planPath = abs(opts.plan);
+  const p = readJSON(planPath);
+  const screens = listScreens(p.screens);
+  const { bands } = runBands(path.join(path.dirname(RUNS_ROOT), "instructional", slugify(p.name)), screens, log);
+  const { timeline, warnings } = compileInstructional(p, { repo: REPO, bands });
+  if (opts.version) timeline.name = p.name + "_" + opts.version;
+  const dir = path.join(path.dirname(RUNS_ROOT), "instructional");
+  fs.mkdirSync(dir, { recursive: true });
+  const tlPath = path.join(dir, timeline.name + ".timeline.json");
+  writeJSON(tlPath, timeline);
+  log("Building " + timeline.name + " (" + timeline.duration + "s) in After Effects…");
+  const res = await callAE("buildInstructional", [tlPath, !!opts.replace], 1800, opts.aeCall);
+  res.compileWarnings = warnings;
+  res.timeline = rel(tlPath);
+  return res;
+}
+
 // spec -> beats + moments, written to the run's client folder. Also the
 // path for a spec a human edited by hand (CLI `compile`).
 function compileAndPublish(s, kit, clientDir, log) {
@@ -728,6 +827,22 @@ const mockProvider = {
     }
     const vo = ctx.video.voScript.replace(/\s+/g, " ").trim();
     const sentences = vo.split(/(?<=[.!?;\u2026])\s+/);
+    if (ctx.stage === "instructional") {
+      // one chapter, one page, an item per beat: the smallest valid plan
+      const beats = [];
+      for (let i = 0; i < sentences.length; i += 2) {
+        const text = sentences.slice(i, i + 2).join(" ");
+        const words = text.split(" ");
+        const b = { vo: text, events: [] };
+        if (i === 0) {
+          b.chapter = { step: 1, title: "Mock step" };
+          b.page = { heading: ["Mock", "plan"], highlight: "plan", items: "list" };
+        }
+        if (beats.length < 4) b.events.push({ cue: words.slice(0, 3).join(" "), do: "item", glyph: "check", title: words.slice(0, 4).join(" ").replace(/[,.;:!?]+$/, "").slice(0, 30) });
+        beats.push(b);
+      }
+      return JSON.stringify({ name: ctx.video.name || "MOCK_VIDEO", version: "v001", totalSteps: 1, open: { heading: ["Mock"], sub: "", dur: 2 }, beats });
+    }
     const beats = [];
     for (let i = 0; i < sentences.length; i += 2) {
       const text = sentences.slice(i, i + 2).join(" ");
@@ -803,6 +918,20 @@ async function main() {
     process.exitCode = r.errors.length ? 1 : 0;
     return;
   }
+  if (cmd === "direct") {
+    out = await direct(Object.assign(common, { runDir: abs(arg(argv, "--run")), video: arg(argv, "--video"), notes: arg(argv, "--notes"), force: argv.indexOf("--force") !== -1 }));
+    for (const v of out.videos) {
+      console.log(v.slug + ": " + v.beats + " beats, " + v.steps + " steps (" + v.attempts + " attempt" + (v.attempts > 1 ? "s" : "") + ") -> " + v.plan);
+      v.warnings.forEach((w) => console.log("  warn: " + w));
+    }
+    return;
+  }
+  if (cmd === "build-plan") {
+    out = await buildPlan({ plan: arg(argv, "--plan"), version: arg(argv, "--version"), replace: argv.indexOf("--replace") !== -1, log });
+    console.log(JSON.stringify(out, null, 1));
+    process.exitCode = out.status === "success" ? 0 : 2;
+    return;
+  }
   if (cmd === "build") {
     out = await build({
       runDir: arg(argv, "--run") ? abs(arg(argv, "--run")) : null, video: arg(argv, "--video"),
@@ -823,6 +952,6 @@ if (require.main === module) {
 }
 
 module.exports = {
-  treatment, revise, approve, spec, build, compileFile, compileAndPublish, listRuns, readRun,
+  treatment, revise, approve, spec, build, compileFile, direct, buildPlan, compileAndPublish, listRuns, readRun,
   treatmentMarkdown, extractClientVO, ingest, extractDocxMedia, mockProvider, RUNS_ROOT, stripToJson, listScreens
 };

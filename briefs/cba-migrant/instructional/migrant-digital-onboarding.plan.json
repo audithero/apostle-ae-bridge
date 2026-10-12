@@ -1,0 +1,717 @@
+{
+ "name": "CBA_MIGRANT_ONBOARDING",
+ "version": "v001",
+ "totalSteps": 8,
+ "open": {
+  "heading": [
+   "Open your account",
+   "online."
+  ],
+  "sub": "A step-by-step guide for people moving to Australia",
+  "dur": 3.4
+ },
+ "outro": {
+  "heading": [
+   "Welcome to Australia.",
+   "Welcome to CommBank."
+  ],
+  "hold": 4
+ },
+ "beats": [
+  {
+   "vo": "In this video we will show you how to open an account and verify your identity online.",
+   "page": {
+    "eyebrow": "OPENING AN ACCOUNT ONLINE",
+    "heading": [
+     "Open an account.",
+     "Verify your identity."
+    ],
+    "highlight": "identity.",
+    "items": "list"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "10. Let's open",
+     "delay": 0.2
+    },
+    {
+     "cue": "how to open an account",
+     "do": "item",
+     "glyph": "phone",
+     "title": "All in the CommBank app",
+     "sub": "8 steps. Have your passport ready."
+    }
+   ]
+  },
+  {
+   "vo": "Before you begin make sure you have the correct documentation: An Australian phone number An Australian address A valid Australian Visa This would be all Australian visa’s except a visitor visa. An ePassport",
+   "chapter": {
+    "step": 1,
+    "title": "Before you begin"
+   },
+   "page": {
+    "heading": [
+     "Have these",
+     "ready"
+    ],
+    "highlight": "ready",
+    "items": "grid"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "7. Before you begin"
+    },
+    {
+     "cue": "An Australian phone number",
+     "do": "item",
+     "glyph": "phone",
+     "title": "Australian phone number"
+    },
+    {
+     "cue": "An Australian address",
+     "do": "item",
+     "glyph": "home",
+     "title": "Australian address"
+    },
+    {
+     "cue": "A valid Australian Visa",
+     "do": "item",
+     "glyph": "doc",
+     "title": "A valid Australian visa",
+     "sub": "All visas except a visitor visa"
+    },
+    {
+     "cue": "A valid Australian Visa",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       4
+      ]
+     }
+    },
+    {
+     "cue": "An ePassport",
+     "do": "item",
+     "glyph": "epassport",
+     "title": "An ePassport",
+     "sub": "Look for the chip symbol"
+    },
+    {
+     "cue": "An ePassport",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       5
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "vo": "To check if you have an ePassport look for a small rectangle with a circle and line on the front and back cover of the passport. This is a chip that stores your photo and identity details.",
+   "events": [
+    {
+     "cue": "To check if you have",
+     "do": "prop",
+     "prop": "passport",
+     "label": "FRONT AND BACK COVER"
+    },
+    {
+     "cue": "a small rectangle with a circle",
+     "do": "pulse"
+    },
+    {
+     "cue": "This is a chip",
+     "do": "label",
+     "text": "The chip stores your photo and identity details"
+    },
+    {
+     "cue": "This is a chip",
+     "do": "pulse"
+    }
+   ]
+  },
+  {
+   "vo": "If you don’t have an ePassport, you can still start the application online with a standard passport and then visit a branch to complete your identity verification",
+   "events": [
+    {
+     "cue": "If you dont have an ePassport",
+     "do": "page",
+     "eyebrow": "NO EPASSPORT?",
+     "heading": [
+      "No ePassport?",
+      "Start online."
+     ],
+     "highlight": "online.",
+     "items": "list",
+     "lead": 0.3
+    },
+    {
+     "cue": "If you dont have an ePassport",
+     "do": "prop",
+     "prop": "path",
+     "nodes": []
+    },
+    {
+     "cue": "you can still start",
+     "do": "node",
+     "glyph": "doc",
+     "label": "Standard passport"
+    },
+    {
+     "cue": "the application online",
+     "do": "node",
+     "glyph": "phone",
+     "label": "Apply online"
+    },
+    {
+     "cue": "then visit a branch",
+     "do": "node",
+     "glyph": "bank",
+     "label": "Verify in a branch"
+    },
+    {
+     "cue": "then visit a branch",
+     "do": "item",
+     "glyph": "bank",
+     "title": "Finish in a branch",
+     "sub": "A branch completes your identity check"
+    }
+   ]
+  },
+  {
+   "vo": "You will be asked to select one of the options below regarding your status in Australia: You have lived in Australia for over a year. You arrived in Australia less than 1 year ago. You are moving to Australia soon – planning to arrive in the next 14 days",
+   "chapter": {
+    "step": 2,
+    "title": "Your status"
+   },
+   "page": {
+    "heading": [
+     "Choose your",
+     "status"
+    ],
+    "highlight": "status",
+    "items": "numbered"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "6. ZPO - Migrant redirect"
+    },
+    {
+     "cue": "You have lived in Australia",
+     "do": "item",
+     "title": "Lived in Australia for over a year"
+    },
+    {
+     "cue": "You have lived in Australia",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       3
+      ]
+     }
+    },
+    {
+     "cue": "You arrived in Australia less",
+     "do": "item",
+     "title": "Arrived less than 1 year ago"
+    },
+    {
+     "cue": "You arrived in Australia less",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       4
+      ]
+     }
+    },
+    {
+     "cue": "You are moving to Australia soon",
+     "do": "item",
+     "title": "Moving here in the next 14 days"
+    },
+    {
+     "cue": "You are moving to Australia soon",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       5
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "vo": "You will then need to scan a photo of your passport. Ensure you’re in good lighting to avoid glare or reflections. Hold the photo page of your passport up to the scanning area indicated on the screen and select scan passport.",
+   "chapter": {
+    "step": 3,
+    "title": "Scan your passport"
+   },
+   "page": {
+    "heading": [
+     "Scan your",
+     "passport"
+    ],
+    "highlight": "passport",
+    "items": "list"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "11. ZPO - Scan licence info"
+    },
+    {
+     "cue": "Ensure youre in good lighting",
+     "do": "item",
+     "glyph": "sparkle",
+     "title": "Find good lighting",
+     "sub": "Glare and reflections: not accepted"
+    },
+    {
+     "cue": "Ensure youre in good lighting",
+     "do": "screen",
+     "shot": "13. Scanning Front - iOS",
+     "glare": true,
+     "badge": "cross"
+    },
+    {
+     "cue": "Hold the photo page",
+     "do": "item",
+     "glyph": "doc",
+     "title": "Photo page in the frame",
+     "sub": "Clear and bright: accepted"
+    },
+    {
+     "cue": "Hold the photo page",
+     "do": "screen",
+     "shot": "14. 8.1 - Scan licence info",
+     "badge": "tick"
+    }
+   ]
+  },
+  {
+   "vo": "Please provide your contact details: Mobile number Email address Australian address We’ll use these details to contact you and send your debit card once it’s ready.",
+   "chapter": {
+    "step": 4,
+    "title": "Contact details"
+   },
+   "page": {
+    "heading": [
+     "Add your",
+     "contact details"
+    ],
+    "highlight": "contact",
+    "items": "list"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "15. Extra details (Manual entry) v2.1"
+    },
+    {
+     "cue": "Mobile number",
+     "do": "item",
+     "glyph": "phone",
+     "title": "Mobile number"
+    },
+    {
+     "cue": "Mobile number",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       4,
+       5
+      ]
+     }
+    },
+    {
+     "cue": "Email address",
+     "do": "item",
+     "glyph": "mail",
+     "title": "Email address"
+    },
+    {
+     "cue": "Email address",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       6,
+       7
+      ]
+     }
+    },
+    {
+     "cue": "Australian address",
+     "do": "item",
+     "glyph": "home",
+     "title": "Australian address"
+    },
+    {
+     "cue": "Australian address",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       8
+      ]
+     }
+    },
+    {
+     "cue": "Well use these details",
+     "do": "prop",
+     "prop": "path",
+     "nodes": [],
+     "traveler": "mail"
+    },
+    {
+     "cue": "Well use these details",
+     "do": "node",
+     "glyph": "card",
+     "label": "Debit card"
+    },
+    {
+     "cue": "send your debit card",
+     "do": "node",
+     "glyph": "mail",
+     "label": "In the post"
+    },
+    {
+     "cue": "once its ready",
+     "do": "node",
+     "glyph": "home",
+     "label": "To your address"
+    }
+   ]
+  },
+  {
+   "vo": "You will be asked to verify your identity. To complete this step, you will need to: Tap ‘Scan passport chip’ Wait until you see ‘Ready to scan’ Hold your passport against the back of your phone. If nothing happens, move your phone around slowly until it vibrates",
+   "chapter": {
+    "step": 5,
+    "title": "Verify your identity"
+   },
+   "page": {
+    "heading": [
+     "Scan your",
+     "passport chip"
+    ],
+    "highlight": "chip",
+    "items": "numbered"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "27. Master NFC -- DAY1.5"
+    },
+    {
+     "cue": "Tap Scan passport chip",
+     "do": "item",
+     "title": "Tap ‘Scan passport chip’"
+    },
+    {
+     "cue": "Tap Scan passport chip",
+     "do": "screen",
+     "shot": "28. Master NFC",
+     "ring": {
+      "bands": [
+       5
+      ]
+     }
+    },
+    {
+     "cue": "Wait until you see",
+     "do": "item",
+     "title": "Wait for ‘Ready to scan’"
+    },
+    {
+     "cue": "Wait until you see",
+     "do": "screen",
+     "shot": "29. Master NFC -- DAY1.5"
+    },
+    {
+     "cue": "Hold your passport against",
+     "do": "item",
+     "title": "Hold passport to back of phone"
+    },
+    {
+     "cue": "Hold your passport against",
+     "do": "prop",
+     "prop": "nfc"
+    },
+    {
+     "cue": "If nothing happens",
+     "do": "move",
+     "text": "Move your phone around slowly"
+    },
+    {
+     "cue": "until it vibrates",
+     "do": "buzz"
+    }
+   ]
+  },
+  {
+   "vo": "if you are a USA or Malaysian passport holder you will need to open your passport before scanning. Hold still until the scan finishes. This may take 5-10 seconds",
+   "events": [
+    {
+     "cue": "if you are a USA",
+     "do": "callout",
+     "glyph": "epassport",
+     "title": "USA or Malaysian passport?",
+     "sub": "Open it before you scan."
+    },
+    {
+     "cue": "Hold still until",
+     "do": "item",
+     "title": "Hold still for 5–10 seconds"
+    },
+    {
+     "cue": "Hold still until",
+     "do": "screen",
+     "shot": "30. Master NFC -- DAY1.5"
+    },
+    {
+     "cue": "This may take",
+     "do": "screen",
+     "shot": "31. Master NFC -- DAY1.5",
+     "badge": "tick"
+    }
+   ]
+  },
+  {
+   "vo": "Then you will need to take a photo of your face, using the camera on your device. Please ensure you have removed glasses, hats or any items that might be covering your face.",
+   "chapter": {
+    "step": 6,
+    "title": "A photo of your face"
+   },
+   "page": {
+    "heading": [
+     "Take a photo",
+     "of your face"
+    ],
+    "highlight": "face",
+    "items": "list"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "33. Selfie check info"
+    },
+    {
+     "cue": "using the camera on your device",
+     "do": "item",
+     "glyph": "phone",
+     "title": "Use your device camera"
+    },
+    {
+     "cue": "using the camera on your device",
+     "do": "screen",
+     "shot": "34.  Selfie instructions- iOS"
+    },
+    {
+     "cue": "Please ensure you have removed",
+     "do": "item",
+     "glyph": "cross",
+     "title": "Hat or glasses on: not accepted",
+     "sub": "Remove anything covering your face"
+    },
+    {
+     "cue": "Please ensure you have removed",
+     "do": "screen",
+     "shot": "35b. Taking selfie - hat on",
+     "badge": "cross"
+    },
+    {
+     "cue": "any items that might be",
+     "do": "item",
+     "glyph": "check",
+     "title": "Clear face: accepted"
+    },
+    {
+     "cue": "any items that might be",
+     "do": "screen",
+     "shot": "35. 17.1 - Taking selfie",
+     "badge": "tick"
+    }
+   ]
+  },
+  {
+   "vo": "You will now need to provide your employment details and information regarding your tax residency.",
+   "chapter": {
+    "step": 7,
+    "title": "Work and tax details"
+   },
+   "page": {
+    "heading": [
+     "Work and",
+     "tax details"
+    ],
+    "highlight": "tax",
+    "items": "list"
+   },
+   "events": [
+    {
+     "do": "prop",
+     "prop": "fan",
+     "shots": [
+      "37. 18.1 - Employment status",
+      "38. Employment status",
+      "43. Tax_ Confirm your tax residency",
+      "39. Employment status",
+      "44. Add countries",
+      "45. Source of Wealth",
+      "40. 18.1 - Employment status",
+      "46. Source of Funds",
+      "42. CP3"
+     ]
+    },
+    {
+     "cue": "your employment details",
+     "do": "item",
+     "glyph": "doc",
+     "title": "Employment details"
+    },
+    {
+     "cue": "your tax residency",
+     "do": "item",
+     "glyph": "bank",
+     "title": "Tax residency"
+    }
+   ]
+  },
+  {
+   "vo": "Australian banks are required by law to collect this information. This information is collected in line with our privacy obligations, to find out more search ‘Group Privacy Statement’ on the CommBank website to see how we protect your information.",
+   "events": [
+    {
+     "cue": "Australian banks are required",
+     "do": "page",
+     "eyebrow": "WHY WE ASK",
+     "heading": [
+      "Your information",
+      "is protected"
+     ],
+     "highlight": "protected",
+     "items": "list",
+     "lead": 0.3
+    },
+    {
+     "cue": "Australian banks are required",
+     "do": "callout",
+     "glyph": "shield",
+     "title": "Required by law",
+     "sub": "All Australian banks collect this information."
+    },
+    {
+     "cue": "This information is collected",
+     "do": "item",
+     "glyph": "lock",
+     "title": "Your information is protected",
+     "sub": "In line with our privacy obligations"
+    },
+    {
+     "cue": "to find out more search",
+     "do": "search",
+     "text": "Group Privacy Statement"
+    }
+   ]
+  },
+  {
+   "vo": "You will then need to create a password and PIN so you can securely access your account and the CommBank app.",
+   "chapter": {
+    "step": 8,
+    "title": "Password and PIN"
+   },
+   "page": {
+    "heading": [
+     "Create a",
+     "password and PIN"
+    ],
+    "highlight": "PIN",
+    "items": "list"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "18. Create password - ios"
+    },
+    {
+     "cue": "create a password",
+     "do": "item",
+     "glyph": "shield",
+     "title": "A strong password"
+    },
+    {
+     "cue": "and PIN so you can",
+     "do": "pin"
+    },
+    {
+     "cue": "and PIN so you can",
+     "do": "screen",
+     "shot": "23. PINCreate"
+    }
+   ]
+  },
+  {
+   "vo": "Once approved, your account will be ready to use, and your debit card will be sent to your nominated Australian address. Welcome to Australia and welcome to CommBank.",
+   "page": {
+    "eyebrow": "ALL DONE",
+    "heading": [
+     "Ready",
+     "to use"
+    ],
+    "highlight": "use",
+    "items": "list"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "48. Review your details",
+     "badge": "tick"
+    },
+    {
+     "cue": "your account will be ready",
+     "do": "item",
+     "glyph": "check",
+     "title": "Your account is ready to use"
+    },
+    {
+     "cue": "your debit card will be sent",
+     "do": "prop",
+     "prop": "path",
+     "nodes": [],
+     "traveler": "mail"
+    },
+    {
+     "cue": "your debit card will be sent",
+     "do": "node",
+     "glyph": "card",
+     "label": "Debit card"
+    },
+    {
+     "cue": "to your nominated",
+     "do": "node",
+     "glyph": "home",
+     "label": "Your Australian address"
+    },
+    {
+     "cue": "Welcome to Australia",
+     "do": "outro",
+     "lead": 0.4
+    }
+   ]
+  }
+ ],
+ "kit": "brands/commbank.json",
+ "screens": [
+  "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/00.Brief/Migrant Onboarding Video Screens - Oct 2026",
+  "/Volumes/Apostle_8TB-1/00.AAA_PROJECTS_GITHUB/ae-apostle-bridge/.apostle-runs/compile/cba-migrant-1/brief-media/migrant-onboarding-instructional-video-scrip",
+  "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/01.MEDIA/GFX/Generated Screens"
+ ],
+ "label": "CBA MIGRANT ONBOARDING  ·  FOR REVIEW",
+ "timing": {
+  "mode": "wpm",
+  "wpm": 150,
+  "gap": 0.45
+ },
+ "sourceRun": ".apostle-runs/compile/cba-migrant-1"
+}

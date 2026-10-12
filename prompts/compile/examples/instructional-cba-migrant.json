@@ -1,0 +1,307 @@
+{
+ "name": "CBA_MIGRANT_ONBOARDING",
+ "version": "v004",
+ "totalSteps": 8,
+ "open": {
+  "heading": [
+   "Open your account",
+   "online."
+  ],
+  "sub": "A step-by-step guide for people moving to Australia",
+  "dur": 3.4
+ },
+ "outro": {
+  "heading": [
+   "Welcome to Australia.",
+   "Welcome to CommBank."
+  ],
+  "hold": 4.0
+ },
+ "beats": [
+  {
+   "vo": "In this video we will show you how to open an account and verify your identity online.",
+   "page": {
+    "eyebrow": "OPENING AN ACCOUNT ONLINE",
+    "heading": [
+     "Open an account.",
+     "Verify your identity."
+    ],
+    "highlight": "identity.",
+    "items": "list"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "10. Let's open",
+     "delay": 0.2
+    },
+    {
+     "cue": "how to open an account",
+     "do": "item",
+     "glyph": "phone",
+     "title": "All in the CommBank app",
+     "sub": "8 steps. Have your passport ready."
+    }
+   ]
+  },
+  {
+   "vo": "Before you begin make sure you have the correct documentation: An Australian phone number An Australian address A valid Australian Visa This would be all Australian visa’s except a visitor visa. An ePassport",
+   "chapter": {
+    "step": 1,
+    "title": "Before you begin"
+   },
+   "page": {
+    "heading": [
+     "Have these",
+     "ready"
+    ],
+    "highlight": "ready",
+    "items": "grid"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "7. Before you begin"
+    },
+    {
+     "cue": "An Australian phone number",
+     "do": "item",
+     "glyph": "phone",
+     "title": "Australian phone number"
+    },
+    {
+     "cue": "An Australian address",
+     "do": "item",
+     "glyph": "home",
+     "title": "Australian address"
+    },
+    {
+     "cue": "A valid Australian Visa",
+     "do": "item",
+     "glyph": "doc",
+     "title": "A valid Australian visa",
+     "sub": "All visas except a visitor visa"
+    },
+    {
+     "cue": "A valid Australian Visa",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       4
+      ]
+     }
+    },
+    {
+     "cue": "An ePassport",
+     "do": "item",
+     "glyph": "epassport",
+     "title": "An ePassport",
+     "sub": "Look for the chip symbol"
+    },
+    {
+     "cue": "An ePassport",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       5
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "vo": "To check if you have an ePassport look for a small rectangle with a circle and line on the front and back cover of the passport. This is a chip that stores your photo and identity details.",
+   "events": [
+    {
+     "cue": "To check if you have",
+     "do": "prop",
+     "prop": "passport",
+     "label": "FRONT AND BACK COVER"
+    },
+    {
+     "cue": "a small rectangle with a circle",
+     "do": "pulse"
+    },
+    {
+     "cue": "This is a chip",
+     "do": "label",
+     "text": "The chip stores your photo and identity details"
+    },
+    {
+     "cue": "This is a chip",
+     "do": "pulse"
+    }
+   ]
+  },
+  {
+   "vo": "If you don’t have an ePassport, you can still start the application online with a standard passport and then visit a branch to complete your identity verification",
+   "events": [
+    {
+     "cue": "If you dont have an ePassport",
+     "do": "page",
+     "eyebrow": "NO EPASSPORT?",
+     "heading": [
+      "No ePassport?",
+      "Start online."
+     ],
+     "highlight": "online.",
+     "items": "list",
+     "lead": 0.3
+    },
+    {
+     "cue": "If you dont have an ePassport",
+     "do": "prop",
+     "prop": "path",
+     "nodes": []
+    },
+    {
+     "cue": "you can still start",
+     "do": "node",
+     "glyph": "doc",
+     "label": "Standard passport"
+    },
+    {
+     "cue": "the application online",
+     "do": "node",
+     "glyph": "phone",
+     "label": "Apply online"
+    },
+    {
+     "cue": "then visit a branch",
+     "do": "node",
+     "glyph": "bank",
+     "label": "Verify in a branch"
+    }
+   ]
+  },
+  {
+   "vo": "You will be asked to select one of the options below regarding your status in Australia: You have lived in Australia for over a year. You arrived in Australia less than 1 year ago. You are moving to Australia soon – planning to arrive in the next 14 days",
+   "chapter": {
+    "step": 2,
+    "title": "Your status"
+   },
+   "page": {
+    "heading": [
+     "Choose your",
+     "status"
+    ],
+    "highlight": "status",
+    "items": "numbered"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "6. ZPO - Migrant redirect"
+    },
+    {
+     "cue": "You have lived in Australia",
+     "do": "item",
+     "title": "Lived in Australia for over a year"
+    },
+    {
+     "cue": "You have lived in Australia",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       3
+      ]
+     }
+    },
+    {
+     "cue": "You arrived in Australia less",
+     "do": "item",
+     "title": "Arrived less than 1 year ago"
+    },
+    {
+     "cue": "You arrived in Australia less",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       4
+      ]
+     }
+    },
+    {
+     "cue": "You are moving to Australia soon",
+     "do": "item",
+     "title": "Moving here in the next 14 days"
+    },
+    {
+     "cue": "You are moving to Australia soon",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       5
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "vo": "You will be asked to verify your identity. To complete this step, you will need to: Tap ‘Scan passport chip’ Wait until you see ‘Ready to scan’ Hold your passport against the back of your phone. If nothing happens, move your phone around slowly until it vibrates",
+   "chapter": {
+    "step": 5,
+    "title": "Verify your identity"
+   },
+   "page": {
+    "heading": [
+     "Scan your",
+     "passport chip"
+    ],
+    "highlight": "chip",
+    "items": "numbered"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "27. Master NFC -- DAY1.5"
+    },
+    {
+     "cue": "Tap Scan passport chip",
+     "do": "item",
+     "title": "Tap ‘Scan passport chip’"
+    },
+    {
+     "cue": "Tap Scan passport chip",
+     "do": "screen",
+     "shot": "28. Master NFC",
+     "ring": {
+      "bands": [
+       5
+      ]
+     }
+    },
+    {
+     "cue": "Wait until you see",
+     "do": "item",
+     "title": "Wait for ‘Ready to scan’"
+    },
+    {
+     "cue": "Wait until you see",
+     "do": "screen",
+     "shot": "29. Master NFC -- DAY1.5"
+    },
+    {
+     "cue": "Hold your passport against",
+     "do": "item",
+     "title": "Hold passport to back of phone"
+    },
+    {
+     "cue": "Hold your passport against",
+     "do": "prop",
+     "prop": "nfc"
+    },
+    {
+     "cue": "If nothing happens",
+     "do": "move",
+     "text": "Move your phone around slowly"
+    },
+    {
+     "cue": "until it vibrates",
+     "do": "buzz"
+    }
+   ]
+  }
+ ],
+ "_note": "EXCERPT: 6 of 14 beats from the CBA Migrant v4 plan (Apostle's gold standard). The real plan covers every beat of the VO."
+}

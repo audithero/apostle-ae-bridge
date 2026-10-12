@@ -63,3 +63,42 @@ describe("compileInstructional", () => {
     expect(c.join(" ")).toBe("Hold the photo page of your passport up to the scanning area indicated on the screen and select scan passport.");
   });
 });
+
+describe("validateInstructional", () => {
+  const { validateInstructional } = require("../scripts/lib/validate-instructional.cjs");
+  const { bandsToRect } = require("../scripts/lib/screen-bands.cjs");
+  const bands = { "6. Status": { w: 1125, h: 2436, bands: [[204, 252], [336, 546], [672, 789], [936, 1128], [1272, 1464]] } };
+  const vo = plan.beats.map((b) => b.vo).join(" ");
+  const ok = () => JSON.parse(JSON.stringify(plan));
+
+  it("turns numbered blocks into a padded full-width rect", () => {
+    expect(bandsToRect(bands["6. Status"], [4])).toEqual([40, 914, 1045, 236]);
+    expect(bandsToRect(bands["6. Status"], [9])).toBeNull();
+  });
+
+  it("passes a good plan", () => {
+    const r = validateInstructional(ok(), { voScript: vo, screens: ["6. Status"], bands, repo: REPO, kit });
+    expect(r.errors).toEqual([]);
+  });
+
+  it("names each kind of model mistake so the retry can fix it", () => {
+    const p = ok();
+    p.beats[0].vo = p.beats[0].vo.replace("make sure", "ensure");
+    p.beats[0].page.highlight = "missing";
+    p.beats[0].events.push({ cue: "an Australian address", do: "screen", shot: "6. Status", ring: { bands: [7] } });
+    p.beats[1].events.unshift({ cue: "a circle and line", do: "node", label: "x" });
+    const r = validateInstructional(p, { voScript: vo, screens: ["6. Status"], bands, repo: REPO, kit });
+    const all = r.errors.join("\n");
+    expect(all).toMatch(/VO is not verbatim/);
+    expect(all).toMatch(/highlight 'missing' is not in the heading/);
+    expect(all).toMatch(/has blocks 1-5/);
+    expect(all).toMatch(/needs a prop on screen/);
+  });
+
+  it("stops a page overflowing into the captions", () => {
+    const p = ok();
+    for (let i = 0; i < 4; i++) p.beats[0].events.push({ cue: "an Australian address", do: "item", glyph: "home", title: "Extra " + i });
+    const r = validateInstructional(p, { voScript: vo, repo: REPO, kit, compile: false });
+    expect(r.errors.some((e: string) => e.includes("overflows a grid page"))).toBe(true);
+  });
+});
