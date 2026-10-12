@@ -113,9 +113,66 @@ const TEXT_EXT = [".md", ".txt", ".csv", ".json", ".srt", ".rtf"];
 // Plain text is inlined into the prompt. Word files are converted with
 // macOS textutil. Everything else (PDF, images, decks exported to PDF) is
 // listed for the model to Read itself.
-function ingest(briefText, attachPaths, log) {
+// Images embedded in a Word brief, in document order, each named after the
+// script text just before it. textutil keeps only the text, and the CBA Migrant
+// script carried 21 images that way: the ePassport symbol reference, a photo of
+// the chip scan, and the client's chosen screen for every step. Missing them
+// made the treatment ask for an image the brief already contained.
+function extractDocxMedia(docx, outDir) {
+  const tmp = fs.mkdtempSync(path.join(os.tmpdir(), "apostle-docx-"));
+  try {
+    execFileSync("/usr/bin/unzip", ["-o", "-q", docx, "word/media/*", "word/document.xml", "word/_rels/document.xml.rels", "-d", tmp], { timeout: 60000 });
+  } catch (e) {
+    return [];
+  }
+  const relsPath = path.join(tmp, "word", "_rels", "document.xml.rels");
+  const docPath = path.join(tmp, "word", "document.xml");
+  if (!fs.existsSync(relsPath) || !fs.existsSync(docPath)) return [];
+  const rels = fs.readFileSync(relsPath, "utf8");
+  const rid = {};
+  for (const tag of rels.match(/<Relationship [^>]*>/g) || []) {
+    const id = (tag.match(/Id="([^"]+)"/) || [])[1];
+    const target = (tag.match(/Target="media\/([^"]+)"/) || [])[1];
+    if (id && target) rid[id] = target;
+  }
+  const doc = fs.readFileSync(docPath, "utf8");
+  const seen = {};
+  const out = [];
+  const re = /r:embed="(rId\d+)"/g;
+  let m;
+  fs.mkdirSync(outDir, { recursive: true });
+  while ((m = re.exec(doc))) {
+    const file = rid[m[1]];
+    if (!file || seen[file]) continue;
+    seen[file] = true;
+    // the paragraph text just before the image, minus the template's labels
+    // only the TEXT runs (<w:t>) before the image's drawing: drawing XML
+    // carries layout numbers and ids that read as words once tags are gone
+    const drawStart = doc.lastIndexOf("<w:drawing", m.index);
+    const win = doc.slice(Math.max(0, (drawStart === -1 ? m.index : drawStart) - 20000), drawStart === -1 ? m.index : drawStart);
+    const before = win.replace(/<w:p[ >]/g, "\n<w:p ")
+      .replace(/<w:t(?: [^>]*)?>([^<]*)<\/w:t>/g, "\u0001$1\u0002")
+      .replace(/<[^>]+>/g, "").replace(/[^\n\u0001\u0002]*\u0001|\u0002[^\n\u0001]*/g, (x) => x.replace(/[^\u0001\u0002]/g, ""))
+      .replace(/[\u0001\u0002]/g, "").replace(/[ \t]+/g, " ");
+    const lines = before.split("\n").map((x) => x.trim())
+      .filter((x) => x && !/^reference to screen experience|^video suggestion|^-?\d[\d -]*$/i.test(x));
+    const ctx = (lines[lines.length - 1] || "").replace(/[\\/:*?"<>|]/g, "").replace(/\s+/g, " ").trim();
+    const n = String(out.length + 1).padStart(2, "0");
+    const name = ("script-" + n + " " + ctx.split(" ").slice(-7).join(" ")).trim().slice(0, 60).trim();
+    const ext = path.extname(file).toLowerCase();
+    if (SHOT_EXT.test(ext)) {
+      fs.copyFileSync(path.join(tmp, "word", "media", file), path.join(outDir, name + ext));
+      out.push({ name, file: path.join(outDir, name + ext), context: lines.slice(-2).join(" / ") });
+    }
+  }
+  fs.rmSync(tmp, { recursive: true, force: true });
+  return out;
+}
+
+function ingest(briefText, attachPaths, log, mediaRoot) {
   const inline = [];
   const forRead = [];
+  const media = [];
   for (const p0 of attachPaths || []) {
     const p = abs(p0);
     if (!fs.existsSync(p)) throw new Error("attachment not found: " + p0);
@@ -126,6 +183,14 @@ function ingest(briefText, attachPaths, log) {
       try {
         const txt = execFileSync("/usr/bin/textutil", ["-convert", "txt", "-stdout", p], { encoding: "utf8", timeout: 60000 });
         inline.push({ name: path.basename(p), text: txt });
+        if (ext === ".docx" && mediaRoot) {
+          const dir = path.join(mediaRoot, slugify(path.basename(p, ext)));
+          const items = extractDocxMedia(p, dir);
+          if (items.length) {
+            media.push({ doc: path.basename(p), dir, items });
+            log && log(path.basename(p) + ": extracted " + items.length + " embedded images");
+          }
+        }
       } catch (e) {
         log && log("could not convert " + path.basename(p) + " to text; listing it for the model to Read");
         forRead.push(p);
@@ -135,7 +200,7 @@ function ingest(briefText, attachPaths, log) {
     }
   }
   const full = [briefText || ""].concat(inline.map((x) => "### " + x.name + "\n\n" + x.text)).join("\n\n").trim();
-  return { text: full, inline: inline.map((x) => x.name), forRead };
+  return { text: full, inline: inline.map((x) => x.name), forRead, media };
 }
 
 // The client's VO, when the script uses SUPER:/VO: lines. Other formats
@@ -175,6 +240,7 @@ const SHOT_EXT = /\.(png|jpe?g|tiff?|psd)$/i;
 
 function listScreens(dir) {
   if (!dir) return [];
+  if (Array.isArray(dir)) return [].concat.apply([], dir.map(listScreens));
   const d = abs(dir);
   if (!fs.existsSync(d)) throw new Error("screens folder not found: " + dir);
   const num = (f) => { const m = f.match(/^(\d+)/); return m ? Number(m[1]) : 1e9; };
@@ -210,12 +276,19 @@ function contactSheet(screens, out) {
   }
 }
 
-function assetsSection(screens, sheet, dir) {
+function assetsSection(screens, sheet, dir, media) {
   if (!screens.length) return "No app screens supplied. The `screen` layout is unavailable; use `device` for in-app moments and list real screens under assetsNeeded.";
-  return "## App screens (" + screens.length + ", from `" + dir + "`)\n\n" +
-    "These are the client's real app screens, the most valuable visual asset in the job. Use them with the `screen` layout for every step the viewer must do in the app. " +
-    (sheet ? "**Read the contact sheet first: `" + sheet + "`** (each tile is captioned with its name), then Read individual screens from the folder when you need detail. " : "Read the screens in the folder before composing. ") +
-    "Use `shot` names exactly as listed:\n\n" + screens.map((x) => "- `" + x.name + "`").join("\n");
+  const dirs = [].concat(dir || []);
+  let t = "## App screens and brief images (" + screens.length + ")\n\n" +
+    "These are the client's real material, the most valuable visual asset in the job. Use them with the `screen` layout for every step the viewer must do in the app. " +
+    (sheet ? "**Read the contact sheet first: `" + sheet + "`** (each tile is captioned with its name), then Read individual files when you need detail. " : "Read them before composing. ") +
+    "Folders: " + dirs.map((d) => "`" + d + "`").join(", ") + ".\n";
+  if (media && media.length) {
+    t += "\nImages named `script-NN ...` were **embedded in the brief document itself**, in order, each placed beside a step of the script (the text it sits under follows the name). Where a script image and a folder screen show the same step, the script image is what the client approved with the words; prefer it, and raise any factual difference between them (a 4-digit vs 6-digit PIN, a button label) under risks/openQuestions. Not every embedded image is a phone screen (a symbol reference, a photo): only use `screen` for actual app captures.\n";
+    for (const m of media) for (const it of m.items) t += "- `" + it.name + "`: under \"" + it.context.slice(0, 140) + "\"\n";
+  }
+  t += "\nUse `shot` names exactly as listed:\n\n" + screens.map((x) => "- `" + x.name + "`").join("\n");
+  return t;
 }
 
 // ---------------- model calls ----------------
@@ -279,8 +352,10 @@ async function treatment(opts) {
   let briefText = opts.brief || "";
   if (opts.briefFile) briefText = fs.readFileSync(abs(opts.briefFile), "utf8") + (briefText ? "\n\n" + briefText : "");
   if (!briefText.trim() && !(opts.attach || []).length) throw new Error("no brief: pass --brief <file> or attachments");
-  const ing = ingest(briefText, opts.attach, log);
-  const screensDir = opts.screens ? abs(opts.screens) : null;
+  const ing = ingest(briefText, opts.attach, log, path.join(runDir, "brief-media"));
+  // screens: the folder(s) passed in, plus any images embedded in the brief
+  const screensDir = [].concat(opts.screens ? [].concat(opts.screens).map(abs) : [])
+    .concat(ing.media.map((x) => x.dir)).filter((d, i, a) => a.indexOf(d) === i);
   const screens = listScreens(screensDir);
   const sheet = screens.length ? contactSheet(screens, path.join(runDir, "screens-sheet.png")) : null;
   const clientVO = extractClientVO(ing.text);
@@ -295,7 +370,8 @@ async function treatment(opts) {
     brandKit: kitPath ? rel(abs(kitPath)) : null,
     attachments: (opts.attach || []).map((p) => abs(p)),
     forRead: ing.forRead, clientVO: !!clientVO, notes: opts.notes || "",
-    screensDir, screens: screens.map((x) => x.name)
+    screensDir, screens: screens.map((x) => x.name),
+    briefMedia: ing.media.map((x) => ({ doc: x.doc, dir: x.dir, items: x.items.map((i) => ({ name: i.name, context: i.context })) }))
   });
 
   const prior = opts.prior
@@ -312,11 +388,11 @@ async function treatment(opts) {
   const cap = capabilities();
   const res = await askJSON({
     stage: "treatment", tag: "treatment", runDir, provider, cfg, model, log,
-    addDirs: Array.from(new Set(ing.forRead.map((p) => path.dirname(p)).concat(screensDir ? [screensDir, runDir] : []))),
+    addDirs: Array.from(new Set(ing.forRead.map((p) => path.dirname(p)).concat(screensDir.length ? screensDir.concat([runDir]) : []))),
     ctx: { briefText: ing.text, clientVO, kitPath: run.brandKit },
     buildPrompt: (errors, previous) => fill(tpl, {
       BRIEF: ing.text || "(see attachments)", ATTACHMENTS: attachments, BRAND: brandSection(kit, kitPath),
-      ASSETS: assetsSection(screens, sheet, screensDir),
+      ASSETS: assetsSection(screens, sheet, screensDir, ing.media),
       NOTES: opts.notes || "(none)", CAPABILITIES: capabilitiesMarkdown(cap), CLIENT_VO: clientVOBlock, PRIOR: prior
     }) + retryBlock(errors, previous),
     validate: (t) => validateTreatment(t, { capabilities: cap, clientVO })
@@ -342,7 +418,8 @@ async function revise(opts) {
   if (!opts.notes) throw new Error("revise needs --notes: what should change");
   return treatment({
     runDir: opts.runDir, client: run.client, brief: fs.readFileSync(path.join(opts.runDir, "brief.md"), "utf8"),
-    attach: (run.forRead || []), brand: run.brandKit, notes: run.notes, screens: run.screensDir,
+    attach: (run.attachments || run.forRead || []), brand: run.brandKit, notes: run.notes,
+    screens: [].concat(run.screensDir || []).filter((d) => d.indexOf(path.join(opts.runDir, "brief-media")) !== 0),
     prior: { treatment: prev, feedback: opts.notes },
     provider: opts.provider, model: opts.model, log: opts.log
   });
@@ -384,22 +461,22 @@ async function spec(opts) {
     const voBlock = "This is the approved VO for this video. Use it **verbatim**: every word, in order, split across beats. Do not add, drop or reword anything.\n\n" + vo;
     const res = await askJSON({
       stage: "spec", tag: "spec." + v.slug, runDir, provider, cfg, model, log,
-      addDirs: run.screensDir ? [run.screensDir, runDir] : undefined,
+      addDirs: [].concat(run.screensDir || []).length ? [].concat(run.screensDir, [runDir]) : undefined,
       ctx: { treatment: t, video: v, screens: screens.map((x) => x.name) },
       buildPrompt: (errors, previous) => fill(tpl, {
         TREATMENT: JSON.stringify(Object.assign({}, t, { videos: undefined }), null, 1),
         VIDEO: JSON.stringify(Object.assign({}, v, { voScript: undefined }), null, 1),
         VO: voBlock, CAPABILITIES: capabilitiesMarkdown(cap), BRAND: brandSection(kit, kitPath),
-        ASSETS: assetsSection(screens, sheet, run.screensDir),
+        ASSETS: assetsSection(screens, sheet, run.screensDir, run.briefMedia),
         NOTES: opts.notes || run.notes || "(none)", NAME: v.name, SLUG: v.slug
       }) + retryBlock(errors, previous),
-      validate: (s) => validateSpec(s, { capabilities: cap, clientVO: vo, voScope: "exact", pictos: kit && kit.pictograms, screens: run.screensDir ? screens.map((x) => x.name) : null })
+      validate: (s) => validateSpec(s, { capabilities: cap, clientVO: vo, voScope: "exact", pictos: kit && kit.pictograms, screens: [].concat(run.screensDir || []).length ? screens.map((x) => x.name) : null })
     });
     const s = res.obj;
     s.client = run.client;
     s.briefDir = rel(clientDir);
     s.sourceRun = rel(runDir);
-    if (run.screensDir) s.assets = Object.assign({}, s.assets, { screens: run.screensDir });
+    if ([].concat(run.screensDir || []).length) s.assets = Object.assign({}, s.assets, { screens: run.screensDir });
     writeJSON(path.join(runDir, "spec." + v.slug + ".json"), s);
     const out = compileAndPublish(s, kit, clientDir, log);
     return { slug: v.slug, name: v.name, warnings: res.warnings.concat(out.warnings), summary: out.summary, files: out.files, attempts: res.attempts };
@@ -747,5 +824,5 @@ if (require.main === module) {
 
 module.exports = {
   treatment, revise, approve, spec, build, compileFile, compileAndPublish, listRuns, readRun,
-  treatmentMarkdown, extractClientVO, ingest, mockProvider, RUNS_ROOT, stripToJson, listScreens
+  treatmentMarkdown, extractClientVO, ingest, extractDocxMedia, mockProvider, RUNS_ROOT, stripToJson, listScreens
 };
