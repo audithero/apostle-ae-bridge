@@ -121,3 +121,44 @@ describe("stat and hero props", () => {
     expect(r.errors.some((e: string) => /hero prop for the 4th time/.test(e))).toBe(true);
   });
 });
+
+describe("brand assets (CBA, 2026-10-13)", () => {
+  const os = require("node:os");
+  const { rasterPictograms } = require("../scripts/lib/pictograms.cjs");
+  const { androidScreens } = require("../scripts/lib/screen-android.cjs");
+  // a 1x1 transparent PNG, wrapped the way the CBA pictogram SVGs wrap theirs
+  const PNG = "iVBORw0KGgoAAAANSUhEUgAAAAEAAAABCAYAAAAfFcSJAAAADUlEQVR42mNkYPhfDwAChwGA60e6kgAAAABJRU5ErkJggg==";
+  const svg = (w: number) => '<svg width="' + w + '"><image id="i" width="1" height="1" xlink:href="data:image/png;base64,' + PNG + '"/></svg>';
+
+  it("resolves every icon to a client pictogram, by alias or by name, and flags the rest", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "picto-"));
+    for (const n of ["iPhone", "house", "tick", "warning", "padlock", "magnifiyingglass", "IDcard"]) fs.writeFileSync(path.join(dir, n + "-nopadding.svg"), svg(10));
+    const k = Object.assign({}, kit, { pictogramSet: { dir, suffix: "-nopadding.svg", only: true, alias: { phone: "iPhone", home: "house", check: "tick", cross: "warning", lock: "padlock", search: "magnifiyingglass" } } });
+    const p = JSON.parse(JSON.stringify(plan));
+    p.beats[0].events.push({ cue: "an Australian address", do: "item", glyph: "IDcard", title: "ID" }, { cue: "an Australian address", do: "item", glyph: "rocket", title: "Nope" });
+    const { timeline, warnings } = compileInstructional(p, { repo: REPO, kit: k });
+    expect(path.basename(timeline.pictograms.phone)).toBe("iPhone-nopadding.svg");
+    expect(path.basename(timeline.pictograms.IDcard)).toBe("IDcard-nopadding.svg");
+    expect(timeline.pictogramsOnly).toBe(true);
+    expect(warnings.some((w: string) => /no brand pictogram for 'rocket'/.test(w))).toBe(true);
+    const out = path.join(dir, "png");
+    expect(rasterPictograms(timeline, out)).toEqual([]);
+    expect(timeline.pictograms.home).toBe(path.join(out, "house-nopadding.png"));
+    expect(fs.readFileSync(timeline.pictograms.home).subarray(1, 4).toString()).toBe("PNG");
+  });
+
+  it("paints the Dynamic Island out of a capture with the status bar's own colour", () => {
+    const dir = fs.mkdtempSync(path.join(os.tmpdir(), "island-"));
+    const src = path.join(dir, "src.png");
+    // a grey status bar with a black pill where iOS draws the island
+    require("node:child_process").execFileSync("python3", ["-I", "-c",
+      "import sys\nfrom PIL import Image, ImageDraw\nim = Image.new('RGB', (1125, 600), (200, 200, 200))\nImageDraw.Draw(im).rounded_rectangle([374, 33, 750, 143], 55, fill=(0, 0, 0))\nim.save(sys.argv[1])", src]);
+    const r = androidScreens([{ name: "s", file: src }], path.join(dir, "out"));
+    expect(r.s.island).not.toBeNull();
+    const px = require("node:child_process").execFileSync("python3", ["-I", "-c",
+      "import sys\nfrom PIL import Image\nprint(Image.open(sys.argv[1]).convert('RGB').getpixel((562, 88)))", r.s.file]).toString().trim();
+    expect(px).toBe("(200, 200, 200)");
+    // cached: a second run does no work and returns the same map
+    expect(androidScreens([{ name: "s", file: src }], path.join(dir, "out")).s.file).toBe(r.s.file);
+  });
+});

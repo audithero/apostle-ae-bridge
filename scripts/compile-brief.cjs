@@ -54,7 +54,9 @@ const { validateSpec, validateTreatment } = require("./lib/validate-spec.cjs");
 const { parseBrief, spokenWords } = require("./parse-brief.cjs");
 const { screenBands } = require("./lib/screen-bands.cjs");
 const { validateInstructional } = require("./lib/validate-instructional.cjs");
-const { compileInstructional } = require("./lib/compile-instructional.cjs");
+const { androidTimeline } = require("./lib/screen-android.cjs");
+const { rasterPictograms } = require("./lib/pictograms.cjs");
+const { compileInstructional, pictogramSet } = require("./lib/compile-instructional.cjs");
 
 const REPO = path.resolve(__dirname, "..");
 const PROMPTS = path.join(REPO, "prompts", "compile");
@@ -537,6 +539,13 @@ async function direct(opts) {
   const sheetNote = sheet
     ? "\n\n### Numbered screen sheet\n\n**Read `" + sheet + "` before choosing any ring.** Each screen is shown as the phone displays it, with its content blocks outlined in red and numbered 1, 2, 3 down the screen. A ring is `{ \"bands\": [n] }` (or several adjacent blocks, `[4, 5]`)."
     : "\n\n(No numbered screen sheet could be made; omit rings.)";
+  // a brand that ships its own pictograms (and forbids home-made icons) gives
+  // the model those names, plus our old glyph names as aliases
+  const ps = pictogramSet(kit, {}, REPO);
+  const glyphs = ps ? ps.names.concat(Object.keys(kit.pictogramSet.alias || {})) : cap.glyphs;
+  const glyphNote = ps
+    ? ps.names.join(", ") + ". These are the client's own pictograms, and the only icons allowed: pick the one that names the thing best (IDcard, camera, sms, padlock, house, envelope, globe, report...)"
+    : cap.glyphs.join(", ");
   const results = [];
   for (const v of videos) {
     const vo = String(v.voScript || "").trim();
@@ -550,11 +559,11 @@ async function direct(opts) {
         VIDEO: JSON.stringify(Object.assign({}, v, { voScript: undefined }), null, 1),
         VO: vo, BRAND: brandSection(kit, kitPath), NOTES: opts.notes || run.notes || "(none)",
         ASSETS: assetsSection(screens, path.join(runDir, "screens-sheet.png"), run.screensDir, run.briefMedia) + sheetNote,
-        GLYPHS: cap.glyphs.join(", "), EXAMPLE: example, NAME: name
+        GLYPHS: glyphNote, EXAMPLE: example, NAME: name
       }) + retryBlock(errors, previous),
       validate: (p) => {
         Object.assign(p, { kit: kitPath, screens: [].concat(run.screensDir || []) });
-        return validateInstructional(p, { voScript: vo, screens: screens.map((x) => x.name), bands, glyphs: cap.glyphs, repo: REPO, kit });
+        return validateInstructional(p, { voScript: vo, screens: screens.map((x) => x.name), bands, glyphs, repo: REPO, kit });
       }
     });
     const p = res.obj;
@@ -585,6 +594,13 @@ async function buildPlan(opts) {
   const { timeline, warnings } = compileInstructional(p, { repo: REPO, bands });
   if (opts.version) timeline.name = p.name + "_" + opts.version;
   const dir = path.join(path.dirname(RUNS_ROOT), "instructional");
+  const pw = rasterPictograms(timeline, p.pictogramsOutDir ? abs(p.pictogramsOutDir) : path.join(dir, slugify(p.name), "pictograms"));
+  pw.forEach((w) => warnings.push(w));
+  if (timeline.device === "android") {
+    const out = p.androidScreensDir ? abs(p.androidScreensDir) : path.join(dir, slugify(p.name), "screens-android");
+    log("Removing the iPhone island from " + timeline.screens.length + " screens…");
+    androidTimeline(timeline, out);
+  }
   fs.mkdirSync(dir, { recursive: true });
   const tlPath = path.join(dir, timeline.name + ".timeline.json");
   writeJSON(tlPath, timeline);

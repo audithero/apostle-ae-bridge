@@ -39,7 +39,7 @@ Split this VO into beats. Every word belongs to exactly one beat, in order, unch
 
 A persistent 2D layout. Nothing is a slide. The layout stays, and its parts change state as the VO moves:
 
-- **Left column** (`page`): an eyebrow (`STEP 2 OF 8`, drawn for you from the chapter), a progress bar, and a heavy 1-2 line **headline** with one **highlight** word underlined in brand yellow. Under it, **items** build one by one, each on the exact words that name it: cards with an icon (`grid` = 2 per row, `list` = 1 per row), or a `numbered` list for ordered actions.
+- **Left column** (`page`): an eyebrow (`STEP 2 OF 8`, drawn for you from the chapter), a progress bar, and a heavy 1-2 line **headline** (set in the brand's Black weight) with one **highlight**: the word the step is about. Under it, **items** build one by one, each on the exact words that name it: cards with an icon (`grid` = 2 per row, `list` = 1 per row), or a `numbered` list for ordered actions.
 - **Right side**: either the **phone** (the client's real app screens, swapped as the VO reaches each one, with a yellow **ring** around the block being talked about and a tick/cross **badge** for do/don't), or one **prop** (an animated demonstration).
 - **Chapter cards**: full-bleed brand yellow with a giant numeral (`02`) and the step title, between steps. They cover the screen while the first words of the step are spoken, then lift away to reveal the new page.
 - **Open card** at the start, **outro card** at the end, and **captions** of every VO word along the bottom. Captions are automatic, so never repeat the VO in items.
@@ -79,7 +79,7 @@ Props: **passport** (`label`): a passport cover with the chip mark. Use it when 
 7. **Prefer sharp screens.** Full-res captures read crisply. Images extracted from a Word brief (`script-NN ...`) are small and go soft, so use one only when no full-res screen shows that step. Never show a screen that contradicts what the VO is saying at that moment.
 8. **One thing on the right at a time**, and something always changing: a new item, ring, screen or prop beat every 3-6 seconds. A beat with nothing new for 8+ seconds reads as dead.
 9. **Vary the demonstrations.** At most 3 of any one prop per film (the validator enforces it), and never the same prop in consecutive steps. A film with no app screens lives on its props: give each number a `stat`, each sequence a `path`, a single big idea a `hero`, and carry the rest with items and callouts.
-10. Glyph names must come from this list: {{GLYPHS}}.
+10. Icons (`glyph` on items, callouts, path nodes, hero and `traveler`) must come from this list: {{GLYPHS}}.
 
 ## Worked example
 

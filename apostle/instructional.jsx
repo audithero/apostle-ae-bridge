@@ -1,4 +1,4 @@
-// instructional.jsx: the "instructional" stage (v2.15). ES3 ExtendScript.
+// instructional.jsx: the "instructional" stage (v2.18). ES3 ExtendScript.
 //
 // Builds one 2D master comp from a timeline compiled by
 // scripts/lib/compile-instructional.cjs. Where the corridor stage is a camera
@@ -16,9 +16,13 @@
 (function () {
   var W = 1920, H = 1080, LX = 120;
   var T, C, F, HX, comp, report;
+  // every master-comp layer is tagged with the section it belongs to, so the
+  // finished build can be folded into one precomp per section (organise)
+  var GROUP = "MISC";
   var PHONE = { x: 1430, y: 528, w: 372, h: 778, bezel: 12, r: 54 };
   var PROP = { x: 1430, y: 500 };
   var CAP = { y: 1012, h: 50 };
+  var HEAD_TRACK = -35; // headings: CBA Beacon Sans Black, tight (CBA, 2026-10-13)
   var SLOT = { top: 540, h: 92, step: 108, wList: 600, wGrid: 404, gapGrid: 20 };
 
   // ---------------------------------------------------------------- utils
@@ -28,7 +32,7 @@
   function O(l) { return tr(l).property("ADBE Opacity"); }
   function S(l) { return tr(l).property("ADBE Scale"); }
   function Rz(l) { return tr(l).property("ADBE Rotate Z"); }
-  function fresh(l, name) { l.startTime = 0; l.name = name; l.comment = "apostle instr"; return l; }
+  function fresh(l, name) { l.startTime = 0; l.name = name; l.comment = "apostle instr|" + GROUP; return l; }
   function hide(l) { O(l).setValue(0); return l; }
 
   // Ease by key: "out" = expo-ish arrival (fast leave, long settle),
@@ -222,7 +226,7 @@
   }
   function subComp(name, w, h) {
     var c = app.project.items.addComp(name, w, h, 1, T.duration, T.fps);
-    c.parentFolder = T._folder;
+    c.parentFolder = T._parts;
     return c;
   }
   function place(c, name, x, y) {
@@ -232,14 +236,51 @@
     return l;
   }
 
+  // a brand icon: the client's own pictogram file when the kit has one (CBA
+  // allows nothing else), else the drawn tile. Fit inside size x size.
+  function icon(into, name, glyph, x, y, size, o) {
+    o = o || {};
+    var f = T.pictograms && T.pictograms[glyph];
+    if (f && new File(f).exists) {
+      var it = footage(f);
+      var l = fresh(comp_(into).layers.add(it), name);
+      var sc = size / Math.max(it.width, it.height) * 100;
+      S(l).setValue([sc, sc]);
+      P(l).setValue([x, y]);
+      try { l.collapseTransformation = true; } catch (eC) {}
+      return l;
+    }
+    if (T.pictogramsOnly) report.warnings.push("no pictogram for " + glyph + " (" + name + "); drew a tile");
+    var t = o.bare ? APOSTLE.drawGlyph(comp_(into), name, glyph, x, y, size, pal(o.pal || {})) :
+      APOSTLE.drawTile(comp_(into), name, glyph, x, y, size, pal(o.pal || {}));
+    t.startTime = 0;
+    t.comment = "apostle instr|" + GROUP;
+    return t;
+  }
+  function logo(into, name, x, y, h) {
+    if (!T.logo || !new File(T.logo).exists) {
+      var lb = box(name + " BOX", 116, 40, 6, null, C.ink, 2, x + 58, y, { into: into });
+      var lt = txt(name, "LOGO", F.bold, 15, C.ink, x + 58, y + 5, { center: true, tracking: 150, into: into });
+      return [lb, lt];
+    }
+    var it = footage(T.logo);
+    var l = fresh(comp_(into).layers.add(it), name);
+    var sc = h / it.height * 100;
+    S(l).setValue([sc, sc]);
+    // left edge on x, centred on y
+    P(l).setValue([x + it.width * sc / 200, y]);
+    return [l];
+  }
+
   // ---------------------------------------------------------------- top bar
   function topBar() {
-    var lb = box("LOGO BOX", 116, 40, 6, null, C.ink, 2, LX + 58, 72);
-    var lt = txt("LOGO", "LOGO", F.bold, 15, C.ink, LX + 58, 77, { center: true, tracking: 150 });
-    var lab = txt("REVIEW LABEL", T.label, F.bold, 14, C.muted, LX + 140, 77, { tracking: 120 });
+    GROUP = "TOP BAR";
+    var lg = logo(null, "LOGO", LX, 72, 88);
+    var lab = txt("REVIEW LABEL", T.label, F.bold, 14, C.muted, LX + 90, 77, { tracking: 120 });
     var tIn = 0;
     for (var i = 0; i < T.cards.length; i++) if (T.cards[i].type === "title") tIn = T.cards[i].tOut - 0.3;
-    show(lb, tIn, null, { from: [0, -12] }); show(lt, tIn, null, { from: [0, -12] }); show(lab, tIn + 0.08, null, { from: [0, -12] });
+    for (var j = 0; j < lg.length; j++) show(lg[j], tIn, null, { from: [0, -12] });
+    show(lab, tIn + 0.08, null, { from: [0, -12] });
   }
 
   // ---------------------------------------------------------------- pages
@@ -260,20 +301,12 @@
         if (cur) anim(S(d), [[tIn + 0.35, [0, 100], tIn + 0.95, [100, 100], "out"]]);
       }
     }
-    var size = 92, base1 = 356, lead = 100;
+    // headings: Black, tightly tracked, shrunk to fit short of the phone
+    var size = 92, base1 = 356, lead = 96, maxW = 1060, widest = 0;
+    for (var m = 0; m < pg.heading.length; m++) widest = Math.max(widest, textWidth(pg.heading[m], F.black, size, HEAD_TRACK));
+    if (widest > maxW) { size = Math.floor(size * maxW / widest); lead = Math.round(size * 1.04); }
     for (var li = 0; li < pg.heading.length; li++) {
-      var line = pg.heading[li], by = base1 + li * lead;
-      var hl = pg.highlight ? line.indexOf(pg.highlight) : -1;
-      if (hl !== -1) {
-        var pre = line.substring(0, hl);
-        var preW = textWidth(pre.replace(/\s+$/, ""), F.xbold, size, -10);
-        if (/\s$/.test(pre)) preW += textWidth("x x", F.xbold, size, -10) - textWidth("xx", F.xbold, size, -10);
-        var wordW = textWidth(pg.highlight.replace(/[.,]$/, ""), F.xbold, size, -10);
-        var bar = box("P" + pg.id + " HIGHLIGHT", wordW + 8, 24, 3, C.brand, null, 0, LX + preW - 4, by - 10, { anchorLeft: true });
-        show(bar, tIn + 0.1 + li * 0.09, tOut, { from: [0, 0], to: [0, 0], dur: 0.2 });
-        anim(S(bar), [[tIn + 0.45, [0, 100], tIn + 1.05, [100, 100], "out"]]);
-      }
-      var hl2 = txt("P" + pg.id + " HEADING " + (li + 1), line, F.xbold, size, C.ink, LX, by, { tracking: -10 });
+      var hl2 = txt("P" + pg.id + " HEADING " + (li + 1), pg.heading[li], F.black, size, C.ink, LX, base1 + li * lead, { tracking: HEAD_TRACK });
       show(hl2, tIn + 0.08 + li * 0.09, tOut, { from: [0, 40], dur: 0.7 });
     }
   }
@@ -306,12 +339,11 @@
     var card = box(name + " CARD", s.w, hgt, it.kind === "search" ? hgt / 2 : 16, fill, strokeC, 2, cx, cy);
     var parts = [sh, card];
     if (it.kind === "search") {
-      var mg = box(name + " LENS", 22, 22, 0, null, C.ink, 3, s.x + s.xo + 40, cy - 3, { ellipse: true });
+      var mg = icon(null, name + " LENS", "search", s.x + s.xo + 40, cy, 34, { bare: true });
       var ht = txt(name + " TEXT", it.text || it.title || "", F.regular, 26, C.ink, s.x + s.xo + 70, cy + 9, {});
       parts.push(mg, ht);
     } else {
-      var tile = APOSTLE.drawTile(comp, name + " TILE", it.glyph || "check", s.x + s.xo + 50, cy, 56, pal({}));
-      tile.startTime = 0;
+      var tile = icon(null, name + " ICON", it.glyph || "check", s.x + s.xo + 52, cy, 58);
       var hasSub = !!it.sub;
       var ti = txt(name + " TITLE", it.title || "", F.bold, 25, C.ink, s.x + s.xo + 94, hasSub ? cy - 4 : cy + 9, {});
       parts.push(tile, ti);
@@ -328,8 +360,7 @@
   }
   function pinItem(it) {
     var y = SLOT.top + it.slot * SLOT.step + SLOT.h / 2;
-    var tile = APOSTLE.drawTile(comp, "PIN LOCK", "lock", LX + 46, y, 76, pal({}));
-    tile.startTime = 0;
+    var tile = icon(null, "PIN LOCK", "lock", LX + 46, y, 76);
     show(tile, it.tIn, it.tOut, { from: [-30, 0], scaleFrom: 0.7 });
     for (var i = 0; i < 6; i++) {
       var x = LX + 120 + i * 50;
@@ -397,7 +428,9 @@
       anim(S(ring), [[rg.tIn, [112, 112], rg.tIn + 0.5, [100, 100], "out"]]);
       ring.inPoint = rg.tIn; ring.outPoint = rg.tOut + 0.02;
     }
-    box("ISLAND", 104, 30, 15, C.ink, null, 0, cx, PHONE.bezel + 22, { into: pc });
+    // the front camera: an Android punch-hole, or the iPhone island
+    if (T.device === "android") box("CAMERA", 17, 17, 0, C.ink, null, 0, cx, PHONE.bezel + 20, { into: pc, ellipse: true });
+    else box("ISLAND", 104, 30, 15, C.ink, null, 0, cx, PHONE.bezel + 22, { into: pc });
 
     var L = place(pc, "PHONE", PHONE.x, PHONE.y);
     var segsP = [], segsO = [], segsR = [], i2;
@@ -419,8 +452,10 @@
     // badges ride the phone's top-right corner
     for (var bI = 0; bI < T.badges.length; bI++) {
       var bd = T.badges[bI];
-      var bl = APOSTLE.drawBadge(comp, "BADGE " + (bI + 1) + " " + bd.kind, bd.kind, 0, 0, 118, pal({}));
+      var bl = (T.pictograms && T.pictograms[bd.kind]) ? icon(null, "BADGE " + (bI + 1) + " " + bd.kind, bd.kind, 0, 0, 110) :
+        APOSTLE.drawBadge(comp, "BADGE " + (bI + 1) + " " + bd.kind, bd.kind, 0, 0, 118, pal({}));
       bl.startTime = 0;
+      bl.comment = "apostle instr|" + GROUP;
       // parent WITHOUT a jump and give phone-local coords: a plain .parent
       // assignment converts using the phone's off-screen pose at time 0
       bl.setParentWithJump(L);
@@ -431,6 +466,9 @@
 
   // ---------------------------------------------------------------- props
   function propIn(L, pr) {
+    // trim the in point first: setting it after the out point drags the out
+    // point later by the same amount
+    L.inPoint = Math.max(0, pr.tIn - 0.02);
     var segsP = [[pr.tIn, [PROP.x + 340, PROP.y + 20], pr.tIn + 0.75, [PROP.x, PROP.y], "out"]];
     var segsO = [[pr.tIn, 0, pr.tIn + 0.4, 100, "out"]];
     var segsR = [[pr.tIn, 10, pr.tIn + 0.75, 0, "out"]];
@@ -441,7 +479,6 @@
       L.outPoint = pr.tOut + 0.02;
     }
     anim(P(L), segsP); anim(O(L), segsO); anim(Rz(L), segsR);
-    L.inPoint = Math.max(0, pr.tIn - 0.02);
   }
   function labelSwaps(pc, pr, first, cx, y) {
     var labels = [{ t: pr.tIn + 0.5, text: first }];
@@ -471,7 +508,7 @@
     box(tag + " BOOK", w, h, 22, C.navy, null, 0, x, y, { into: pc });
     var ttl = txt(tag + " TITLE", "PASSPORT", F.bold, Math.round(w * 0.085), C.gold, x, y - h * 0.33, { center: true, tracking: 300, into: pc });
     box(tag + " CREST", w * 0.36, w * 0.36, 0, null, C.gold, 4, x, y - h * 0.06, { into: pc, ellipse: true });
-    APOSTLE.drawGlyph(pc, tag + " STAR", "star", x, y - h * 0.06, w * 0.2, pal({ ink: HX.gold })).startTime = 0;
+    if (!T.pictogramsOnly) APOSTLE.drawGlyph(pc, tag + " STAR", "star", x, y - h * 0.06, w * 0.2, pal({ ink: HX.gold })).startTime = 0;
     APOSTLE.drawGlyph(pc, tag + " CHIP", "epassport", x, y + h * 0.3, w * 0.3, pal({ ink: HX.gold })).startTime = 0;
     return ttl;
   }
@@ -517,7 +554,8 @@
     if (tBuzz !== null) reads.push(tBuzz);
     pulses(pc, cx, cy + 40, reads, 200);
     if (tBuzz !== null) {
-      var ok = APOSTLE.drawBadge(pc, "READ OK", "tick", cx + 150, cy - 210, 110, pal({}));
+      var ok = (T.pictograms && T.pictograms.tick) ? icon(pc, "READ OK", "tick", cx + 150, cy - 210, 110) :
+        APOSTLE.drawBadge(pc, "READ OK", "tick", cx + 150, cy - 210, 110, pal({}));
       ok.startTime = 0;
       anim(S(ok), [[tBuzz + 0.3, [20, 20, 100], tBuzz + 0.75, [100, 100, 100], "snap"]]);
       anim(O(ok), [[tBuzz + 0.3, 0, tBuzz + 0.5, 100, "out"]]);
@@ -539,20 +577,18 @@
         anim(ln.trim, [[nd.t - 0.45, 0, nd.t + 0.1, 100, "io"]]);
         ln.layer.inPoint = Math.max(0, nd.t - 0.47);
       }
-      var tile = APOSTLE.drawTile(pc, "NODE " + (j + 1), nd.glyph || "check", x, cy, 150, pal({}));
-      tile.startTime = 0;
+      var tile = icon(pc, "NODE " + (j + 1), nd.glyph || "check", x, cy, 150);
       anim(S(tile), [[nd.t, [10, 10, 100], nd.t + 0.55, [100, 100, 100], "snap"]]);
       anim(O(tile), [[nd.t, 0, nd.t + 0.2, 100, "out"]]);
       tile.inPoint = nd.t;
-      var lb = txt("NODE LABEL " + (j + 1), nd.label || "", F.bold, 27, C.ink, x, cy + 130, { center: true, into: pc });
+      var lb = txt("NODE LABEL " + (j + 1), nd.label || "", F.bold, 27, C.ink, x, cy + 150, { center: true, into: pc });
       var p = P(lb).value;
       anim(P(lb), [[nd.t + 0.12, [p[0], p[1] + 16], nd.t + 0.6, p, "out"]]);
       anim(O(lb), [[nd.t + 0.12, 0, nd.t + 0.45, 100, "out"]]);
       lb.inPoint = nd.t;
     }
     if (pr.traveler && n >= 2) {
-      var tv = APOSTLE.drawGlyph(pc, "TRAVELER", pr.traveler, xs[0], cy - 128, 70, pal({}));
-      tv.startTime = 0;
+      var tv = icon(pc, "TRAVELER", pr.traveler, xs[0], cy - 128, 76, { bare: true });
       var a = nodes[1].t, b = Math.max(nodes[n - 1].t + 0.6, a + 1.2);
       anim(P(tv), [[a, [xs[0], cy - 128], b, [xs[Math.min(n - 1, xs.length - 1)], cy - 128], "io"]]);
       anim(O(tv), [[a - 0.2, 0, a + 0.1, 100, "out"]]);
@@ -605,15 +641,14 @@
   // hero: one idea, one big icon
   function propHero(pr) {
     var pc = subComp(T.name + " PROP hero", 700, 700), cx = 350;
-    var tile = APOSTLE.drawTile(pc, "HERO TILE", pr.glyph || "star", cx, 270, 300, pal({}));
-    tile.startTime = 0;
+    var tile = icon(pc, "HERO ICON", pr.glyph || "star", cx, 270, 300);
     anim(S(tile), [[pr.tIn + 0.2, [40, 40, 100], pr.tIn + 0.9, [100, 100, 100], "snap"]]);
     var lbs = [{ t: pr.tIn + 0.45, text: pr.label }];
     for (var i = 0; i < pr.events.length; i++) if (pr.events[i].action === "label") lbs.push({ t: pr.events[i].t, text: pr.events[i].text });
     for (var j = 0; j < lbs.length; j++) {
       if (!lbs[j].text) continue;
       var nx = (j + 1 < lbs.length) ? lbs[j + 1].t : null;
-      var lt = txt("HERO LABEL " + (j + 1), lbs[j].text, F.xbold, 44, C.ink, cx, 540, { center: true, tracking: -5, into: pc });
+      var lt = txt("HERO LABEL " + (j + 1), lbs[j].text, F.black, 44, C.ink, cx, 540, { center: true, tracking: HEAD_TRACK, into: pc });
       var p = P(lt).value;
       anim(P(lt), nx === null ? [[lbs[j].t, [p[0], p[1] + 24], lbs[j].t + 0.5, p, "out"]] : [[lbs[j].t, [p[0], p[1] + 24], lbs[j].t + 0.5, p, "out"], [nx - 0.2, p, nx, [p[0], p[1] - 16], "in"]]);
       anim(O(lt), nx === null ? [[lbs[j].t, 0, lbs[j].t + 0.3, 100, "out"]] : [[lbs[j].t, 0, lbs[j].t + 0.3, 100, "out"], [nx - 0.2, 100, nx, 0, "in"]]);
@@ -662,6 +697,7 @@
 
   // ---------------------------------------------------------------- cards
   function card(cd, idx) {
+    GROUP = "CARD|" + idx;
     var nul = fresh(comp.layers.addNull(), "CARD " + (idx + 1) + " " + cd.type);
     tr(nul).property("ADBE Anchor Point").setValue([0, 0]);
     P(nul).setValue([0, 0]);
@@ -672,17 +708,16 @@
     if (cd.type === "chapter") {
       var ey = txt("CARD " + (idx + 1) + " STEP", "STEP " + cd.step + " OF " + cd.total, F.bold, 22, C.ink, LX, 330, { tracking: 140 });
       var nm = txt("CARD " + (idx + 1) + " NUMERAL", cd.numeral, F.black, 300, C.ink, LX - 12, 640, { tracking: -30 });
-      var tt = txt("CARD " + (idx + 1) + " TITLE", cd.title, F.xbold, 78, C.ink, LX, 762, { tracking: -10 });
+      var tt = txt("CARD " + (idx + 1) + " TITLE", cd.title, F.black, 78, C.ink, LX, 762, { tracking: HEAD_TRACK });
       kids.push(ey, nm, tt);
     } else {
-      var lb = box("CARD " + (idx + 1) + " LOGO BOX", 116, 40, 6, null, C.ink, 2, LX + 58, 72);
-      var lt = txt("CARD " + (idx + 1) + " LOGO", "LOGO", F.bold, 15, C.ink, LX + 58, 77, { center: true, tracking: 150 });
-      kids.push(lb, lt);
+      var lg = logo(null, "CARD " + (idx + 1) + " LOGO", LX, 72, 88);
+      for (var g = 0; g < lg.length; g++) kids.push(lg[g]);
       var by = cd.type === "title" ? 470 : 500;
       for (var i = 0; i < cd.heading.length; i++) {
-        kids.push(txt("CARD " + (idx + 1) + " LINE " + (i + 1), cd.heading[i], F.xbold, 120, C.ink, LX, by + i * 128, { tracking: -14 }));
+        kids.push(txt("CARD " + (idx + 1) + " LINE " + (i + 1), cd.heading[i], F.black, 120, C.ink, LX, by + i * 124, { tracking: HEAD_TRACK }));
       }
-      if (cd.sub) kids.push(txt("CARD " + (idx + 1) + " SUB", cd.sub, F.regular, 34, C.ink, LX, by + cd.heading.length * 128 + 10, {}));
+      if (cd.sub) kids.push(txt("CARD " + (idx + 1) + " SUB", cd.sub, F.regular, 34, C.ink, LX, by + cd.heading.length * 124 + 10, {}));
     }
     for (var k = 0; k < kids.length; k++) {
       try { kids[k].setParentWithJump(nul); } catch (eJ) { kids[k].parent = nul; }
@@ -697,15 +732,18 @@
       anim(P(kids[j]), [[d0, [p[0], p[1] + 70], d0 + 0.7, p, "out"]]);
       anim(O(kids[j]), [[d0, 0, d0 + 0.35, 100, "out"]]);
     }
+    for (var n = 0; n < kids.length; n++) kids[n].inPoint = Math.max(0, tIn - 0.02);
+    nul.inPoint = Math.max(0, tIn - 0.02);
     if (tOut < T.duration - 0.05) {
       anim(P(nul), [[tOut - 0.6, [0, 0], tOut, [0, -H - 60], "in"]]);
       for (var m = 0; m < kids.length; m++) kids[m].outPoint = tOut + 0.02;
+      nul.outPoint = tOut + 0.02;
     }
-    for (var n = 0; n < kids.length; n++) kids[n].inPoint = Math.max(0, tIn - 0.02);
   }
 
   // ---------------------------------------------------------------- captions
   function captions() {
+    GROUP = "CAPTIONS";
     for (var i = 0; i < T.captions.length; i++) {
       var c = T.captions[i];
       var tw = textWidth(c.text, F.regular, 24, 0);
@@ -717,6 +755,87 @@
       var parts = [pill, tag, t];
       for (var k = 0; k < parts.length; k++) show(parts[k], c.tIn, c.tOut, { from: [0, 10], to: [0, 0], dur: 0.28, exit: 0.16 });
     }
+  }
+
+  // ---------------------------------------------------------------- sections
+  // A finished build is folded into one precomp per part, so the master reads
+  // as the film's outline (CBA, 2026-10-13: "organise each part into sections
+  // instead of 350+ layers"), top to bottom:
+  //   CAPTIONS / chapter, title and outro cards / STEP sections (left column
+  //   + props) / PHONE (with its badges) / TOP BAR / BG
+  // Each precomp is full length and time-aligned, so timing is unchanged; the
+  // master layer is trimmed to the span its layers occupy.
+  function stepOfPage(id) {
+    for (var i = 0; i < T.pages.length; i++) if (T.pages[i].id === id) return T.pages[i].step || 0;
+    return 0;
+  }
+  function stepAt(t) {
+    var st = 0;
+    for (var i = 0; i < T.pages.length; i++) if (T.pages[i].tIn <= t + 0.01) st = T.pages[i].step || 0;
+    return st;
+  }
+  function pad2(n) { return (n < 10 ? "0" : "") + n; }
+  function sectionKey(step) { return "STEP|" + (step || 0); }
+  function sectionName(key) {
+    var a = key.split("|");
+    if (a[0] === "STEP") {
+      var st = parseInt(a[1], 10);
+      if (!st) return "00 INTRO";
+      for (var i = 0; i < T.cards.length; i++) if (T.cards[i].type === "chapter" && T.cards[i].step === st) return pad2(st) + " " + T.cards[i].title.toUpperCase();
+      return pad2(st) + " STEP";
+    }
+    if (a[0] === "CARD") {
+      var cd = T.cards[parseInt(a[1], 10)];
+      if (cd.type === "chapter") return "CARD " + pad2(cd.step) + " " + cd.title.toUpperCase();
+      return cd.type === "title" ? "CARD TITLE" : "CARD OUTRO";
+    }
+    return key;
+  }
+  function organise() {
+    var keys = [], seen = {}, i;
+    for (i = 1; i <= comp.numLayers; i++) {
+      var c = comp.layer(i).comment, k = c.indexOf("apostle instr|") === 0 ? c.substring(14) : null;
+      if (k && k !== "BG" && !seen[k]) { seen[k] = true; keys.push(k); }
+    }
+    var folder = app.project.items.addFolder("SECTIONS");
+    folder.parentFolder = T._folder;
+    var made = {};
+    for (var q = 0; q < keys.length; q++) {
+      var idx = [], tIn = T.duration, tOut = 0;
+      for (i = 1; i <= comp.numLayers; i++) {
+        var L = comp.layer(i);
+        if (L.comment === "apostle instr|" + keys[q]) {
+          idx.push(i);
+          if (!L.nullLayer) { tIn = Math.min(tIn, L.inPoint); tOut = Math.max(tOut, L.outPoint); }
+        }
+      }
+      if (!idx.length) continue;
+      var nm = T.name + " " + sectionName(keys[q]);
+      var pc = comp.layers.precompose(idx, nm, true);
+      pc.parentFolder = folder;
+      pc.motionBlur = true;
+      pc.bgColor = C.bg;
+      var layer = null;
+      for (i = 1; i <= comp.numLayers; i++) if (comp.layer(i).source === pc) layer = comp.layer(i);
+      layer.name = sectionName(keys[q]);
+      layer.comment = "apostle section|" + keys[q];
+      layer.motionBlur = true;
+      layer.inPoint = Math.max(0, tIn); layer.outPoint = Math.min(T.duration, tOut);
+      made[keys[q]] = layer;
+      report.sections = report.sections || [];
+      report.sections.push(layer.name + " (" + idx.length + " layers)");
+    }
+    // stacking, bottom -> top
+    var order = ["TOP BAR", "PHONE"], cardsK = [], steps = [];
+    for (var k2 in made) if (made.hasOwnProperty(k2)) {
+      if (k2.indexOf("STEP|") === 0) steps.push(k2);
+      if (k2.indexOf("CARD|") === 0) cardsK.push(k2);
+    }
+    var byNum = function (a, b) { return parseInt(a.split("|")[1], 10) - parseInt(b.split("|")[1], 10); };
+    steps.sort(byNum); cardsK.sort(byNum);
+    order = order.concat(steps, cardsK, ["CAPTIONS"]);
+    for (var o = 0; o < order.length; o++) if (made[order[o]]) made[order[o]].moveToBeginning();
+    for (i = 1; i <= comp.numLayers; i++) if (comp.layer(i).name === "BG") { comp.layer(i).moveToEnd(); break; }
   }
 
   // ---------------------------------------------------------------- build
@@ -751,16 +870,19 @@
         T._folder = app.project.items.addFolder("APOSTLE/" + name);
         T._assets = app.project.items.addFolder(name + " ASSETS");
         T._assets.parentFolder = T._folder;
+        T._parts = app.project.items.addFolder("PARTS");
+        T._parts.parentFolder = T._folder;
         comp = app.project.items.addComp(name, W, H, 1, T.duration, T.fps);
         comp.parentFolder = T._folder;
         comp.motionBlur = true;
         comp.bgColor = C.bg;
+        GROUP = "BG";
         var bg = fresh(comp.layers.addSolid(C.bg, "BG", W, H, 1, T.duration), "BG");
         bg.moveToEnd();
 
         // bottom -> top: every addX puts the new layer on top
         topBar();
-        for (var p = 0; p < T.pages.length; p++) page(T.pages[p]);
+        for (var p = 0; p < T.pages.length; p++) { GROUP = sectionKey(T.pages[p].step); page(T.pages[p]); }
         // the newest item on a page is "active" until the next one arrives
         for (var it = 0; it < T.items.length; it++) {
           var cur = T.items[it], nx = null;
@@ -768,12 +890,15 @@
           if (nx) cur.activeUntil = nx.tIn;
         }
         for (var it2 = 0; it2 < T.items.length; it2++) {
+          GROUP = sectionKey(stepOfPage(T.items[it2].page));
           if (T.items[it2].kind === "pin") pinItem(T.items[it2]);
           else item(T.items[it2]);
         }
+        GROUP = "PHONE";
         phone();
         for (var pr = 0; pr < T.props.length; pr++) {
           var P0 = T.props[pr];
+          GROUP = sectionKey(stepAt(P0.tIn));
           if (P0.type === "passport") propPassport(P0);
           else if (P0.type === "nfc") propNfc(P0);
           else if (P0.type === "path") propPath(P0);
@@ -784,17 +909,19 @@
         }
         for (var c = 0; c < T.cards.length; c++) card(T.cards[c], c);
         captions();
+        if (opts.organise !== false) organise();
       } finally {
         app.endUndoGroup();
       }
       report.master = comp.name;
       report.duration = T.duration;
       report.layers = comp.numLayers;
+      report.sections = report.sections || [];
       return JSON.stringify(report);
     } catch (e) {
       return JSON.stringify({ status: "error", error: e.toString(), line: e.line || null, warnings: report.warnings });
     }
   }
 
-  $.global.APOSTLE_INSTR = { build: build, version: "1.0.0" };
+  $.global.APOSTLE_INSTR = { build: build, version: "1.1.0" };
 })();

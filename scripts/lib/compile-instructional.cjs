@@ -284,7 +284,55 @@ function compileInstructional(plan, opts) {
     if (c.tOut - c.tIn > maxDur) c.tOut = R(c.tIn + maxDur);
   });
   tl.screens = Object.keys(usedShots).map((k) => ({ name: k, file: usedShots[k] }));
+
+  // brand pictograms: every icon the film draws resolves to a client file
+  // (kit.pictogramSet). Brands that forbid home-made icons set only: true,
+  // and anything unresolved is a warning, never a silent drawn glyph.
+  const ps = pictogramSet(kit, plan, repo);
+  if (ps) {
+    const want = new Set(["tick", "cross", "lock", "search"]);
+    tl.items.forEach((x) => { if (x.glyph) want.add(x.glyph); });
+    tl.props.forEach((p) => {
+      if (p.glyph) want.add(p.glyph);
+      if (p.traveler) want.add(p.traveler);
+      p.events.forEach((e) => { if (e.glyph) want.add(e.glyph); });
+    });
+    tl.pictograms = {};
+    want.forEach((g) => {
+      const f = ps.resolve(g);
+      if (f) tl.pictograms[g] = f;
+      else if (ps.only) warnings.push("no brand pictogram for '" + g + "'; use one of the pictogram names");
+    });
+    tl.pictogramsOnly = !!ps.only;
+  }
+  const logo = plan.logo || kit.logo;
+  if (logo) tl.logo = path.isAbsolute(logo) ? logo : path.join(repo, logo);
+  // devices: "android" hides the iPhone Dynamic Island (frame and captures)
+  tl.device = plan.device || (kit.phone && kit.phone.device) || "iphone";
   return { timeline: tl, warnings };
 }
 
-module.exports = { compileInstructional, captionChunks };
+// kit.pictogramSet = { dir, suffix, only, alias: { glyph: name } }; plan.pictograms
+// overrides dir (a job-folder copy keeps the AE project self-contained)
+function pictogramSet(kit, plan, repo) {
+  const set = kit && kit.pictogramSet;
+  if (!set) return null;
+  let dir = plan.pictograms || set.dir;
+  if (!path.isAbsolute(dir)) dir = path.join(repo, dir);
+  const suffix = set.suffix || ".ai";
+  let names = [];
+  try { names = fs.readdirSync(dir).filter((f) => f.endsWith(suffix)).map((f) => f.slice(0, -suffix.length)); } catch (e) { return null; }
+  const lower = {};
+  names.forEach((n) => { lower[n.toLowerCase()] = n; });
+  const alias = set.alias || {};
+  return {
+    only: set.only !== false,
+    names,
+    resolve(g) {
+      const n = lower[String(alias[g] || g).toLowerCase()];
+      return n ? path.join(dir, n + suffix) : null;
+    }
+  };
+}
+
+module.exports = { compileInstructional, captionChunks, pictogramSet };

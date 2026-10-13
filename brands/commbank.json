@@ -1,7 +1,7 @@
 {
  "kitId": "commbank",
  "client": "Commonwealth Bank (CommBank masterbrand, app and customer education)",
- "note": "Built 2026-10-12 for the CBA Migrant onboarding video. Yellow is the classic CommBank gold #FFCC00 (Tim, 2026-10-12, CBA Migrant). The October 2026 app screens use a brighter #FAEC20; the film deliberately does not match it. The stage is white like the app, with black CBA Beacon Sans type and yellow accents. The icon tiles are yellow circles with black line art, as in the app's own illustrations (screen 03). Logo: 00.ADMIN/02.Client Assets/CAN & Beacon/CBA_CAN_PRM_BCN_STK_WM_BLACK_SRGB_300425.ai.",
+ "note": "Built 2026-10-12 for the CBA Migrant onboarding video. Yellow is the classic CommBank gold #FFCC00 (Tim, 2026-10-12, CBA Migrant). The October 2026 app screens use a brighter #FAEC20; the film deliberately does not match it. The stage is white like the app, with black CBA Beacon Sans type and yellow accents. Icons are the client's own pictograms ONLY (pictogramSet): CBA does not allow home-made icons in animation (Tim, 2026-10-13). The client may not show the iPhone Dynamic Island: phones read as Android (phone.device). Logo: 00.ADMIN/02.Client Assets/CAN & Beacon/CBA_CAN_PRM_BCN_STK_WM_BLACK_SRGB_300425.ai.",
  "fontHeadingPS": "CBABeaconSans-Bold",
  "fontBodyPS": "CBABeaconSans-Regular",
  "headingSize": 84,
@@ -29,7 +29,7 @@
   "plateFill": "paper",
   "plateStroke": "ink"
  },
- "logo": null,
+ "logo": "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/02.Client Assets/CAN & Beacon/3x/PRM_BEACON_STK_WM_BLACK_SRGB_300425@3x.png",
  "defaults": {
   "wpm": 150,
   "fps": 25,
@@ -40,5 +40,57 @@
   "layout": "gallery",
   "easeProfile": "curvaceous",
   "handycam": "subtle"
+ },
+ "pictogramSet": {
+  "dir": "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/00000_TEMPLATE_MEDIA x CBA/00.ADMIN/02.Client Assets/Pictograms",
+  "suffix": "-nopadding.svg",
+  "only": true,
+  "alias": {
+   "star": "star",
+   "sparkle": "star",
+   "card": "commbankcard",
+   "doc": "document",
+   "renew": "cardcycle",
+   "home": "house",
+   "shield": "security",
+   "bank": "branch",
+   "cart": "trolley",
+   "basket": "shopping",
+   "plane": "plane",
+   "gift": "gift",
+   "tag": "offers",
+   "percent": "percentage",
+   "ticket": "keycard",
+   "phone": "iPhone",
+   "coin": "coinstack",
+   "receipt": "statement",
+   "arrowRight": "select",
+   "transfer": "change",
+   "check": "tick",
+   "cross": "warning",
+   "epassport": "IDcard",
+   "lock": "padlock",
+   "mail": "envelope",
+   "hub": "connectivity",
+   "search": "magnifiyingglass",
+   "id": "IDcard",
+   "passport": "IDcard",
+   "selfie": "camera",
+   "camera": "camera",
+   "sms": "sms",
+   "pin": "pincode",
+   "calendar": "calendar",
+   "globe": "globe",
+   "tax": "report",
+   "money": "dollarcircle",
+   "wallet": "wallet",
+   "help": "help",
+   "warning": "warning",
+   "clock": "clock",
+   "user": "human"
+  }
+ },
+ "phone": {
+  "device": "android"
  }
 }
