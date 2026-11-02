@@ -38,7 +38,7 @@ rm -rf \
   docs/phase5-8-roadmap.md \
   scripts/package-release.sh .release-please-manifest.json release-please-config.json vitest.config.ts eslint.config.js \
   CONTRIBUTING.md CODE_OF_CONDUCT.md badge-ar.svg README.ar.md \
-  .githooks .git-blame-ignore-revs .gitattributes .npmignore .prettierignore .prettierrc.json .editorconfig install-bridge.js
+  .githooks .git-blame-ignore-revs .gitattributes .npmignore .prettierignore .prettierrc.json .editorconfig
 
 # ---- CLAUDE.md: keep the engineering notes, drop the client names
 # (the repo copy keeps them; only the packaged copy is rewritten)
