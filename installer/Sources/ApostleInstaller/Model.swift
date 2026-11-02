@@ -17,8 +17,11 @@ struct Step: Identifiable, Equatable {
     var state: StepState = .pending
 }
 
-let installDir = FileManager.default.homeDirectoryForCurrentUser
-    .appendingPathComponent("Applications/Apostle AE Bridge")
+// APOSTLE_TEST_HOME points the whole install at a sandbox home (tests only)
+let testEnv = ProcessInfo.processInfo.environment
+let userHome = testEnv["APOSTLE_TEST_HOME"].map { URL(fileURLWithPath: $0) }
+    ?? FileManager.default.homeDirectoryForCurrentUser
+let installDir = userHome.appendingPathComponent("Applications/Apostle AE Bridge")
 let firstPrompt = "Build the demo film in briefs/demo, then show me a frame from the middle of it."
 
 @MainActor
@@ -54,6 +57,7 @@ final class InstallModel: ObservableObject {
         refresh()
         payloadVersion = Self.readPayloadVersion() ?? "?"
         screen = installedVersion == nil ? .welcome : .manage
+        if testEnv["APOSTLE_AUTOTEST"] != nil { autotest() }
         aeTimer = Timer.scheduledTimer(withTimeInterval: 1.0, repeats: true) { [weak self] _ in
             Task { @MainActor in self?.pollAfterEffects() }
         }
@@ -72,7 +76,7 @@ final class InstallModel: ObservableObject {
     }
 
     func pollAfterEffects() {
-        aeRunning = NSWorkspace.shared.runningApplications.contains {
+        aeRunning = testEnv["APOSTLE_TEST_IGNORE_AE"] == nil && NSWorkspace.shared.runningApplications.contains {
             ($0.bundleIdentifier ?? "").hasPrefix("com.adobe.AfterEffects")
         }
         if waitingForQuit && !aeRunning {
@@ -121,8 +125,7 @@ final class InstallModel: ObservableObject {
             failure = "This installer is missing its files. Download it again."
             return
         }
-        let staging = FileManager.default.urls(for: .cachesDirectory, in: .userDomainMask)[0]
-            .appendingPathComponent("Apostle AE Bridge/installer")
+        let staging = userHome.appendingPathComponent("Library/Caches/Apostle AE Bridge/installer")
         try? FileManager.default.removeItem(at: staging)
         try? FileManager.default.createDirectory(at: staging, withIntermediateDirectories: true)
         setStep("files", .running)
@@ -203,6 +206,23 @@ final class InstallModel: ObservableObject {
         }
     }
 
+    // APOSTLE_AUTOTEST: press Install, print each step change, exit 0 when the
+    // install reaches sign-in or ready, 1 on failure (tests only)
+    private func autotest() {
+        startInstall()
+        Task {
+            var last = ""
+            for _ in 0..<600 {
+                try? await Task.sleep(nanoseconds: 250_000_000)
+                let now = steps.map { "\($0.id)=\($0.state)" }.joined(separator: " ")
+                if now != last { print(now); last = now }
+                if let f = failure { print("FAILED: \(f)"); exit(1) }
+                if screen == .signIn || screen == .ready { print("SCREEN: \(screen)"); exit(0) }
+            }
+            print("TIMEOUT"); exit(1)
+        }
+    }
+
     private func setStep(_ id: String, _ state: StepState, _ detail: String = "") {
         guard let i = steps.firstIndex(where: { $0.id == id }) else { return }
         withAnimation(.spring(response: 0.35, dampingFraction: 1)) {
@@ -234,7 +254,7 @@ final class InstallModel: ObservableObject {
     // MARK: Claude sign-in
 
     static func claudePath() -> String? {
-        let home = FileManager.default.homeDirectoryForCurrentUser.path
+        let home = userHome.path
         for c in ["\(home)/.local/bin/claude", "\(home)/.claude/local/claude", "/opt/homebrew/bin/claude", "/usr/local/bin/claude"]
         where FileManager.default.isExecutableFile(atPath: c) { return c }
         return nil
@@ -242,8 +262,10 @@ final class InstallModel: ObservableObject {
 
     static func shellEnvironment() -> [String: String] {
         var env = ProcessInfo.processInfo.environment
-        let home = FileManager.default.homeDirectoryForCurrentUser.path
-        env["PATH"] = "\(home)/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
+        let home = userHome.path
+        env["HOME"] = home
+        env["PATH"] = (testEnv["APOSTLE_TEST_PATH"].map { $0 + ":" } ?? "")
+            + "\(home)/.local/bin:/opt/homebrew/bin:/usr/local/bin:/usr/bin:/bin:/usr/sbin:/sbin"
         return env
     }
 
@@ -350,8 +372,7 @@ final class InstallModel: ObservableObject {
             p.standardOutput = Pipe(); p.standardError = Pipe()
             try? p.run(); p.waitUntilExit()
         }
-        let cep = FileManager.default.homeDirectoryForCurrentUser
-            .appendingPathComponent("Library/Application Support/Adobe/CEP/extensions/apostle-panel")
+        let cep = userHome.appendingPathComponent("Library/Application Support/Adobe/CEP/extensions/apostle-panel")
         try? FileManager.default.removeItem(at: cep)
         NSWorkspace.shared.recycle([installDir]) { _, _ in
             Task { @MainActor in

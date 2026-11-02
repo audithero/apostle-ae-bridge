@@ -24,7 +24,7 @@ IDENTITY="$(security find-identity -v -p codesigning | awk -v t="($TEAM)" '/Deve
 echo "== build (universal)"
 cd "$HERE"
 swift build -c release --arch arm64 --arch x86_64 2>&1 | grep -E "error|warning: unre|Build complete" || true
-BIN="$HERE/.build/apple/Products/Release/ApostleInstaller"
+BIN="$(swift build -c release --arch arm64 --arch x86_64 --show-bin-path)/ApostleInstaller"
 [ -x "$BIN" ] || { echo "build failed" >&2; exit 1; }
 
 echo "== bundle"

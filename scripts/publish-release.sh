@@ -79,6 +79,15 @@ if [ "$CHANNEL" = stable ]; then
     put "$TMP/beta.json" "$PREFIX/channels/beta/latest.json" application/json "no-cache, max-age=0"
   fi
   put "$ZIP" "$PREFIX/download/Apostle-AE-Bridge.zip" application/zip "no-cache, max-age=0"
+  # The installer app embeds this release. Only a notarized DMG is published:
+  # an un-notarized one makes macOS warn on every other Mac.
+  if installer/build.sh "$ZIP" | tee "$TMP/installer.log" | grep -q "notarized: yes"; then
+    DMG="$REPO/installer/build-out/Apostle-Installer-$VERSION.dmg"
+    put "$DMG" "$PREFIX/releases/$VERSION/Apostle-Installer-$VERSION.dmg" application/x-apple-diskimage "public, max-age=31536000, immutable"
+    put "$DMG" "$PREFIX/download/Apostle-Installer.dmg" application/x-apple-diskimage "no-cache, max-age=0"
+  else
+    echo "  installer NOT published: not notarized (see installer/README.md)" >&2
+  fi
 fi
 rm -rf "$TMP"
 
