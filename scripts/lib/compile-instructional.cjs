@@ -88,7 +88,7 @@ function compileInstructional(plan, opts) {
   const tl = {
     name: plan.name + "_" + (plan.version || "v001"), fps: 25, w: 1920, h: 1080,
     label: plan.label || "",
-    // "lower": every piece of on-screen type is set in lowercase (CBA, 2026-10-14)
+    // "lower": every piece of on-screen type is set in lowercase (client review, 2026-10-14)
     textCase: plan.textCase || kit.textCase || "",
     total,
     colors: {

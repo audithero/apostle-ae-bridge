@@ -3038,7 +3038,7 @@ var APOSTLE = (function () {
     l.label = 8;
     l.comment = MOM_TAG;
     // Continuous rasterisation, but ONLY where AE allows it: the switch exists
-    // for vector footage (.ai/.eps/PDF) and throws on raster. Most of the CBA
+    // for vector footage (.ai/.eps/PDF) and throws on raster. Most of one client's
     // pictogram set turned out to be bitmaps despite the .ai extension (see
     // scripts/extract-pictogram-art.py), so this has to be conditional —
     // setting it unguarded failed every scene carrying a raster pictogram.
@@ -3120,7 +3120,7 @@ var APOSTLE = (function () {
 
     momRect(pc, "PHONE BODY", cx, cy, P.w, P.h, P.r, "ink", null, 0, pal, masterName);
     // white display under the shot: a capture shorter than the display (the
-    // CBA script's cropped screens) ends in white like the app, not in the
+    // a client script's cropped screens) ends in white like the app, not in the
     // black phone body
     var disp = momRect(pc, "DISPLAY", cx, cy, iw, ih, P.r - P.bezel, "paper", null, 0, pal, masterName);
 
@@ -3134,7 +3134,7 @@ var APOSTLE = (function () {
     var pos = tr.property("ADBE Position");
     pos.setValue([cx, P.bezel]);
     // the display takes the capture's OWN background (its bottom edge), not
-    // the kit's paper: CBA's surface tint left a visible seam under short
+    // the kit's paper: one client's surface tint left a visible seam under short
     // captures. Sampled once by expression, then frozen to a plain value.
     try {
       var dv = disp.property("ADBE Root Vectors Group").property(1).property("ADBE Vectors Group");
@@ -3151,7 +3151,7 @@ var APOSTLE = (function () {
     // Scroll only a genuinely long capture: a few % taller than the display
     // just crops at the bottom. Start halfway through the moment so the
     // viewer reads the screen's heading first (scrolling from tIn+1.4 had
-    // already carried "Approved" past the app's own tick in the CBA build).
+    // already carried "Approved" past the app's own tick in a client build).
     if (overflow > ih * 0.12 && m.scroll !== false && win) {
       var a = win.tIn + Math.max(1.4, (win.tOut - win.tIn) * 0.45);
       var b = win.tOut - 0.8;

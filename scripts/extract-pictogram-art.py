@@ -1,5 +1,5 @@
 #!/usr/bin/env python3
-"""extract-pictogram-art.py — recover usable artwork from the CBA pictogram set.
+"""extract-pictogram-art.py — recover usable artwork from a client pictogram set.
 
     python3 scripts/extract-pictogram-art.py <svg-dir> <out-dir> [--only name,name]
 

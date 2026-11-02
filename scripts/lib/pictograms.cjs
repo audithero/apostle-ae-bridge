@@ -1,7 +1,7 @@
 /*
  * pictograms.cjs: brand pictograms After Effects can actually render.
  *
- * CBA's pictogram set (00.ADMIN/02.Client Assets/Pictograms) ships as SVGs
+ * A client's pictogram set (00.ADMIN/02.Client Assets/Pictograms) ships as SVGs
  * that wrap one embedded PNG each (no vector paths), and an "_AI" set whose
  * PDF layer renders blank in AE and in Preview (measured 2026-10-13). So the
  * embedded PNG is the pictogram: it is written out once per job, transparent,

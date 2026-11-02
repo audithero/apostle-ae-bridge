@@ -23,7 +23,7 @@
   var PROP = { x: 1430, y: 500 };
   var CAP = { y: 1008, h: 58, size: 29 };
   // the logo: one layer over everything, every card included, its bottom
-  // right corner on the margins (CBA, 2026-10-14: twice the old 88px)
+  // right corner on the margins (client review, 2026-10-14: twice the old 88px)
   var LOGO = { h: 170, right: W - LX, bottom: H - 56 };
   var HEAD_TRACK = -20; // headings: the kit's Black weight, tracked -20 (2026-10-14)
   var SLOT = { top: 540, h: 92, step: 108, wList: 600, wGrid: 404, gapGrid: 20 };
@@ -103,7 +103,7 @@
   function txt(name, str, font, size, color, x, y, o) {
     o = o || {};
     // lowercase films: captions are all lowercase, every other line is
-    // sentence case (CBA, 2026-10-14); multi-line headings arrive already
+    // sentence case (client review, 2026-10-14); multi-line headings arrive already
     // cased by headingCase and pass keepCase
     if (T.textCase === "lower" && !o.keepCase) str = o.lowerOnly ? String(str).toLowerCase() : headingCase([str])[0];
     var l = fresh(comp_(o.into).layers.addText(str), name);
@@ -134,7 +134,7 @@
     return w;
   }
 
-  // headings in a lowercase film are sentence case (CBA, 2026-10-14): a
+  // headings in a lowercase film are sentence case (client review, 2026-10-14): a
   // capital only where a sentence starts, which carries across the lines of
   // one heading (["Add your", "contact details"]) and restarts after . ! ?
   function headingCase(lines) {
@@ -259,7 +259,7 @@
     return l;
   }
 
-  // a brand icon: the client's own pictogram file when the kit has one (CBA
+  // a brand icon: the client's own pictogram file when the kit has one (client
   // allows nothing else), else the drawn tile. Fit inside size x size.
   function icon(into, name, glyph, x, y, size, o) {
     o = o || {};
@@ -806,7 +806,7 @@
 
   // ---------------------------------------------------------------- sections
   // A finished build is folded into one precomp per part, so the master reads
-  // as the film's outline (CBA, 2026-10-13: "organise each part into sections
+  // as the film's outline (client review, 2026-10-13: "organise each part into sections
   // instead of 350+ layers"), top to bottom:
   //   LOGO / CAPTIONS / chapter, title and outro cards / STEP sections (left
   //   column + props) / PHONE (with its badges) / TOP BAR / BG

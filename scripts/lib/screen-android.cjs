@@ -1,10 +1,10 @@
 /*
  * screen-android.cjs: take the iPhone Dynamic Island out of app captures.
  *
- * Some clients may not show an iPhone (CBA, 2026-10-13: "make it feel more
+ * Some clients may not show an iPhone (client review, 2026-10-13: "make it feel more
  * like an android phone"). iOS screenshots carry the island as a black pill
  * in the middle of the status bar (y 33-143, x 374-750 at 1125 wide on the
- * CBA October 2026 set). Each row of the pill is repainted with that row's
+ * a client's October 2026 set). Each row of the pill is repainted with that row's
  * own status-bar colour, sampled in the gap between the clock and the pill,
  * so dimmed (modal) and tinted bars clean as well as white ones. The phone
  * frame then draws an Android punch-hole camera instead (instructional.jsx).

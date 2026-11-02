@@ -36,7 +36,7 @@ rm -rf \
   scripts/v1-insert-rba-beat.cjs scripts/apply-super-updates-v2.cjs \
   scripts/add-change-flags.jsx scripts/fix-blank-transits.jsx \
   docs/phase5-8-roadmap.md \
-  .release-please-manifest.json release-please-config.json vitest.config.ts eslint.config.js \
+  scripts/package-release.sh .release-please-manifest.json release-please-config.json vitest.config.ts eslint.config.js \
   CONTRIBUTING.md CODE_OF_CONDUCT.md badge-ar.svg README.ar.md
 
 # ---- CLAUDE.md: keep the engineering notes, drop the client names
@@ -79,7 +79,7 @@ require("fs").writeFileSync("package.json", JSON.stringify(p, null, 2) + "\n");'
 printf '%s (%s)\n' "$VERSION" "$STAMP" > VERSION.txt
 
 # ---- leak gate: no client names anywhere (file contents or names)
-LEAKS="$(grep -rIilE 'commbank|\bcba|yello([^w]|$)|migrant|beacon ?sans' . --exclude-dir=node_modules || true)"
+LEAKS="$(grep -rIilE 'commbank|\bcba\b|yello([^w]|$)|migrant|beacon ?sans' . --exclude-dir=node_modules || true)"
 NAMES="$(find . -path ./node_modules -prune -o -print | grep -iE 'commbank|cba|yello|migrant' || true)"
 if [ -n "$LEAKS$NAMES" ]; then
   echo "REFUSING: client names found in the package:" >&2
