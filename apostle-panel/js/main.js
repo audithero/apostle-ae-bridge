@@ -247,8 +247,15 @@ async function bridgePoll() {
   bridge.lastMtime = st.mtimeMs;
   const key = c.commandId || c.timestamp || "";
   if (!key || key === bridge.lastKey) return;
-  bridge.lastKey = key;
+  // Only run if this page can still hear back from After Effects. CEP can leave
+  // a navigated-away page's timers alive: its evalScript calls still execute in
+  // AE but never answer, so it would start the command, never write the result,
+  // and the ScriptUI fallback would run it a second time. Such a page never
+  // answers this probe, so it retires instead.
   bridge.busy = true;
+  const alive = await Promise.race([evalJSX("'alive'"), new Promise((r) => setTimeout(() => r(null), 1500))]);
+  if (alive !== "alive") { bridge.ready = false; bridge.busy = false; return; }
+  bridge.lastKey = key;
   bridge.busySince = Date.now();
   bridge.lastCmd = c.command;
   bridgeShow("busy", "claude: " + String(c.command || "").slice(0, 24) + "…");
