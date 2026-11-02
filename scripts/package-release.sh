@@ -13,7 +13,7 @@ REPO="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="${1:-$REPO/dist}"
 NAME="Apostle AE Bridge"
 STAGE="$OUT/$NAME"
-VERSION="$(cd "$REPO" && git describe --tags --always 2>/dev/null || date +%Y%m%d)"
+VERSION="$(cd "$REPO" && git rev-parse --short HEAD)"
 STAMP="$(date +%Y-%m-%d)"
 
 if [ -n "$(cd "$REPO" && git status --porcelain -- . ':!dist' ':!release')" ]; then
@@ -37,7 +37,8 @@ rm -rf \
   scripts/add-change-flags.jsx scripts/fix-blank-transits.jsx \
   docs/phase5-8-roadmap.md \
   scripts/package-release.sh .release-please-manifest.json release-please-config.json vitest.config.ts eslint.config.js \
-  CONTRIBUTING.md CODE_OF_CONDUCT.md badge-ar.svg README.ar.md
+  CONTRIBUTING.md CODE_OF_CONDUCT.md badge-ar.svg README.ar.md \
+  .githooks .git-blame-ignore-revs .gitattributes .npmignore .prettierignore .prettierrc.json .editorconfig install-bridge.js
 
 # ---- CLAUDE.md: keep the engineering notes, drop the client names
 # (the repo copy keeps them; only the packaged copy is rewritten)
