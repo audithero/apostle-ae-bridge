@@ -18,8 +18,11 @@ else
   bad "Not installed at $DEST" "double-click Install.command"
 fi
 
-NODE="$(command -v node || true)"
-[ -n "$NODE" ] && ok "Node.js $("$NODE" -v)" || bad "Node.js not found" "install the LTS from https://nodejs.org, then re-run Install.command"
+# the install's own Node.js runtime, else one on PATH (older installs)
+NODE="$DEST/runtime/node/bin/node"
+[ -x "$NODE" ] || NODE="$(command -v node || true)"
+[ -n "$NODE" ] && ok "Node.js $("$NODE" -v) ($( [ "$NODE" = "$DEST/runtime/node/bin/node" ] && echo "Apostle's own" || echo "$NODE"))" ||
+  bad "Node.js not found" "re-run Install.command (it sets up its own copy)"
 
 CLAUDE="$(command -v claude || true)"
 if [ -n "$CLAUDE" ]; then
@@ -46,8 +49,8 @@ done
 LINK="$HOME/Library/Application Support/Adobe/CEP/extensions/apostle-panel"
 [ -f "$LINK/CSXS/manifest.xml" ] && ok "Apostle panel installed" || bad "Apostle panel missing" "re-run Install.command"
 
-if command -v node >/dev/null && [ -f "$DEST/scripts/update.cjs" ]; then
-  UPD="$(node "$DEST/scripts/update.cjs" 2>&1 | head -1)"
+if [ -n "$NODE" ] && [ -f "$DEST/scripts/update.cjs" ]; then
+  UPD="$("$NODE" "$DEST/scripts/update.cjs" 2>&1 | head -1)"
   case "$UPD" in
     "Update available"*) printf '  \033[33m!\033[0m %s\n      install it: the UPDATE button in the Apostle panel\n' "$UPD" ;;
     "Up to date"*) ok "$UPD" ;;

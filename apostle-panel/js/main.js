@@ -1581,12 +1581,16 @@ $id("btnFocusAE").addEventListener("click", () => {
 function relayEnsure() {
   // idempotent: relay exits 0 immediately if the port is already served.
   // process.execPath inside CEP is the CEF binary, NOT node — go through a
-  // login shell so the user's node (homebrew/nvm) is found.
+  // login shell (it finds claude, homebrew and nvm on the user's PATH).
   const { spawn } = require("child_process");
   // paths go in as positional args ($1, $2), never spliced into the command
   // string, so a quote or $ in the repo path can't break or inject
-  const child = spawn("/bin/zsh", ["-lc", 'node "$1" --port ' + RELAY_PORT + ' --cwd "$2"', "zsh",
-    path.join(REPO, "scripts", "panel-relay.cjs"), REPO], { detached: true, stdio: "ignore" });
+  // Installs carry their own Node.js (runtime/node, set up by install-core.sh);
+  // a dev checkout has none and uses the login shell's node, as before.
+  const ownNode = path.join(REPO, "runtime", "node", "bin", "node");
+  const nodeCmd = fs.existsSync(ownNode) ? '"$3"' : "node";
+  const child = spawn("/bin/zsh", ["-lc", nodeCmd + ' "$1" --port ' + RELAY_PORT + ' --cwd "$2"', "zsh",
+    path.join(REPO, "scripts", "panel-relay.cjs"), REPO, ownNode], { detached: true, stdio: "ignore" });
   child.unref();
 }
 

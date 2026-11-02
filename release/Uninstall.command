@@ -28,7 +28,7 @@ done
 
 rm -f "$HOME/.apostle/relay.token"
 
-printf '\n  Delete the install folder too (%s)?\n  It holds any briefs and builds you made there. [y/N] ' "$DEST"
+printf '\n  Delete the install folder too (%s)?\n  It holds any briefs and builds you made there (and the Node.js copy Apostle uses). [y/N] ' "$DEST"
 read -r a
 if [ "$a" = "y" ] || [ "$a" = "Y" ]; then
   rm -rf "$DEST" && echo "  deleted $DEST"
