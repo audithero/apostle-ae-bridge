@@ -33,7 +33,9 @@ esac
 [ -z "$(git status --porcelain -- . ':!dist')" ] || { echo "commit first: the package is built from HEAD" >&2; exit 1; }
 
 ZIPKEY="$PREFIX/releases/$VERSION/Apostle-AE-Bridge-$VERSION.zip"
-if curl -fsI "$BASE/releases/$VERSION/Apostle-AE-Bridge-$VERSION.zip" >/dev/null 2>&1; then
+# Probe with a unique query string: Cloudflare caches a 404 for the plain URL,
+# and a probe of the real address before upload poisoned it for minutes (2.20.0).
+if curl -fsI "$BASE/releases/$VERSION/Apostle-AE-Bridge-$VERSION.zip?probe=$(date +%s)$RANDOM" >/dev/null 2>&1; then
   echo "$VERSION is already published. Bump APOSTLE_VERSION." >&2; exit 1
 fi
 
@@ -79,6 +81,10 @@ if [ "$CHANNEL" = stable ]; then
   put "$ZIP" "$PREFIX/download/Apostle-AE-Bridge.zip" application/zip "no-cache, max-age=0"
 fi
 rm -rf "$TMP"
+
+# the zip must be reachable at the address installs will use
+curl -fsI "$BASE/releases/$VERSION/Apostle-AE-Bridge-$VERSION.zip" >/dev/null ||
+  echo "WARNING: $BASE/releases/$VERSION/... is not reachable yet (edge cache?); re-check before announcing" >&2
 
 # what an install will actually see
 curl -fs "$BASE/channels/$CHANNEL/latest.json" | node -e '
