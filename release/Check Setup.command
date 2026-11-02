@@ -29,17 +29,15 @@ else
   bad "Claude Code not found" "re-run Install.command, or see https://docs.claude.com/en/docs/claude-code/setup"
 fi
 
-WANT="$(grep -m1 -o 'BRIDGE_VERSION = "[^"]*"' "$DEST/build/scripts/mcp-bridge-auto.jsx" 2>/dev/null)"
-FOUND=0
+# The old ScriptUI bridge panel isn't needed. A copy from before the Apostle
+# panel served the bridge doesn't know to stand down, so commands could run twice.
 for d in /Applications/Adobe\ After\ Effects\ 20*; do
   f="$d/Scripts/ScriptUI Panels/mcp-bridge-auto.jsx"
   [ -f "$f" ] || continue
-  FOUND=1
-  HAVE="$(grep -m1 -o 'BRIDGE_VERSION = "[^"]*"' "$f")"
-  if [ "$HAVE" = "$WANT" ]; then ok "MCP Bridge panel is current in $(basename "$d")"
-  else bad "MCP Bridge panel in $(basename "$d") is out of date (${HAVE#*= })" "re-run Install.command"; fi
+  if ! grep -q "apostle_bridge.alive" "$f"; then
+    bad "An old MCP Bridge panel is installed in $(basename "$d")" "it isn't needed: don't open Window > mcp-bridge-auto.jsx (close it if it's open)"
+  fi
 done
-[ $FOUND = 1 ] || bad "MCP Bridge panel is not in any After Effects" "re-run Install.command"
 
 LINK="$HOME/Library/Application Support/Adobe/CEP/extensions/apostle-panel"
 [ -f "$LINK/CSXS/manifest.xml" ] && ok "Apostle panel installed" || bad "Apostle panel missing" "re-run Install.command"
@@ -49,16 +47,26 @@ if ! pgrep -qf "MacOS/After Effects"; then
   bad "After Effects is not open" "open After Effects and run this check again"
 else
   ok "After Effects is open"
-  if OUT="$("$DEST/scripts/bridge-exec.sh" executeScript --file "$DEST/scripts/preflight.jsx" 10 2>/dev/null)"; then
-    ok "The MCP Bridge panel answered: Claude can drive After Effects"
+  ALIVE="$HOME/Documents/ae-mcp-bridge/apostle_bridge.alive"
+  AGE=999
+  [ -f "$ALIVE" ] && AGE=$(( $(date +%s) - $(stat -f %m "$ALIVE") ))
+  if [ "$AGE" -le 5 ]; then
+    ok "The Apostle panel is open and serving Claude"
   else
-    bad "The MCP Bridge panel did not answer" "in After Effects: Window > mcp-bridge-auto.jsx, keep it open with 'Auto-run commands' ticked. Also check After Effects > Settings > Scripting & Expressions > 'Allow Scripts to Write Files and Access Network' is ticked. Then run this check again."
-    if "$DEST/scripts/ae-run.sh" "$DEST/scripts/preflight.jsx" 20 >/dev/null 2>&1; then
-      printf '      (After Effects itself responds, so only the panel or the setting above is missing.)\n'
-    else
-      printf '      (After Effects did not respond at all: look for an open dialog box in After Effects and close it.)\n'
-    fi
+    bad "The Apostle panel isn't open" "in After Effects: Window > Extensions > Apostle. Keep it open (dock it anywhere). Then run this check again."
   fi
+  if "$DEST/scripts/bridge-exec.sh" ping '{}' 10 >/dev/null 2>&1; then
+    ok "After Effects answered through the bridge: Claude can drive it"
+  elif "$DEST/scripts/ae-run.sh" "$DEST/scripts/preflight.jsx" 20 >/dev/null 2>&1; then
+    [ "$AGE" -le 5 ] && bad "After Effects responds, but not through the Apostle panel" "close and reopen the Apostle panel (Window > Extensions > Apostle)"
+  else
+    bad "After Effects did not answer" "open the Apostle panel (Window > Extensions > Apostle), and close any dialog box open in After Effects, then run this check again"
+  fi
+  WRITE="$(printf 'return app.preferences.getPrefAsLong("Main Pref Section v2", "Pref_SCRIPTING_FILE_NETWORK_SECURITY");\n' > "$HOME/Documents/ae-mcp-bridge/.check-pref.jsx"; "$DEST/scripts/bridge-exec.sh" executeScript --file "$HOME/Documents/ae-mcp-bridge/.check-pref.jsx" 10 2>/dev/null | tr -d ' \n')"
+  case "$WRITE" in
+    *'"result":1'*) ok "Scripts may write files (frame previews work)" ;;
+    *'"result":0'*) bad "Scripts may not write files, so Claude can't preview frames" "After Effects > Settings > Scripting & Expressions > tick 'Allow Scripts to Write Files and Access Network'" ;;
+  esac
 fi
 
 echo

@@ -419,17 +419,19 @@ server.tool("get-help", "Get help on using the After Effects MCP integration", {
 
 To use this integration with After Effects, follow these steps:
 
- 1. **Install the scripts in After Effects**
-   - Run \`node install-bridge.js\` with administrator privileges
-   - This copies the necessary scripts to your After Effects installation
-
-2. **Open After Effects**
-   - Launch Adobe After Effects 
+1. **Open After Effects**
+   - Launch Adobe After Effects
    - Open a project that you want to work with
 
-3. **Open the MCP Bridge Auto panel**
-   - In After Effects, go to Window > mcp-bridge-auto.jsx
-   - The panel will automatically check for commands every few seconds
+2. **Open the Apostle panel**
+   - Window > Extensions > Apostle. It serves the bridge while it is open:
+     the masthead reads "claude linked" when it is ready.
+   - (Without the Apostle panel: install the ScriptUI bridge with
+     \`node install-bridge.js\` as administrator, then open
+     Window > mcp-bridge-auto.jsx. It stands down while Apostle is open.)
+
+3. **Nothing else to set up**
+   - The panel checks for commands several times a second
 
 4. **Run scripts through MCP**
    - Use the \`run-script\` tool to queue a command
@@ -2562,7 +2564,7 @@ const EXPECTED_BRIDGE_VERSION = "1.13.0-mcp-enhanced";
 
 server.tool(
   "check-bridge",
-  "Health check: verify the After Effects MCP Bridge panel is open and responding, report its version, the AE version, the shared bridge folder, and the open project/active comp. Run this FIRST when anything times out or behaves oddly. If it reports a version mismatch, re-run `npm run install-bridge` and restart After Effects.",
+  "Health check: verify After Effects is answering through the Apostle panel (Window > Extensions > Apostle) or the MCP Bridge panel, report its version, the AE version, the shared bridge folder, and the open project/active comp. Run this FIRST when anything times out or behaves oddly. If it reports a version mismatch, reload the Apostle panel (close and reopen it) or re-run `npm run install-bridge` for the ScriptUI panel, and restart After Effects.",
   {},
   async () => {
     try {
@@ -2610,7 +2612,7 @@ server.tool(
                     : "No response from the bridge panel.",
                   hint: stalePanelDetected
                     ? "Reload the current panel: run `npm run install-bridge`, then FULLY quit and reopen After Effects, reopen Window > mcp-bridge-auto.jsx, and restart the MCP client. (The version string alone is unreliable - a stale panel can still report the right version.)"
-                    : "Open After Effects and open the panel via Window > mcp-bridge-auto.jsx (keep it open). Ensure 'Allow Scripts to Write Files and Access Network' is enabled. Also confirm the AE_MCP_BRIDGE_DIR env var (if set) matches on both sides.",
+                    : "Open After Effects and open the Apostle panel (Window > Extensions > Apostle) and keep it open; its masthead should read 'claude linked'. If After Effects shows a dialog box, close it. Also confirm the AE_MCP_BRIDGE_DIR env var (if set) matches on both sides.",
                   expectedBridgeVersion: EXPECTED_BRIDGE_VERSION,
                   raw,
                 },

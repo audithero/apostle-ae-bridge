@@ -2897,9 +2897,27 @@ var isAE2025OrLater = aeVersion >= 25.0;
 // When launched via Window > mcp-bridge-auto.jsx, AE passes the dockable Panel as
 // top-level `this` - reuse it so the UI lives in ONE clean docked panel (no empty
 // leftover). Fall back to a floating palette only when run via File > Scripts.
-var panel = (this instanceof Panel)
-    ? this
-    : new Window("palette", "MCP Bridge Auto", undefined, { resizeable: true });
+// Headless mode (Apostle fork): the Apostle CEP panel loads this file with
+// $.global.MCP_BRIDGE_HEADLESS = true and does the polling and file I/O itself
+// in Node, so users never open this ScriptUI panel. Headless builds no UI, starts
+// no timer, writes no files: executeCommand leaves its result string in
+// $.global.MCP_BRIDGE_LAST_RESULT and $.global.MCP_BRIDGE.run() returns it.
+var MCP_HEADLESS = ($.global.MCP_BRIDGE_HEADLESS === true);
+function _mcpStubWidget() {
+    return { text: "", value: true, children: [], minimumSize: null, preferredSize: {}, size: {},
+             layout: { layout: function () {}, resize: function () {} },
+             add: function () { return _mcpStubWidget(); } };
+}
+// (if/else, not a chained ternary: ExtendScript parses a ? b : c ? d : e
+// left-associatively and would hand the headless path the global object)
+var panel;
+if (MCP_HEADLESS) {
+    panel = _mcpStubWidget();
+} else if (this instanceof Panel) {
+    panel = this;
+} else {
+    panel = new Window("palette", "MCP Bridge Auto", undefined, { resizeable: true });
+}
 panel.orientation = "column";
 panel.alignChildren = ["fill", "top"];
 panel.spacing = 10;
@@ -4400,6 +4418,9 @@ function executeCommand(command, args) {
             }, null, 2);
         }
         
+        if (MCP_HEADLESS) {
+            $.global.MCP_BRIDGE_LAST_RESULT = resultString;
+        } else {
         var resultFile = new File(getResultFilePath());
         resultFile.encoding = "UTF-8"; 
         logToPanel("Opening result file for writing...");
@@ -4421,6 +4442,7 @@ function executeCommand(command, args) {
              
         }
         logToPanel("Result file write process complete.");
+        }
         
         logToPanel("Command completed successfully: " + command);
         statusText.text = "Command completed: " + command;
@@ -4454,6 +4476,9 @@ function executeCommand(command, args) {
                 _commandId: currentCommandId,
                 _responseTimestamp: new Date().toISOString()
             });
+            if (MCP_HEADLESS) {
+                $.global.MCP_BRIDGE_LAST_RESULT = errorResult;
+            } else {
             var errorFile = new File(getResultFilePath());
             errorFile.encoding = "UTF-8";
             if (errorFile.open("w")) {
@@ -4462,6 +4487,7 @@ function executeCommand(command, args) {
                 logToPanel("Successfully wrote ERROR to result file.");
             } else {
                  logToPanel("CRITICAL ERROR: Failed to open result file to write error!");
+            }
             }
         } catch (writeError) {
              logToPanel("CRITICAL ERROR: Failed to write error to result file: " + writeError.toString());
@@ -4473,6 +4499,7 @@ function executeCommand(command, args) {
 
 
 function logToPanel(message) {
+    if (MCP_HEADLESS) return;
     var timestamp = new Date().toLocaleTimeString();
     logText.text = timestamp + ": " + message + "\n" + logText.text;
 }
@@ -4490,6 +4517,15 @@ function checkForCommands() {
         return;
     }
     if (!autoOn || isChecking) return;
+    // The Apostle panel serves the bridge and touches this file every second;
+    // if it is fresh, stand down so a command never runs twice.
+    // Decide first, then touch the UI in its own try: a UI error must never
+    // fall through to running the command.
+    var apostleServing = false;
+    try {
+        var alive = new File(getBridgeFolder().fsName + "/apostle_bridge.alive");
+        apostleServing = alive.exists && (new Date().getTime() - alive.modified.getTime()) < 5000;
+    } catch (aliveErr) {}
     
     isChecking = true;
     
@@ -4516,9 +4552,16 @@ function checkForCommands() {
                 // server matches on, so this dedup is purely AE-local.
                 var commandKey = commandData.commandId || commandData.timestamp || "";
                 if (commandKey && commandKey !== lastProcessedCommandId) {
+                    // Mark it seen either way: if this panel later takes over
+                    // from the Apostle panel it must never replay a command
+                    // the Apostle panel already ran.
                     lastProcessedCommandId = commandKey;
-                    currentCommandId = commandData.commandId || "";
-                    executeCommand(commandData.command, commandData.args || {});
+                    if (apostleServing) {
+                        try { statusText.text = "Standing by: the Apostle panel is serving Claude"; } catch (stErr) {}
+                    } else {
+                        currentCommandId = commandData.commandId || "";
+                        executeCommand(commandData.command, commandData.args || {});
+                    }
                 }
             }
         }
@@ -4564,6 +4607,17 @@ function startCommandChecker() {
 }
 
 
+if (MCP_HEADLESS) {
+    $.global.MCP_BRIDGE = {
+        version: BRIDGE_VERSION,
+        run: function (command, args, commandId) {
+            currentCommandId = commandId || "";
+            $.global.MCP_BRIDGE_LAST_RESULT = null;
+            executeCommand(command, args || {});
+            return $.global.MCP_BRIDGE_LAST_RESULT;
+        }
+    };
+} else {
 var checkButton = panel.add("button", undefined, "Check for Commands Now");
 checkButton.onClick = function() {
     logToPanel("Manually checking for commands");
@@ -4596,4 +4650,4 @@ if (panel instanceof Window) {
     panel.layout.resize();
     panel.onResizing = panel.onResize = function () { this.layout.resize(); };
 }
-
+} // end !MCP_HEADLESS

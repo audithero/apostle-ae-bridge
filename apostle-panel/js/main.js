@@ -210,15 +210,138 @@ function rdReset() {
   $id("btnRdRefs").disabled = true; $id("btnRdGenerate").disabled = true; $id("btnRdReconstruct").disabled = true;
 }
 
+// ---------- Claude bridge, served by this panel ------------------------------
+// The MCP server talks to After Effects through two files in BRIDGE_DIR: it
+// writes ae_command.json and waits for ae_mcp_result.json carrying the same
+// _commandId. Upstream, a ScriptUI panel (Window > mcp-bridge-auto.jsx) polls
+// for them; here the Apostle panel does it, so opening Apostle is all a user
+// does. Node does the polling and file I/O (so ExtendScript needs no file-write
+// permission for this); host.jsx runs the command in the same bridge code,
+// loaded headless. apostle_bridge.alive, touched every second, tells a ScriptUI
+// copy that may also be open to stand down, so no command ever runs twice.
+const bridge = { ready: false, busy: false, busySince: 0, lastKey: "", lastMtime: 0, count: 0, lastCmd: "", version: "" };
+const bridgeFile = (n) => path.join(BRIDGE_DIR, n);
+
+function bridgeShow(cls, text, tip) {
+  const el = $id("bridgeState");
+  if (!el) return;
+  el.className = cls || "dim";
+  el.textContent = text;
+  if (tip) el.title = tip;
+}
+
+function bridgeWriteResult(text) {
+  const target = bridgeFile("ae_mcp_result.json");
+  const tmp = target + ".apostle-tmp";
+  fs.writeFileSync(tmp, text);
+  fs.renameSync(tmp, target); // atomic: the server never reads half a result
+}
+
+async function bridgePoll() {
+  if (!bridge.ready || bridge.busy) return;
+  let st;
+  try { st = fs.statSync(bridgeFile("ae_command.json")); } catch (e) { return; }
+  if (st.mtimeMs === bridge.lastMtime) return;
+  let c;
+  try { c = JSON.parse(fs.readFileSync(bridgeFile("ae_command.json"), "utf8")); } catch (e) { return; }
+  bridge.lastMtime = st.mtimeMs;
+  const key = c.commandId || c.timestamp || "";
+  if (!key || key === bridge.lastKey) return;
+  bridge.lastKey = key;
+  bridge.busy = true;
+  bridge.busySince = Date.now();
+  bridge.lastCmd = c.command;
+  bridgeShow("busy", "claude: " + String(c.command || "").slice(0, 24) + "…");
+  let out;
+  try {
+    const cmdPath = bridgeFile(".apostle-command.json");
+    fs.writeFileSync(cmdPath, JSON.stringify(c));
+    const raw = await evalJSX('apBridgeRunFile("' + cmdPath.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '")');
+    try {
+      const o = JSON.parse(raw);
+      // the server matches on _commandId; make sure every reply carries it
+      if (o && typeof o === "object" && o._commandId === undefined) {
+        o._commandId = c.commandId || "";
+        o._commandExecuted = o._commandExecuted || c.command;
+        out = JSON.stringify(o);
+      } else {
+        out = raw;
+      }
+    } catch (e) {
+      // "EvalScript error." or a non-JSON reply: report it, matched to the command
+      out = JSON.stringify({ status: "error", message: "After Effects returned: " + String(raw).slice(0, 500),
+        _commandId: c.commandId || "", _commandExecuted: c.command });
+    }
+  } catch (e) {
+    out = JSON.stringify({ status: "error", message: "Apostle panel bridge: " + e.message,
+      _commandId: c.commandId || "", _commandExecuted: c.command });
+  }
+  try { bridgeWriteResult(out); } catch (e) { bridgeShow("err", "claude link: can't write result", e.message); }
+  bridge.count++;
+  bridge.busy = false;
+  bridgeShow(bridge.previewsOff ? "busy" : "ok", bridge.previewsOff ? "claude linked · previews off" : "claude linked",
+    "Claude Code is connected. " + bridge.count + " command(s) this session, last: " + bridge.lastCmd);
+}
+
+async function bridgeStart() {
+  try { fs.mkdirSync(BRIDGE_DIR, { recursive: true }); } catch (e) {}
+  let r;
+  try { r = JSON.parse(await evalJSX('apBridgeInit("' + REPO.replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '")')); }
+  catch (e) { r = { ok: false, error: "host did not answer" }; }
+  if (!r.ok) { bridgeShow("err", "claude link off", "The Claude bridge could not load: " + r.error); return; }
+  bridge.version = r.version;
+  // don't replay a command left over from an earlier session: only commands
+  // that arrive after the panel is listening run
+  try {
+    const c = JSON.parse(fs.readFileSync(bridgeFile("ae_command.json"), "utf8"));
+    bridge.lastKey = c.commandId || c.timestamp || "";
+    bridge.lastMtime = fs.statSync(bridgeFile("ae_command.json")).mtimeMs;
+  } catch (e) {}
+  // The heartbeat must prove this panel can still run commands, not just that a
+  // timer fires: CEP keeps a navigated-away page's timers running. So a beat is
+  // only written after an evalScript round trip answers (a dead page's never
+  // does). While a command is running AE can't answer, so then we beat directly,
+  // capped at 10 minutes so a stuck panel can't hold the bridge forever.
+  const writeBeat = () => { try { fs.writeFileSync(bridgeFile("apostle_bridge.alive"), String(Date.now())); } catch (e) {} };
+  const beat = async () => {
+    if (bridge.busy) { if (Date.now() - bridge.busySince < 600000) writeBeat(); return; }
+    const answer = await Promise.race([evalJSX("'alive'"), new Promise((r) => setTimeout(() => r(null), 2000))]);
+    if (answer === "alive") writeBeat();
+  };
+  beat();
+  // window.setInterval, not bare setInterval: in CEP mixed context the bare one
+  // is Node's, which outlives the page, so a reloaded or closed panel would keep
+  // beating and the ScriptUI fallback would stand down while nobody serves.
+  window.setInterval(beat, 1000);
+  window.addEventListener("beforeunload", () => { try { fs.unlinkSync(bridgeFile("apostle_bridge.alive")); } catch (e) {} });
+  bridge.ready = true;
+  window.setInterval(bridgePoll, 150);
+  bridgeShow("ok", "claude linked", "Claude Code can drive After Effects through this panel (bridge " + r.version + ").");
+  // Scripts can't switch this on themselves ("Scripts may not change security
+  // preferences"); the installer does it while AE is closed. If it's still off,
+  // say so: everything works except frame previews and file exports.
+  const pref = await evalJSX('(function(){try{return String(app.preferences.getPrefAsLong("Main Pref Section v2","Pref_SCRIPTING_FILE_NETWORK_SECURITY"))}catch(e){return "?"}})()');
+  if (pref === "0") {
+    bridge.previewsOff = true;
+    bridgeShow("busy", "claude linked · previews off",
+      "Claude is connected, but it can't preview frames: After Effects > Settings > Scripting & Expressions > tick 'Allow Scripts to Write Files and Access Network'.");
+    status("For frame previews: Settings > Scripting & Expressions > Allow Scripts to Write Files and Access Network", "warn");
+  }
+}
+
 // ---------- init -----------------------------------------------------------
 (async function init() {
   if (!NODE_OK) return; // bootstrap already painted the error
+  // CEP evaluates host.jsx once, when After Effects starts; re-evaluate it so a
+  // panel reload (or an update installed while AE is open) uses the current one
+  await evalJSX('try{$.evalFile(new File("' + path.join(REPO, "apostle-panel", "jsx", "host.jsx").replace(/\\/g, "\\\\").replace(/"/g, '\\"') + '"));"ok"}catch(e){String(e)}');
   const init = await evalJSX('apInit("' + REPO.replace(/\\/g, "\\\\") + '")');
   try {
     const r = JSON.parse(init);
     $id("libver").textContent = r.ok ? "apostle.jsx v" + r.version : "LIBRARY ERROR";
     if (!r.ok) status(r.error, "err");
   } catch (e) { $id("libver").textContent = "HOST ERROR"; }
+  await bridgeStart(); // serve Claude's bridge before anything slow (fonts, project scan)
   store.cleanup();
   loadKitSelectors();
   await loadFonts(); // before kit load, so the font combos can resolve PS names

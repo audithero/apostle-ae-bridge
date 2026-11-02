@@ -21,8 +21,10 @@ cat <<'EOF'
   This will:
     1. check your Mac has After Effects, Node.js and Claude Code
     2. copy the bridge to ~/Applications/Apostle AE Bridge
-    3. add two panels to After Effects (it asks for your Mac password once)
+    3. add the Apostle panel to After Effects
     4. connect Claude Code to After Effects
+
+  No password needed.
 
 EOF
 printf 'Press Return to start, or close this window to cancel. '
@@ -105,18 +107,10 @@ setTimeout(() => { p.kill(); console.log(/running/.test(out) ? "ok" : out.slice(
 [ "$SMOKE" = "ok" ] || fail "The bridge server did not start: $SMOKE"
 ok "Bridge server starts"
 
-# ---------------------------------------------------------------- 3. panels
-bold "3. Adding the panels to After Effects"
-echo "  The MCP Bridge panel goes inside the After Effects app folder, which needs"
-echo "  your Mac login password. Nothing shows on screen while you type it; press"
-echo "  Return when done."
-for d in "${AE_DIRS[@]}"; do
-  sudo mkdir -p "$d/Scripts/ScriptUI Panels" &&
-  sudo cp "$DEST/build/scripts/mcp-bridge-auto.jsx" "$d/Scripts/ScriptUI Panels/mcp-bridge-auto.jsx" ||
-    fail "Could not copy the MCP Bridge panel into $d."
-  ok "MCP Bridge panel -> $(basename "$d")"
-done
-
+# ---------------------------------------------------------------- 3. panel
+bold "3. Adding the Apostle panel to After Effects"
+# The Apostle panel serves Claude's bridge itself, so the old ScriptUI bridge
+# panel (which needed sudo to install) is not installed at all.
 CEP_DIR="$HOME/Library/Application Support/Adobe/CEP/extensions"
 mkdir -p "$CEP_DIR"
 rm -rf "$CEP_DIR/apostle-panel"
@@ -127,6 +121,29 @@ ok "Apostle panel (Window > Extensions > Apostle)"
 
 mkdir -p "$HOME/Documents/ae-mcp-bridge"
 ok "Bridge folder ~/Documents/ae-mcp-bridge"
+
+# "Allow Scripts to Write Files and Access Network" (Settings > Scripting &
+# Expressions). Scripts may not change it, but its prefs file can be edited while
+# After Effects is closed (it is: we waited above). Frame grabs need it.
+PREFS_DONE=0
+for f in "$HOME/Library/Preferences/Adobe/After Effects/"*/"Adobe After Effects "*" Prefs.txt"; do
+  [ -f "$f" ] || continue
+  v="$(basename "$(dirname "$f")")"; major="${v%%.*}"
+  [ "$major" -ge 24 ] 2>/dev/null || continue
+  if LC_ALL=C grep -q '"Pref_SCRIPTING_FILE_NETWORK_SECURITY" = "0"' "$f"; then
+    cp "$f" "$f.before-apostle" &&
+    LC_ALL=C sed -i '' 's/"Pref_SCRIPTING_FILE_NETWORK_SECURITY" = "0"/"Pref_SCRIPTING_FILE_NETWORK_SECURITY" = "1"/' "$f" &&
+    PREFS_DONE=1
+  elif LC_ALL=C grep -q '"Pref_SCRIPTING_FILE_NETWORK_SECURITY" = "1"' "$f"; then
+    PREFS_DONE=1
+  fi
+done
+if [ $PREFS_DONE = 1 ]; then
+  ok "After Effects may let scripts write files (needed for frame previews)"
+else
+  warn "Couldn't switch on 'Allow Scripts to Write Files' (After Effects may never have been opened)."
+  warn "The Apostle panel will remind you: Settings > Scripting & Expressions."
+fi
 
 # ---------------------------------------------------------------- 4. claude
 bold "4. Connecting Claude Code to After Effects"
@@ -139,17 +156,14 @@ ok "Claude Code now has the AfterEffectsMCP tools"
 bold "Installed."
 cat <<EOF
 
-  Next (also in START HERE.md, steps 3 to 6):
+  Next:
 
     1. Open After Effects.
-    2. After Effects > Settings > Scripting & Expressions:
-       tick "Allow Scripts to Write Files and Access Network".
-    3. Window > mcp-bridge-auto.jsx  (keep this little panel open,
-       with "Auto-run commands" ticked).
-    4. Window > Extensions > Apostle  (optional, the Apostle panel).
-    5. Double-click "Check Setup.command" in
-       $DEST
-       to confirm everything is connected.
+    2. Window > Extensions > Apostle.
+       When the top right of the panel says "claude linked", you're set.
+       Keep the panel open (dock it anywhere) while Claude works.
+
+  Then see START HERE.md, step 4, for your first session.
 
 EOF
 open "$DEST"

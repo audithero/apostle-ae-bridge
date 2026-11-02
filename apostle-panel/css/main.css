@@ -41,6 +41,10 @@ body {
   max-width: 190px; overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
 }
 #projName.warn { color: var(--warn); }
+#bridgeState { font-size: 9px; letter-spacing: 0.08em; }
+#bridgeState.ok { color: var(--ok); }
+#bridgeState.busy { color: var(--warn); }
+#bridgeState.err { color: var(--err); }
 
 .kitcolors input[type="color"] {
   padding: 0; height: 26px; cursor: pointer;

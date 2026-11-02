@@ -34,7 +34,7 @@ OUT="$("$DIR/bridge-exec.sh" executeScript --file "$PROBE" 8 2>/dev/null)" && {
 
 OUT="$("$DIR/ae-run.sh" "$PROBE" 30 2>/dev/null)" && {
   echo "{\"transport\":\"doscript\",\"probe\":$OUT}"
-  echo "NOTE: bridge panel is not responding — using DoScript fallback. For MCP-native tools, open Window > mcp-bridge-auto.jsx with Auto-run checked." >&2
+  echo "NOTE: bridge is not responding — using DoScript fallback. For MCP-native tools, open the Apostle panel (Window > Extensions > Apostle; it reads "claude linked")." >&2
   exit 0
 }
 

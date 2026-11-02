@@ -13,7 +13,10 @@ if [ "$CMD" = "executeScript" ] && [ "${1:-}" = "--file" ]; then
   SCRIPT_FILE="$2"; TIMEOUT="${3:-30}"
   ARGS_MODE="file"
 else
-  ARGS_JSON="${1:-{}}"; TIMEOUT="${2:-30}"
+  # (not "${1:-{}}": bash closes that expansion at the first "}", so any
+  # argument came out with a stray "}" appended and broke the JSON)
+  ARGS_JSON="${1:-}"; [ -n "$ARGS_JSON" ] || ARGS_JSON='{}'
+  TIMEOUT="${2:-30}"
   ARGS_MODE="json"
 fi
 

@@ -36,7 +36,7 @@ rm -rf \
   scripts/v1-insert-rba-beat.cjs scripts/apply-super-updates-v2.cjs \
   scripts/add-change-flags.jsx scripts/fix-blank-transits.jsx \
   docs/phase5-8-roadmap.md \
-  scripts/package-release.sh .release-please-manifest.json release-please-config.json vitest.config.ts eslint.config.js \
+  apostle-panel/.debug scripts/package-release.sh .release-please-manifest.json release-please-config.json vitest.config.ts eslint.config.js \
   CONTRIBUTING.md CODE_OF_CONDUCT.md badge-ar.svg README.ar.md \
   .githooks .git-blame-ignore-revs .gitattributes .npmignore .prettierignore .prettierrc.json .editorconfig
 

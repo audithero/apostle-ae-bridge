@@ -17,10 +17,13 @@ fi
 
 rm -f "$HOME/Library/Application Support/Adobe/CEP/extensions/apostle-panel" && echo "  removed the Apostle panel"
 
-echo "  removing the MCP Bridge panel from After Effects (needs your Mac password):"
+# Only older installs put the ScriptUI bridge inside After Effects (needs sudo).
 for d in /Applications/Adobe\ After\ Effects\ 20*; do
   f="$d/Scripts/ScriptUI Panels/mcp-bridge-auto.jsx"
-  [ -f "$f" ] && sudo rm -f "$f" && echo "  removed from $(basename "$d")"
+  if [ -f "$f" ]; then
+    echo "  removing the old MCP Bridge panel from $(basename "$d") (needs your Mac password):"
+    sudo rm -f "$f" && echo "  removed"
+  fi
 done
 
 rm -f "$HOME/.apostle/relay.token"
