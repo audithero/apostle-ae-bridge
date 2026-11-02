@@ -49,6 +49,22 @@ function resolveClaude() {
 }
 const CLAUDE_BIN = resolveClaude();
 
+// Shared secret. Browsers let any web page open a WebSocket to 127.0.0.1, so
+// without this a site visited while the relay runs could start a claude
+// session (with --dangerously-skip-permissions) in the repo. The token lives
+// in a file only this user can read; the panel reads it and sends ?token=.
+// relayToken() is shared with the panel (same file, same create-once rule).
+const RELAY_TOKEN = require("./lib/relay-token.cjs").relayToken();
+function tokenOk(q) {
+  for (const kv of q.split("&")) {
+    if (kv.indexOf("token=") !== 0) continue;
+    const got = Buffer.from(decodeURIComponent(kv.slice(6)));
+    const want = Buffer.from(RELAY_TOKEN);
+    return got.length === want.length && crypto.timingSafeEqual(got, want);
+  }
+  return false;
+}
+
 // python pty bridge: stdin -> pty master, pty master -> stdout. Control
 // line on fd 3 would be cleaner but pipes beyond stdio are awkward with
 // spawn; instead resize commands arrive on stdin as \x00resize:COLS,ROWS\n
@@ -148,6 +164,10 @@ const server = net.createServer((sock) => {
       const head = acc.slice(0, headEnd).toString();
       const keyMatch = head.match(/Sec-WebSocket-Key:\s*(\S+)/i);
       if (!keyMatch || !/GET/.test(head)) { sock.end("HTTP/1.1 400 Bad Request\r\n\r\n"); return; }
+      const query = ((head.split("\r\n")[0].split(" ")[1] || "").split("?")[1] || "");
+      let authed = false;
+      try { authed = tokenOk(query); } catch (e) {}
+      if (!authed) { sock.end("HTTP/1.1 403 Forbidden\r\n\r\n"); return; }
       // per-session claude flags via query string (?args=...), whitelisted —
       // the panel's SKIP PERMISSIONS toggle rides in here
       const ALLOWED_FLAGS = new Set(["--dangerously-skip-permissions", "--continue", "--resume"]);
@@ -155,8 +175,7 @@ const server = net.createServer((sock) => {
       const ALLOWED_VALUED = { "--model": /^[a-z0-9][a-z0-9.\-[\]]*$/i, "--effort": /^(low|medium|high|xhigh|max)$/ };
       let extraArgs = [];
       try {
-        const q = ((head.split("\r\n")[0].split(" ")[1] || "").split("?")[1] || "");
-        for (const kv of q.split("&")) {
+        for (const kv of query.split("&")) {
           if (kv.indexOf("args=") !== 0) continue;
           const toks = decodeURIComponent(kv.slice(5)).split(" ").filter(Boolean);
           for (let i = 0; i < toks.length; i++) {

@@ -1374,8 +1374,10 @@ function relayEnsure() {
   // process.execPath inside CEP is the CEF binary, NOT node — go through a
   // login shell so the user's node (homebrew/nvm) is found.
   const { spawn } = require("child_process");
-  const cmd = "node '" + path.join(REPO, "scripts", "panel-relay.cjs") + "' --port " + RELAY_PORT + " --cwd '" + REPO + "'";
-  const child = spawn("/bin/zsh", ["-lc", cmd], { detached: true, stdio: "ignore" });
+  // paths go in as positional args ($1, $2), never spliced into the command
+  // string, so a quote or $ in the repo path can't break or inject
+  const child = spawn("/bin/zsh", ["-lc", 'node "$1" --port ' + RELAY_PORT + ' --cwd "$2"', "zsh",
+    path.join(REPO, "scripts", "panel-relay.cjs"), REPO], { detached: true, stdio: "ignore" });
   child.unref();
 }
 
@@ -1389,7 +1391,13 @@ function claudeArgs() {
 }
 
 function termConnect(attempt) {
-  const ws = new WebSocket("ws://127.0.0.1:" + RELAY_PORT + "/?args=" + encodeURIComponent(claudeArgs()));
+  let token = "";
+  try { token = require(path.join(REPO, "scripts", "lib", "relay-token.cjs")).relayToken(); } catch (e) {
+    termStatus("cannot read ~/.apostle/relay.token: " + e.message, "err");
+    $id("btnTermStart").disabled = false;
+    return;
+  }
+  const ws = new WebSocket("ws://127.0.0.1:" + RELAY_PORT + "/?token=" + encodeURIComponent(token) + "&args=" + encodeURIComponent(claudeArgs()));
   ws.binaryType = "arraybuffer";
   ws.onopen = () => {
     termStatus($id("skipPerms").checked ? "LIVE — permissions bypassed" : "LIVE", "ok");
@@ -1509,7 +1517,11 @@ $id("btnAsk").addEventListener("click", () => {
     : "";
   // login shell so PATH finds the claude CLI
   const model = $id("claudeModel").value;
-  execFile("/bin/zsh", ["-lc", "claude -p " + (model ? "--model " + model + " " : "") + JSON.stringify(projCtx + prompt)], { timeout: 300000, cwd: REPO, maxBuffer: 4 * 1024 * 1024 },
+  // the prompt rides in as $1: JSON.stringify'd text inside the command string
+  // still expanded $(...) and backticks, so a question that quoted a shell
+  // command ran it. The model id is checked against the relay's pattern.
+  const modelArg = /^[a-z0-9][a-z0-9.\-[\]]*$/i.test(model || "") ? "--model " + model + " " : "";
+  execFile("/bin/zsh", ["-lc", 'claude -p ' + modelArg + '"$1"', "zsh", projCtx + prompt], { timeout: 300000, cwd: REPO, maxBuffer: 4 * 1024 * 1024 },
     (err, stdout, stderr) => {
       $id("claudeOut").textContent = err ? ("ERROR: " + (stderr || err.message)) : stdout;
     });
