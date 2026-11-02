@@ -1,4 +1,4 @@
-// instructional.jsx: the "instructional" stage (v2.18). ES3 ExtendScript.
+// instructional.jsx: the "instructional" stage (v2.20). ES3 ExtendScript.
 //
 // Builds one 2D master comp from a timeline compiled by
 // scripts/lib/compile-instructional.cjs. Where the corridor stage is a camera
@@ -21,8 +21,11 @@
   var GROUP = "MISC";
   var PHONE = { x: 1430, y: 528, w: 372, h: 778, bezel: 12, r: 54 };
   var PROP = { x: 1430, y: 500 };
-  var CAP = { y: 1012, h: 50 };
-  var HEAD_TRACK = -35; // headings: CBA Beacon Sans Black, tight (CBA, 2026-10-13)
+  var CAP = { y: 1008, h: 58, size: 29 };
+  // the logo: one layer over everything, every card included, its bottom
+  // right corner on the margins (CBA, 2026-10-14: twice the old 88px)
+  var LOGO = { h: 170, right: W - LX, bottom: H - 56 };
+  var HEAD_TRACK = -20; // headings: CBA Beacon Sans Black, tracked -20 (CBA, 2026-10-14)
   var SLOT = { top: 540, h: 92, step: 108, wList: 600, wGrid: 404, gapGrid: 20 };
 
   // ---------------------------------------------------------------- utils
@@ -99,6 +102,10 @@
   // ---------------------------------------------------------------- drawing
   function txt(name, str, font, size, color, x, y, o) {
     o = o || {};
+    // lowercase films: captions are all lowercase, every other line is
+    // sentence case (CBA, 2026-10-14); multi-line headings arrive already
+    // cased by headingCase and pass keepCase
+    if (T.textCase === "lower" && !o.keepCase) str = o.lowerOnly ? String(str).toLowerCase() : headingCase([str])[0];
     var l = fresh(comp_(o.into).layers.addText(str), name);
     var dp = l.property("ADBE Text Properties").property("ADBE Text Document");
     for (var a = 0; a < 2; a++) {
@@ -118,12 +125,28 @@
     return l;
   }
   function comp_(c) { return c || comp; }
-  function textWidth(str, font, size, tracking) {
+  function textWidth(str, font, size, tracking, o) {
     if (!str) return 0;
-    var l = txt("MEASURE", str, font, size, [0, 0, 0], 0, 0, { tracking: tracking });
+    o = o || {};
+    var l = txt("MEASURE", str, font, size, [0, 0, 0], 0, 0, { tracking: tracking, keepCase: o.keepCase, lowerOnly: o.lowerOnly });
     var w = l.sourceRectAtTime(0, false).width;
     l.remove();
     return w;
+  }
+
+  // headings in a lowercase film are sentence case (CBA, 2026-10-14): a
+  // capital only where a sentence starts, which carries across the lines of
+  // one heading (["Add your", "contact details"]) and restarts after . ! ?
+  function headingCase(lines) {
+    if (T.textCase !== "lower") return lines;
+    var out = [], start = true;
+    for (var i = 0; i < lines.length; i++) {
+      var s = String(lines[i]).toLowerCase().replace(/([.!?]\s+)([a-z])/g, function (m, a, b) { return a + b.toUpperCase(); });
+      if (start) s = s.replace(/[a-z]/, function (c) { return c.toUpperCase(); });
+      out.push(s);
+      start = /[.!?]\s*$/.test(s);
+    }
+    return out;
   }
 
   function shapeLayer(name, into) {
@@ -257,30 +280,42 @@
     t.comment = "apostle instr|" + GROUP;
     return t;
   }
-  function logo(into, name, x, y, h) {
+  // x is the left edge, or the right edge with o.right; centred on y
+  function logo(into, name, x, y, h, o) {
+    o = o || {};
     if (!T.logo || !new File(T.logo).exists) {
-      var lb = box(name + " BOX", 116, 40, 6, null, C.ink, 2, x + 58, y, { into: into });
-      var lt = txt(name, "LOGO", F.bold, 15, C.ink, x + 58, y + 5, { center: true, tracking: 150, into: into });
+      var bx = o.right ? x - 58 : x + 58;
+      var lb = box(name + " BOX", 116, 40, 6, null, C.ink, 2, bx, y, { into: into });
+      var lt = txt(name, "LOGO", F.bold, 15, C.ink, bx, y + 5, { center: true, tracking: 150, into: into, keepCase: true });
       return [lb, lt];
     }
     var it = footage(T.logo);
     var l = fresh(comp_(into).layers.add(it), name);
     var sc = h / it.height * 100;
     S(l).setValue([sc, sc]);
-    // left edge on x, centred on y
-    P(l).setValue([x + it.width * sc / 200, y]);
+    var half = it.width * sc / 200;
+    P(l).setValue([o.right ? x - half : x + half, y]);
     return [l];
   }
 
   // ---------------------------------------------------------------- top bar
   function topBar() {
     GROUP = "TOP BAR";
-    var lg = logo(null, "LOGO", LX, 72, 88);
-    var lab = txt("REVIEW LABEL", T.label, F.bold, 14, C.muted, LX + 90, 77, { tracking: 120 });
     var tIn = 0;
     for (var i = 0; i < T.cards.length; i++) if (T.cards[i].type === "title") tIn = T.cards[i].tOut - 0.3;
-    for (var j = 0; j < lg.length; j++) show(lg[j], tIn, null, { from: [0, -12] });
-    show(lab, tIn + 0.08, null, { from: [0, -12] });
+    if (T.label) show(txt("REVIEW LABEL", T.label, F.bold, 14, C.muted, LX + 90, 77, { tracking: 120 }), tIn + 0.08, null, { from: [0, -12] });
+  }
+
+  // built last, so it sits over the cards; arrives with the title card's type
+  function logoMark() {
+    GROUP = "LOGO";
+    var lg = logo(null, "LOGO", LOGO.right, LOGO.bottom - LOGO.h / 2, LOGO.h, { right: true });
+    for (var j = 0; j < lg.length; j++) {
+      show(lg[j], 0.15, null, { from: [0, 12] });
+      // off over pages whose art runs under the corner (plan.logoHide)
+      var hs = T.logoHide || [];
+      for (var k = 0; k < hs.length; k++) anim(O(lg[j]), [[hs[k][0] - 0.35, 100, hs[k][0], 0, "in"], [hs[k][1], 0, hs[k][1] + 0.35, 100, "out"]]);
+    }
   }
 
   // ---------------------------------------------------------------- pages
@@ -302,11 +337,11 @@
       }
     }
     // headings: Black, tightly tracked, shrunk to fit short of the phone
-    var size = 92, base1 = 356, lead = 96, maxW = 1060, widest = 0;
-    for (var m = 0; m < pg.heading.length; m++) widest = Math.max(widest, textWidth(pg.heading[m], F.black, size, HEAD_TRACK));
+    var size = 92, base1 = 356, lead = 96, maxW = 1060, widest = 0, hd = headingCase(pg.heading);
+    for (var m = 0; m < hd.length; m++) widest = Math.max(widest, textWidth(hd[m], F.black, size, HEAD_TRACK, { keepCase: true }));
     if (widest > maxW) { size = Math.floor(size * maxW / widest); lead = Math.round(size * 1.04); }
-    for (var li = 0; li < pg.heading.length; li++) {
-      var hl2 = txt("P" + pg.id + " HEADING " + (li + 1), pg.heading[li], F.black, size, C.ink, LX, base1 + li * lead, { tracking: HEAD_TRACK });
+    for (var li = 0; li < hd.length; li++) {
+      var hl2 = txt("P" + pg.id + " HEADING " + (li + 1), hd[li], F.black, size, C.ink, LX, base1 + li * lead, { tracking: HEAD_TRACK, keepCase: true });
       show(hl2, tIn + 0.08 + li * 0.09, tOut, { from: [0, 40], dur: 0.7 });
     }
   }
@@ -316,6 +351,8 @@
       var col = it.slot % 2, row = Math.floor(it.slot / 2);
       return { x: LX, y: SLOT.top + row * SLOT.step, w: SLOT.wGrid, col: col, xo: col * (SLOT.wGrid + SLOT.gapGrid) };
     }
+    // a card on a numbered page sits under the page's full list of steps
+    if (it.numAbove !== undefined) return { x: LX, y: 560 + it.numAbove * 64 + 10 + it.slot * SLOT.step, w: SLOT.wList, col: 0, xo: 0 };
     return { x: LX, y: SLOT.top + it.slot * SLOT.step, w: SLOT.wList, col: 0, xo: 0 };
   }
   function item(it) {
@@ -486,7 +523,7 @@
     for (var j = 0; j < labels.length; j++) {
       if (!labels[j].text) continue;
       var nx = (j + 1 < labels.length) ? labels[j + 1].t : null;
-      var lt = txt("LABEL " + (j + 1), labels[j].text.toUpperCase(), F.bold, 19, C.ink, cx, y, { center: true, tracking: 110, into: pc });
+      var lt = txt("LABEL " + (j + 1), labels[j].text, F.bold, 19, C.ink, cx, y, { center: true, tracking: 110, into: pc });
       var p = P(lt).value;
       anim(P(lt), nx === null ? [[labels[j].t, [p[0], p[1] + 14], labels[j].t + 0.45, p, "out"]] :
         [[labels[j].t, [p[0], p[1] + 14], labels[j].t + 0.45, p, "out"], [nx - 0.2, p, nx, [p[0], p[1] - 10], "in"]]);
@@ -528,10 +565,17 @@
     var chip = APOSTLE.drawGlyph(pc, "PASSPORT CHIP", "epassport", cx + 14, cy + 160, 92, pal({ ink: HX.gold }));
     chip.startTime = 0; Rz(chip).setValue(-7);
     var back = box("PHONE BACK", 220, 450, 36, C.ink, null, 0, cx, cy, { into: pc });
-    var bump = box("CAMERA BUMP", 92, 92, 24, [0.18, 0.18, 0.18], null, 0, cx - 48, cy - 160, { into: pc });
-    var lens1 = box("LENS 1", 32, 32, 0, [0.06, 0.06, 0.06], [0.3, 0.3, 0.3], 3, cx - 66, cy - 178, { into: pc, ellipse: true });
-    var lens2 = box("LENS 2", 32, 32, 0, [0.06, 0.06, 0.06], [0.3, 0.3, 0.3], 3, cx - 30, cy - 142, { into: pc, ellipse: true });
-    var grp = [back, bump, lens1, lens2];
+    var grp = [back], lensC = [0.06, 0.06, 0.06], rimC = [0.3, 0.3, 0.3];
+    if (T.device === "android") {
+      // Android: three lenses stacked in a vertical pill, flash beside it
+      grp.push(box("CAMERA BUMP", 64, 176, 32, [0.18, 0.18, 0.18], null, 0, cx - 56, cy - 118, { into: pc }));
+      for (var lz = 0; lz < 3; lz++) grp.push(box("LENS " + (lz + 1), 38, 38, 0, lensC, rimC, 3, cx - 56, cy - 170 + lz * 52, { into: pc, ellipse: true }));
+      grp.push(box("FLASH", 14, 14, 0, [0.85, 0.85, 0.8], null, 0, cx - 4, cy - 184, { into: pc, ellipse: true }));
+    } else {
+      grp.push(box("CAMERA BUMP", 92, 92, 24, [0.18, 0.18, 0.18], null, 0, cx - 48, cy - 160, { into: pc }));
+      grp.push(box("LENS 1", 32, 32, 0, lensC, rimC, 3, cx - 66, cy - 178, { into: pc, ellipse: true }));
+      grp.push(box("LENS 2", 32, 32, 0, lensC, rimC, 3, cx - 30, cy - 142, { into: pc, ellipse: true }));
+    }
     var tMove = null, tBuzz = null;
     for (var i = 0; i < pr.events.length; i++) {
       if (pr.events[i].action === "move") tMove = pr.events[i].t;
@@ -564,7 +608,8 @@
     propIn(place(pc, "PROP nfc", PROP.x, PROP.y), pr);
   }
   function propPath(pr) {
-    var pc = subComp(T.name + " PROP path", 900, 620), cy = 290;
+    // NODE: pictogram size, and the clear space a link leaves either side
+    var pc = subComp(T.name + " PROP path", 900, 620), cy = 290, NODE = 144, CLEAR = NODE / 2 + 30;
     var nodes = [];
     for (var i = 0; i < pr.events.length; i++) if (pr.events[i].action === "node") nodes.push(pr.events[i]);
     var n = nodes.length, xs = [450];
@@ -573,24 +618,30 @@
     for (var j = 0; j < n; j++) {
       var nd = nodes[j], x = xs[Math.min(j, xs.length - 1)];
       if (j > 0) {
-        var ln = dotted("LINK " + j, xs[j - 1] + 92, cy, x - 92, cy, C.ink, pc);
+        var ln = dotted("LINK " + j, xs[j - 1] + CLEAR, cy, x - CLEAR, cy, C.ink, pc);
         anim(ln.trim, [[nd.t - 0.45, 0, nd.t + 0.1, 100, "io"]]);
         ln.layer.inPoint = Math.max(0, nd.t - 0.47);
       }
-      var tile = icon(pc, "NODE " + (j + 1), nd.glyph || "check", x, cy, 150);
-      anim(S(tile), [[nd.t, [10, 10, 100], nd.t + 0.55, [100, 100, 100], "snap"]]);
+      var tile = icon(pc, "NODE " + (j + 1), nd.glyph || "check", x, cy, NODE);
+      // pop relative to the fitted scale: keying a flat 100% drew every
+      // pictogram at its PNG's native size, whatever NODE said
+      var s0 = S(tile).value;
+      anim(S(tile), [[nd.t, [s0[0] * 0.1, s0[1] * 0.1, 100], nd.t + 0.55, [s0[0], s0[1], 100], "snap"]]);
       anim(O(tile), [[nd.t, 0, nd.t + 0.2, 100, "out"]]);
       tile.inPoint = nd.t;
-      var lb = txt("NODE LABEL " + (j + 1), nd.label || "", F.bold, 27, C.ink, x, cy + 150, { center: true, into: pc });
+      var lb = txt("NODE LABEL " + (j + 1), nd.label || "", F.bold, 27, C.ink, x, cy + NODE / 2 + 66, { center: true, into: pc });
       var p = P(lb).value;
       anim(P(lb), [[nd.t + 0.12, [p[0], p[1] + 16], nd.t + 0.6, p, "out"]]);
       anim(O(lb), [[nd.t + 0.12, 0, nd.t + 0.45, 100, "out"]]);
       lb.inPoint = nd.t;
     }
     if (pr.traveler && n >= 2) {
-      var tv = icon(pc, "TRAVELER", pr.traveler, xs[0], cy - 128, 76, { bare: true });
+      // "dot": a small brand dot travelling above the nodes, not an icon
+      var ty = cy - 128, tv;
+      if (pr.traveler === "dot") { ty = cy - NODE / 2 - 34; tv = box("TRAVELER", 22, 22, 0, C.brand, C.ink, 2, xs[0], ty, { into: pc, ellipse: true }); }
+      else tv = icon(pc, "TRAVELER", pr.traveler, xs[0], ty, 76, { bare: true });
       var a = nodes[1].t, b = Math.max(nodes[n - 1].t + 0.6, a + 1.2);
-      anim(P(tv), [[a, [xs[0], cy - 128], b, [xs[Math.min(n - 1, xs.length - 1)], cy - 128], "io"]]);
+      anim(P(tv), [[a, [xs[0], ty], b, [xs[Math.min(n - 1, xs.length - 1)], ty], "io"]]);
       anim(O(tv), [[a - 0.2, 0, a + 0.1, 100, "out"]]);
       tv.inPoint = a - 0.2;
     }
@@ -648,7 +699,7 @@
     for (var j = 0; j < lbs.length; j++) {
       if (!lbs[j].text) continue;
       var nx = (j + 1 < lbs.length) ? lbs[j + 1].t : null;
-      var lt = txt("HERO LABEL " + (j + 1), lbs[j].text, F.black, 44, C.ink, cx, 540, { center: true, tracking: HEAD_TRACK, into: pc });
+      var lt = txt("HERO LABEL " + (j + 1), headingCase([lbs[j].text])[0], F.black, 44, C.ink, cx, 540, { center: true, tracking: HEAD_TRACK, into: pc, keepCase: true });
       var p = P(lt).value;
       anim(P(lt), nx === null ? [[lbs[j].t, [p[0], p[1] + 24], lbs[j].t + 0.5, p, "out"]] : [[lbs[j].t, [p[0], p[1] + 24], lbs[j].t + 0.5, p, "out"], [nx - 0.2, p, nx, [p[0], p[1] - 16], "in"]]);
       anim(O(lt), nx === null ? [[lbs[j].t, 0, lbs[j].t + 0.3, 100, "out"]] : [[lbs[j].t, 0, lbs[j].t + 0.3, 100, "out"], [nx - 0.2, 100, nx, 0, "in"]]);
@@ -708,14 +759,13 @@
     if (cd.type === "chapter") {
       var ey = txt("CARD " + (idx + 1) + " STEP", "STEP " + cd.step + " OF " + cd.total, F.bold, 22, C.ink, LX, 330, { tracking: 140 });
       var nm = txt("CARD " + (idx + 1) + " NUMERAL", cd.numeral, F.black, 300, C.ink, LX - 12, 640, { tracking: -30 });
-      var tt = txt("CARD " + (idx + 1) + " TITLE", cd.title, F.black, 78, C.ink, LX, 762, { tracking: HEAD_TRACK });
+      var tt = txt("CARD " + (idx + 1) + " TITLE", headingCase([cd.title])[0], F.black, 78, C.ink, LX, 762, { tracking: HEAD_TRACK, keepCase: true });
       kids.push(ey, nm, tt);
     } else {
-      var lg = logo(null, "CARD " + (idx + 1) + " LOGO", LX, 72, 88);
-      for (var g = 0; g < lg.length; g++) kids.push(lg[g]);
       var by = cd.type === "title" ? 470 : 500;
-      for (var i = 0; i < cd.heading.length; i++) {
-        kids.push(txt("CARD " + (idx + 1) + " LINE " + (i + 1), cd.heading[i], F.black, 120, C.ink, LX, by + i * 124, { tracking: HEAD_TRACK }));
+      var cl = headingCase(cd.heading);
+      for (var i = 0; i < cl.length; i++) {
+        kids.push(txt("CARD " + (idx + 1) + " LINE " + (i + 1), cl[i], F.black, 120, C.ink, LX, by + i * 124, { tracking: HEAD_TRACK, keepCase: true }));
       }
       if (cd.sub) kids.push(txt("CARD " + (idx + 1) + " SUB", cd.sub, F.regular, 34, C.ink, LX, by + cd.heading.length * 124 + 10, {}));
     }
@@ -746,13 +796,10 @@
     GROUP = "CAPTIONS";
     for (var i = 0; i < T.captions.length; i++) {
       var c = T.captions[i];
-      var tw = textWidth(c.text, F.regular, 24, 0);
-      var w = tw + 26 * 2 + 34;
-      var x0 = W / 2 - w / 2;
-      var pill = box("CC " + (i + 1) + " PILL", w, CAP.h, CAP.h / 2, C.ink, null, 0, W / 2, CAP.y);
-      var tag = box("CC " + (i + 1) + " TAG", 20, 20, 5, C.brand, null, 0, x0 + 26 + 10, CAP.y);
-      var t = txt("CC " + (i + 1) + " TEXT", c.text, F.regular, 24, C.card, x0 + 26 + 34, CAP.y + 8, {});
-      var parts = [pill, tag, t];
+      var tw = textWidth(c.text, F.regular, CAP.size, 0, { lowerOnly: true });
+      var pill = box("CC " + (i + 1) + " PILL", tw + 32 * 2, CAP.h, CAP.h / 2, C.ink, null, 0, W / 2, CAP.y);
+      var t = txt("CC " + (i + 1) + " TEXT", c.text, F.regular, CAP.size, C.card, W / 2, CAP.y + 10, { center: true, lowerOnly: true });
+      var parts = [pill, t];
       for (var k = 0; k < parts.length; k++) show(parts[k], c.tIn, c.tOut, { from: [0, 10], to: [0, 0], dur: 0.28, exit: 0.16 });
     }
   }
@@ -761,8 +808,8 @@
   // A finished build is folded into one precomp per part, so the master reads
   // as the film's outline (CBA, 2026-10-13: "organise each part into sections
   // instead of 350+ layers"), top to bottom:
-  //   CAPTIONS / chapter, title and outro cards / STEP sections (left column
-  //   + props) / PHONE (with its badges) / TOP BAR / BG
+  //   LOGO / CAPTIONS / chapter, title and outro cards / STEP sections (left
+  //   column + props) / PHONE (with its badges) / TOP BAR / BG
   // Each precomp is full length and time-aligned, so timing is unchanged; the
   // master layer is trimmed to the span its layers occupy.
   function stepOfPage(id) {
@@ -833,7 +880,7 @@
     }
     var byNum = function (a, b) { return parseInt(a.split("|")[1], 10) - parseInt(b.split("|")[1], 10); };
     steps.sort(byNum); cardsK.sort(byNum);
-    order = order.concat(steps, cardsK, ["CAPTIONS"]);
+    order = order.concat(steps, cardsK, ["CAPTIONS", "LOGO"]);
     for (var o = 0; o < order.length; o++) if (made[order[o]]) made[order[o]].moveToBeginning();
     for (i = 1; i <= comp.numLayers; i++) if (comp.layer(i).name === "BG") { comp.layer(i).moveToEnd(); break; }
   }
@@ -909,6 +956,7 @@
         }
         for (var c = 0; c < T.cards.length; c++) card(T.cards[c], c);
         captions();
+        logoMark();
         if (opts.organise !== false) organise();
       } finally {
         app.endUndoGroup();
@@ -923,5 +971,5 @@
     }
   }
 
-  $.global.APOSTLE_INSTR = { build: build, version: "1.1.0" };
+  $.global.APOSTLE_INSTR = { build: build, version: "1.2.0" };
 })();

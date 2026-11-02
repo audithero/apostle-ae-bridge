@@ -363,7 +363,7 @@
      "do": "prop",
      "prop": "path",
      "nodes": [],
-     "traveler": "mail"
+     "traveler": "dot"
     },
     {
      "cue": "Well use these details",
@@ -679,7 +679,7 @@
      "do": "prop",
      "prop": "path",
      "nodes": [],
-     "traveler": "mail"
+     "traveler": "dot"
     },
     {
      "cue": "your debit card will be sent",
@@ -703,19 +703,28 @@
  ],
  "kit": "brands/commbank.json",
  "screens": [
-  "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/00.Brief/Migrant Onboarding Video Screens - Oct 2026",
-  "/Volumes/Apostle_8TB-1/00.AAA_PROJECTS_GITHUB/ae-apostle-bridge/.apostle-runs/compile/cba-migrant-1/brief-media/migrant-onboarding-instructional-video-scrip",
-  "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/01.MEDIA/GFX/Generated Screens"
+  "/Volumes/Apostle_8TB 1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/00.Brief/Migrant Onboarding Video Screens - Oct 2026",
+  "/Volumes/Apostle_8TB 1/00.AAA_PROJECTS_GITHUB/ae-apostle-bridge/.apostle-runs/compile/cba-migrant-1/brief-media/migrant-onboarding-instructional-video-scrip",
+  "/Volumes/Apostle_8TB 1/00.APOSTLE_WORKING/CBA - MIGRANT/01.MEDIA/GFX/Generated Screens"
  ],
- "label": "CBA MIGRANT ONBOARDING  ·  FOR REVIEW",
+ "label": "",
  "timing": {
   "mode": "wpm",
   "wpm": 150,
   "gap": 0.45
  },
  "sourceRun": ".apostle-runs/compile/cba-migrant-1",
- "pictograms": "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/02.Client Assets/Pictograms",
- "androidScreensDir": "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/01.MEDIA/GFX/Screens - Android",
- "logo": "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/02.Client Assets/CAN & Beacon/3x/PRM_BEACON_STK_WM_BLACK_SRGB_300425@3x.png",
- "pictogramsOutDir": "/Volumes/Apostle_8TB-1/00.APOSTLE_WORKING/CBA - MIGRANT/01.MEDIA/GFX/Pictograms PNG"
+ "pictograms": "/Volumes/Apostle_8TB 1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/02.Client Assets/Pictograms",
+ "androidScreensDir": "/Volumes/Apostle_8TB 1/00.APOSTLE_WORKING/CBA - MIGRANT/01.MEDIA/GFX/Screens - Android",
+ "logo": "/Volumes/Apostle_8TB 1/00.APOSTLE_WORKING/CBA - MIGRANT/00.ADMIN/02.Client Assets/CAN & Beacon/3x/PRM_BEACON_STK_WM_BLACK_SRGB_300425@3x.png",
+ "pictogramsOutDir": "/Volumes/Apostle_8TB 1/00.APOSTLE_WORKING/CBA - MIGRANT/01.MEDIA/GFX/Pictograms PNG",
+ "textCase": "lower",
+ "captions": {
+  "maxWords": 4
+ },
+ "logoHide": [
+  "Work and tax details",
+  "Your information is protected",
+  "Create a password and PIN"
+ ]
 }

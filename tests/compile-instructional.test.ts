@@ -57,10 +57,29 @@ describe("compileInstructional", () => {
     expect(timeline.duration).toBeGreaterThan(timeline.cards[3].tIn);
   });
 
-  it("splits a long sentence near the middle at a clause boundary", () => {
-    const c = captionChunks("Hold the photo page of your passport up to the scanning area indicated on the screen and select scan passport.");
-    expect(c.length).toBe(2);
-    expect(c.join(" ")).toBe("Hold the photo page of your passport up to the scanning area indicated on the screen and select scan passport.");
+  it("captions one line of at most four words, never across a sentence", () => {
+    const vo = "Hold the photo page of your passport up to the scanning area indicated on the screen and select scan passport. Then wait.";
+    const c = captionChunks(vo);
+    expect(c.every((x) => x.split(" ").length <= 4)).toBe(true);
+    expect(c[c.length - 1]).toBe("Then wait.");
+    expect(c.join(" ")).toBe(vo);
+    expect(captionChunks("one two three four five")).toEqual(["one two three", "four five"]);
+  });
+
+  it("numbers steps on a numbered page without counting a callout", () => {
+    const p = {
+      name: "NUM", kit: "brands/commbank.json", screens: [],
+      beats: [
+        { vo: "First tap it. Then wait for it.", page: { heading: ["Steps"], items: "numbered" },
+          events: [{ cue: "First tap it", do: "item", title: "Tap" }, { cue: "Then wait", do: "item", title: "Wait" }] },
+        { vo: "A special case. Hold still now.",
+          events: [{ cue: "A special case", do: "callout", title: "Note" }, { cue: "Hold still now", do: "item", title: "Hold" }] }
+      ]
+    };
+    const { timeline } = compileInstructional(p, { repo: REPO, kit });
+    const nums = timeline.items.filter((x: { kind: string }) => x.kind === "num").map((x: { n: number }) => x.n);
+    expect(nums).toEqual([1, 2, 3]);
+    expect(timeline.items.find((x: { kind: string }) => x.kind === "callout").numAbove).toBe(3);
   });
 });
 

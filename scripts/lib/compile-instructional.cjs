@@ -28,31 +28,22 @@ function hexToRgb01(h) {
   return [parseInt(m.slice(0, 2), 16) / 255, parseInt(m.slice(2, 4), 16) / 255, parseInt(m.slice(4, 6), 16) / 255].map((v) => R(v * 1000) / 1000);
 }
 
-// captions: sentences, long ones split at a comma or "and"/"or" near the
-// middle, so one line of 24px type never runs past ~95 characters
-function captionChunks(vo) {
+// captions: one line each, at most maxWords words. Split per sentence first
+// so a caption never straddles two, then into near-even runs (17 words make
+// 4+4+3+3+3, never four 4s and an orphan).
+function captionChunks(vo, maxWords) {
+  const max = maxWords || 4;
   const sentences = String(vo).replace(/\s+/g, " ").trim().split(/(?<=[.!?:])\s+(?=[A-Z‘'“"]|$)/);
   const out = [];
-  const MAX = 92;
-  const split = (s) => {
-    if (s.length <= MAX) { out.push(s); return; }
-    const mid = s.length / 2;
-    let best = -1, bestD = 1e9;
-    const re = /,\s|\s(?:and|or|so|to|until|then)\s/g;
-    let m;
-    while ((m = re.exec(s))) {
-      const at = m[0][0] === "," ? m.index + 1 : m.index;
-      const d = Math.abs(at - mid);
-      if (d < bestD && at > 20 && at < s.length - 20) { best = at; bestD = d; }
+  sentences.filter(Boolean).forEach((s) => {
+    const w = s.split(" ");
+    const n = Math.ceil(w.length / max);
+    for (let k = 0, i = 0; k < n; k++) {
+      const len = Math.floor(w.length / n) + (k < w.length % n ? 1 : 0);
+      out.push(w.slice(i, i + len).join(" "));
+      i += len;
     }
-    if (best === -1) {
-      best = s.lastIndexOf(" ", Math.floor(mid) + 10);
-      if (best < 20) { out.push(s); return; }
-    }
-    split(s.slice(0, best).trim());
-    split(s.slice(best).trim());
-  };
-  sentences.filter(Boolean).forEach(split);
+  });
   return out;
 }
 
@@ -97,6 +88,8 @@ function compileInstructional(plan, opts) {
   const tl = {
     name: plan.name + "_" + (plan.version || "v001"), fps: 25, w: 1920, h: 1080,
     label: plan.label || "",
+    // "lower": every piece of on-screen type is set in lowercase (CBA, 2026-10-14)
+    textCase: plan.textCase || kit.textCase || "",
     total,
     colors: {
       bg: hexToRgb01(plan.colors && plan.colors.bg || "#F4F4F4"),
@@ -146,7 +139,7 @@ function compileInstructional(plan, opts) {
 
   if (open) tl.cards.push({ type: "title", tIn: 0, tOut: R(open.dur), heading: open.heading, sub: open.sub || "" });
 
-  let page = null, step = 0, phoneOn = null, prop = null, itemCount = 0;
+  let page = null, step = 0, phoneOn = null, prop = null, itemCount = 0, numCount = 0;
   const closePage = (t) => {
     if (!page) return;
     page.tOut = R(t);
@@ -157,7 +150,7 @@ function compileInstructional(plan, opts) {
   const propOff = (t) => { if (prop) { prop.tOut = R(t); prop = null; } };
   const newPage = (t, p, eyebrow) => {
     closePage(t);
-    itemCount = 0;
+    itemCount = 0; numCount = 0;
     page = { id: tl.pages.length + 1, tIn: R(t), tOut: null, step, total, eyebrow: eyebrow || (step ? "STEP " + step + " OF " + total : ""), heading: p.heading, highlight: p.highlight || "", layout: p.items || "list", sub: p.sub || "" };
     tl.pages.push(page);
   };
@@ -198,7 +191,12 @@ function compileInstructional(plan, opts) {
         case "page":
           newPage(t, e, e.eyebrow); break;
         case "item": case "callout": case "search": case "pin": {
-          const it = Object.assign({ page: page.id, kind: e.do === "item" ? (page.layout === "numbered" ? "num" : "card") : e.do, n: ++itemCount, slot: itemCount - 1, layout: page.layout }, at);
+          // numbered items count (and stack) on their own: a callout or search
+          // card on a numbered page is not a step, and used to skip a number.
+          // Cards there stack below the page's whole list (numAbove, below).
+          const kind = e.do === "item" ? (page.layout === "numbered" ? "num" : "card") : e.do;
+          const it = kind === "num" ? Object.assign({ page: page.id, kind, n: ++numCount, slot: numCount - 1, layout: page.layout }, at)
+            : Object.assign({ page: page.id, kind, n: ++itemCount, slot: itemCount - 1, layout: page.layout }, at);
           ["glyph", "title", "sub", "text"].forEach((k) => { if (e[k] !== undefined) it[k] = e[k]; });
           tl.items.push(it);
           break;
@@ -257,7 +255,7 @@ function compileInstructional(plan, opts) {
     });
 
     // captions for this beat
-    const chunks = captionChunks(b.vo);
+    const chunks = captionChunks(b.vo, plan.captions && plan.captions.maxWords);
     let wi0 = 0;
     chunks.forEach((c, ci) => {
       const ct = tokens(c);
@@ -280,9 +278,25 @@ function compileInstructional(plan, opts) {
   // a caption may not outlive a long pause: cap at ~reading time + 1.2s
   tl.captions.forEach((c) => {
     const words = c.text.split(" ").length;
-    const maxDur = Math.max(2.2, words * spw * 1.15 + 1.2);
+    const maxDur = Math.max(1.6, words * spw * 1.15 + 0.9);
     if (c.tOut - c.tIn > maxDur) c.tOut = R(c.tIn + maxDur);
   });
+  tl.items.forEach((x) => {
+    if (x.layout === "numbered" && x.kind !== "num") x.numAbove = tl.items.filter((y) => y.page === x.page && y.kind === "num").length;
+  });
+  // logo off over named pages (plan.logoHide: page headings, lines joined by
+  // a space), where the art runs under the bottom-right corner. Adjacent
+  // pages merge into one span.
+  tl.logoHide = [];
+  if (plan.logoHide) {
+    const want = plan.logoHide.map((h) => String(h).toLowerCase());
+    tl.pages.filter((p) => want.includes(p.heading.join(" ").toLowerCase())).forEach((p) => {
+      const last = tl.logoHide[tl.logoHide.length - 1];
+      if (last && Math.abs(last[1] - p.tIn) < 0.05) last[1] = p.tOut;
+      else tl.logoHide.push([p.tIn, p.tOut]);
+    });
+    if (tl.logoHide.length === 0) warnings.push("logoHide: no page heading matched");
+  }
   tl.screens = Object.keys(usedShots).map((k) => ({ name: k, file: usedShots[k] }));
 
   // brand pictograms: every icon the film draws resolves to a client file
@@ -294,7 +308,7 @@ function compileInstructional(plan, opts) {
     tl.items.forEach((x) => { if (x.glyph) want.add(x.glyph); });
     tl.props.forEach((p) => {
       if (p.glyph) want.add(p.glyph);
-      if (p.traveler) want.add(p.traveler);
+      if (p.traveler && p.traveler !== "dot") want.add(p.traveler);
       p.events.forEach((e) => { if (e.glyph) want.add(e.glyph); });
     });
     tl.pictograms = {};
