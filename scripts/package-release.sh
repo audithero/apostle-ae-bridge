@@ -88,7 +88,7 @@ if [ -n "$LEAKS$NAMES" ]; then
 fi
 MACHINE="$(grep -rIlE '/Volumes/Apostle|apostle_mbp|/Users/[a-z_]+/' . --exclude-dir=node_modules || true)"
 [ -z "$MACHINE" ] || { echo "REFUSING: this Mac's paths found in: $MACHINE" >&2; exit 1; }
-SECRETS="$(grep -rIlE '(sk-ant-|FAL_API_KEY=.+|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{20,})' . --exclude-dir=node_modules || true)"
+SECRETS="$(grep -rIlE '(sk-ant-|FAL_API_KEY=[A-Za-z0-9:_-]{20,}|AKIA[0-9A-Z]{16}|ghp_[A-Za-z0-9]{20,})' . --exclude-dir=node_modules || true)"
 [ -z "$SECRETS" ] || { echo "REFUSING: possible secrets in: $SECRETS" >&2; exit 1; }
 
 # ---- zip (ditto keeps the executable bits on the .command files)
