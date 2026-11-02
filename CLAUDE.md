@@ -52,6 +52,12 @@ Closed-loop system: Claude Code drives a live After Effects instance on macOS vi
 - Testing trap: `$.evalFile` called from inside a wrapped script (ae-run.sh, bridge-exec `--file`) evaluates into that function's scope, not global. Load at global scope with `app.scheduleTask('$.evalFile(...)', 50, false)`.
 - Distribution: `scripts/package-release.sh` (see the package gates there); installer files in `release/`. The package installs no ScriptUI panel, so no sudo.
 
+## Releases and self-update (v2.20)
+
+- Ship an update: bump `APOSTLE_VERSION` (beta: `2.21.0-beta.1`; stable: no prerelease tag), commit, then `scripts/publish-release.sh beta "notes"` or `... stable "notes"`. It builds the package (all gates), signs the manifest with the ed25519 key in Tim's **Keychain** (service `apostle-ae-bridge-release-signing`; the public half is `apostle-panel/release-key.pub`), uploads to R2 bucket `apostle-ae-bridge-updates` (custom domain `updates.apostle.io`, prefix `ae-bridge/`), verifies what is live, and tags `apostle-v<version>`. Stable also advances beta if beta is behind, and refreshes the first-install link `https://updates.apostle.io/ae-bridge/download/Apostle-AE-Bridge.zip`. Versions are never republished.
+- **Losing the private key strands every install** (they only accept that key). Keep a backup of the Keychain item somewhere safe.
+- Installs check on panel open (every 6h, or CHECK NOW in REVIEW > UPDATES; channel stable/beta in `~/.apostle/update.json`). `scripts/lib/updater.cjs` verifies the signature, product and channel, downloads, checks size + sha256, unpacks, checks the unpacked `release.json`, then runs the **new** release's `scripts/apply-update.sh` (also used by Install.command): app folders replaced exactly (`rsync --checksum --delete`: git-archive mtimes can collide), `brands/` and `briefs/` add-only so user edits survive, `.apostle-runs/` and `.env` untouched, `release.json` written last. A git checkout (`.git` present) never self-updates. CLI: `node scripts/update.cjs [--apply] [--channel beta]`.
+
 ## Apostle CEP panel (v2.7.0, Phase 7)
 
 - `apostle-panel/` is a CEP extension (CSXS 11, AE 24+): Apostle-branded UI with tabs BRIEF (paste → parse → build; script sync with diff + apply), TIMING (per-beat duration overrides + retime), BRAND (typography via the same API as the retired ScriptUI fonts panel), MOTION (ease profile + handheld level), REVIEW (checks, self-render, queue a Claude review job), CLAUDE (one-shot `claude -p` + job list).

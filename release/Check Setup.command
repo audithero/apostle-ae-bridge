@@ -12,7 +12,11 @@ bad()  { printf '  \033[31m✗\033[0m %s\n' "$1"; [ -n "${2:-}" ] && printf '   
 clear
 printf '\n  Apostle AE Bridge: setup check\n\n'
 
-[ -f "$DEST/build/index.js" ] && ok "Installed at $DEST" || bad "Not installed at $DEST" "double-click Install.command"
+if [ -f "$DEST/build/index.js" ]; then
+  ok "Installed at $DEST (version $(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' "$DEST/release.json" 2>/dev/null))"
+else
+  bad "Not installed at $DEST" "double-click Install.command"
+fi
 
 NODE="$(command -v node || true)"
 [ -n "$NODE" ] && ok "Node.js $("$NODE" -v)" || bad "Node.js not found" "install the LTS from https://nodejs.org, then re-run Install.command"
@@ -41,6 +45,15 @@ done
 
 LINK="$HOME/Library/Application Support/Adobe/CEP/extensions/apostle-panel"
 [ -f "$LINK/CSXS/manifest.xml" ] && ok "Apostle panel installed" || bad "Apostle panel missing" "re-run Install.command"
+
+if command -v node >/dev/null && [ -f "$DEST/scripts/update.cjs" ]; then
+  UPD="$(node "$DEST/scripts/update.cjs" 2>&1 | head -1)"
+  case "$UPD" in
+    "Update available"*) printf '  \033[33m!\033[0m %s\n      install it: the UPDATE button in the Apostle panel\n' "$UPD" ;;
+    "Up to date"*) ok "$UPD" ;;
+    *) printf '  \033[33m!\033[0m %s\n' "$UPD" ;;
+  esac
+fi
 
 printf '\n  Live connection to After Effects\n\n'
 if ! pgrep -qf "MacOS/After Effects"; then

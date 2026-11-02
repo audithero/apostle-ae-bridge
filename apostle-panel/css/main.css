@@ -45,6 +45,8 @@ body {
 #bridgeState.ok { color: var(--ok); }
 #bridgeState.busy { color: var(--warn); }
 #bridgeState.err { color: var(--err); }
+button.mast { font-size: 9px; letter-spacing: 0.08em; padding: 2px 6px; margin-top: 3px; border-color: var(--ok); color: var(--ok); }
+button.mast:hover:not(:disabled) { background: var(--ok); color: var(--bg); }
 
 .kitcolors input[type="color"] {
   padding: 0; height: 26px; cursor: pointer;

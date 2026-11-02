@@ -336,6 +336,68 @@ async function bridgeStart() {
   }
 }
 
+// ---------- updates -------------------------------------------------------------
+// Installs from a release zip carry release.json; the panel checks the signed
+// manifest on updates.apostle.io when it opens (at most every 6 hours) and offers
+// a one-click update. A git checkout is a developer install and never updates
+// itself. All logic is scripts/lib/updater.cjs (shared with scripts/update.cjs).
+const upd = { lib: null, latest: null, running: false };
+function updLib() { if (!upd.lib) upd.lib = require(path.join(REPO, "scripts", "lib", "updater.cjs")); return upd.lib; }
+function updSay(msg, cls) { const el = $id("updOut"); if (el) { el.textContent = msg; el.className = "small " + (cls || "dim"); } }
+
+async function updCheck(force) {
+  let u;
+  try { u = updLib(); } catch (e) { updSay("updater missing: " + e.message, "err"); return; }
+  const cur = u.readInstalled(REPO);
+  $id("updChannel").value = u.readSettings().channel;
+  if (u.isDevInstall(REPO)) { updSay("Developer install (git): update with git pull."); return; }
+  if (!force && Date.now() - u.readSettings().lastCheck < 6 * 3600 * 1000 && !upd.latest) {
+    updSay("Version " + (cur ? cur.version : "?") + ". Checked recently.");
+    return;
+  }
+  updSay("Checking for updates…");
+  try {
+    const r = await u.checkForUpdate(REPO);
+    if (r.status === "available") {
+      upd.latest = r.latest;
+      const b = $id("updateBtn");
+      b.textContent = "UPDATE TO " + r.latest.version;
+      b.title = (r.latest.notes || "A new version is ready.") + "\n\nClick to install. Your briefs, brand kits and builds are kept.";
+      b.hidden = false;
+      updSay("Version " + r.current + ". " + r.latest.version + " is ready" + (r.latest.notes ? ": " + r.latest.notes : "."), "ok");
+    } else if (r.status === "current") {
+      $id("updateBtn").hidden = true;
+      updSay("Version " + r.current + " (" + r.channel + "): up to date.");
+    } else {
+      updSay("Can't update this install (" + r.status + "). Reinstall from a release zip.", "warn");
+    }
+  } catch (e) {
+    updSay("Couldn't check for updates: " + e.message, "warn");
+  }
+}
+
+async function updApply() {
+  if (upd.running) return;
+  upd.running = true;
+  const b = $id("updateBtn");
+  b.disabled = true;
+  try {
+    const r = await updLib().updateNow(REPO, { onProgress: (m) => { b.textContent = m.toUpperCase(); status("Update: " + m); } });
+    if (r.status === "updated") {
+      status("Updated to " + r.to + ". Restart Claude (/exit, then claude) to get its new tools. Reloading the panel…", "ok");
+      setTimeout(() => location.reload(), 2500);
+    } else {
+      b.hidden = true;
+      status("Already up to date.");
+    }
+  } catch (e) {
+    status("Update failed: " + e.message + ". Your briefs and brand kits are untouched. If the panel misbehaves, run Install.command from a fresh download.", "err");
+    b.textContent = "RETRY UPDATE";
+    b.disabled = false;
+  }
+  upd.running = false;
+}
+
 // ---------- init -----------------------------------------------------------
 (async function init() {
   if (!NODE_OK) return; // bootstrap already painted the error
@@ -349,6 +411,14 @@ async function bridgeStart() {
     if (!r.ok) status(r.error, "err");
   } catch (e) { $id("libver").textContent = "HOST ERROR"; }
   await bridgeStart(); // serve Claude's bridge before anything slow (fonts, project scan)
+  $id("updateBtn").addEventListener("click", updApply);
+  $id("btnUpdCheck").addEventListener("click", () => updCheck(true));
+  $id("updChannel").addEventListener("change", () => {
+    try { updLib().writeSettings({ channel: $id("updChannel").value }); } catch (e) { updSay(e.message, "err"); return; }
+    $id("updateBtn").hidden = true; upd.latest = null;
+    updCheck(true);
+  });
+  updCheck(false); // not awaited: a slow network must not hold up the panel
   store.cleanup();
   loadKitSelectors();
   await loadFonts(); // before kit load, so the font combos can resolve PS names

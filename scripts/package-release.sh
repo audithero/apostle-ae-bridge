@@ -13,7 +13,9 @@ REPO="$(cd "$(dirname "$0")/.." && pwd)"
 OUT="${1:-$REPO/dist}"
 NAME="Apostle AE Bridge"
 STAGE="$OUT/$NAME"
-VERSION="$(cd "$REPO" && git rev-parse --short HEAD)"
+COMMIT="$(cd "$REPO" && git rev-parse --short HEAD)"
+VERSION="$(tr -d ' \n' < "$REPO/APOSTLE_VERSION")"
+CHANNEL="${RELEASE_CHANNEL:-stable}"
 STAMP="$(date +%Y-%m-%d)"
 
 if [ -n "$(cd "$REPO" && git status --porcelain -- . ':!dist' ':!release')" ]; then
@@ -36,7 +38,7 @@ rm -rf \
   scripts/v1-insert-rba-beat.cjs scripts/apply-super-updates-v2.cjs \
   scripts/add-change-flags.jsx scripts/fix-blank-transits.jsx \
   docs/phase5-8-roadmap.md \
-  apostle-panel/.debug scripts/package-release.sh .release-please-manifest.json release-please-config.json vitest.config.ts eslint.config.js \
+  apostle-panel/.debug scripts/package-release.sh scripts/publish-release.sh APOSTLE_VERSION .release-please-manifest.json release-please-config.json vitest.config.ts eslint.config.js \
   CONTRIBUTING.md CODE_OF_CONDUCT.md badge-ar.svg README.ar.md \
   .githooks .git-blame-ignore-revs .gitattributes .npmignore .prettierignore .prettierrc.json .editorconfig
 
@@ -77,7 +79,10 @@ const p = require("./package.json");
 delete p.scripts.prepare; delete p.scripts.prepack; delete p.devDependencies;
 p.name = "apostle-ae-bridge"; p.description = "Claude Code drives After Effects: MCP server + Apostle panel.";
 require("fs").writeFileSync("package.json", JSON.stringify(p, null, 2) + "\n");'
-printf '%s (%s)\n' "$VERSION" "$STAMP" > VERSION.txt
+# release.json: what the updater and Check Setup read
+node -e 'require("fs").writeFileSync("release.json", JSON.stringify({ product: "apostle-ae-bridge",
+  version: process.argv[1], channel: process.argv[2], commit: process.argv[3], built: process.argv[4] }, null, 2) + "\n")' \
+  "$VERSION" "$CHANNEL" "$COMMIT" "$STAMP"
 
 # ---- leak gate: no client names anywhere (file contents or names)
 LEAKS="$(grep -rIilE 'commbank|\bcba\b|yello([^w]|$)|migrant|beacon ?sans' . --exclude-dir=node_modules || true)"
@@ -94,7 +99,7 @@ SECRETS="$(grep -rIlE '(sk-ant-|FAL_API_KEY=[A-Za-z0-9:_-]{20,}|AKIA[0-9A-Z]{16}
 
 # ---- zip (ditto keeps the executable bits on the .command files)
 cd "$OUT"
-ZIP="$OUT/Apostle-AE-Bridge-$STAMP.zip"
+ZIP="$OUT/Apostle-AE-Bridge-$VERSION.zip"
 rm -f "$ZIP"
 ditto -c -k --keepParent --norsrc "$NAME" "$ZIP"
 echo "packaged $VERSION -> $ZIP ($(du -h "$ZIP" | cut -f1))"

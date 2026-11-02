@@ -13,6 +13,7 @@
     <div id="projName" class="dim" title="Open AE project — the panel follows it automatically"></div>
     <div id="libver" class="dim">connecting&hellip;</div>
     <div id="bridgeState" class="dim" title="Claude Code reaches After Effects through this panel">claude link &hellip;</div>
+    <button id="updateBtn" class="mast" hidden></button>
   </div>
 </header>
 
@@ -194,6 +195,14 @@
     </div>
     <button id="btnClaudeReview" class="primary">FULL CLAUDE REVIEW (JOB)</button>
     <div id="reviewOut" class="out"></div>
+
+    <div class="lbl" style="margin-top:18px">UPDATES</div>
+    <div class="row">
+      <div class="field grow"><label class="lbl">CHANNEL</label>
+        <select id="updChannel"><option value="stable">STABLE</option><option value="beta">BETA (early builds)</option></select></div>
+      <button id="btnUpdCheck">CHECK NOW</button>
+    </div>
+    <div id="updOut" class="small dim"></div>
   </section>
 
   <!-- 07 CLAUDE -->

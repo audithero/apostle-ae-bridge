@@ -86,16 +86,13 @@ done
 
 # ---------------------------------------------------------------- 2. copy
 bold "2. Copying the bridge to $DEST"
-mkdir -p "$DEST"
-if [ "$SRC" != "$DEST" ]; then
-  # no --delete: keep anything the user made in the install folder
-  rsync -a --exclude ".apostle-runs/" --exclude ".env" "$SRC/" "$DEST/" || fail "Could not copy files to $DEST."
-fi
-# files from a downloaded zip are quarantined; After Effects won't load a
-# quarantined panel
-xattr -dr com.apple.quarantine "$DEST" 2>/dev/null || true
-chmod +x "$DEST"/*.command "$DEST"/scripts/*.sh 2>/dev/null || true
-ok "Copied"
+# Same copy rules as the in-panel updater: app files replaced, the user's
+# briefs, brand kits, runs and .env kept. It also clears the download
+# quarantine (After Effects won't load a quarantined panel).
+NEWV="$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' "$SRC/release.json" 2>/dev/null)"
+OLDV="$(sed -n 's/.*"version": *"\([^"]*\)".*/\1/p' "$DEST/release.json" 2>/dev/null)"
+/bin/bash "$SRC/scripts/apply-update.sh" "$SRC" "$DEST" >/dev/null || fail "Could not copy files to $DEST."
+if [ -n "$OLDV" ] && [ "$OLDV" != "$NEWV" ]; then ok "Updated $OLDV -> $NEWV"; else ok "Copied version ${NEWV:-?}"; fi
 
 SMOKE="$("$NODE" -e '
 const { spawn } = require("child_process");

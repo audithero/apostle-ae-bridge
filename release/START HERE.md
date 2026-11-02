@@ -101,7 +101,13 @@ Double-click **Check Setup.command** in `~/Applications/Apostle AE Bridge` (with
 
 ## Updating
 
-Unzip the new version and double-click its Install.command. Your briefs, brand kits and builds in the install folder are kept.
+The Apostle panel checks for updates when it opens. When one is ready, a green **UPDATE TO …** button appears at the top right of the panel: hover it for what's new, click it to install. The panel reloads itself; then restart Claude (`/exit`, then `claude`) so it picks up any new tools.
+
+- Updates are signed. The panel won't install anything that isn't a genuine release.
+- Your briefs, brand kits (including edits to the demo kit), builds and `.env` are kept.
+- Want early builds? In the panel's **REVIEW** tab, under **UPDATES**, switch the channel to **BETA**. Switch back to **STABLE** any time; you move to the next stable release when it's newer than your beta.
+- From Terminal instead: `cd ~/Applications/Apostle\ AE\ Bridge && node scripts/update.cjs --apply`.
+- If an update ever goes wrong, download the latest version from https://updates.apostle.io/ae-bridge/download/Apostle-AE-Bridge.zip and run its Install.command. Your work is kept.
 
 ## Uninstalling
 
