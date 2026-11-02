@@ -13,7 +13,7 @@
  * becomes a section-title beat. Pairing: a VO binds to the immediately
  * preceding unconsumed SUPER if one exists, else to the immediately
  * following SUPER; leftover SUPERs become standalone card beats. (Rule
- * verified against the full CommBank Yello corpus.)
+ * verified against a full client corpus of scripts.)
  *
  * CLI: node scripts/parse-brief.cjs <script.md> [--brand kit.json]
  *   [--brief-id id] [--master-name NAME] [--title T] [--script-version N]

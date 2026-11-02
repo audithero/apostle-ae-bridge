@@ -54,7 +54,7 @@ Pre-agreed threshold: if the HandyCam path needs more than one human touch per c
 
 **Decision: expression rig is the default. HandyCam is explicit opt-in for static-position shake/polish only; `meta.rig = "auto"` resolves to expression.**
 
-A/B protocol: identical sample-beats (7-beat CommBank corridor) through both rigs. Expression arm = APOSTLE_P1/P2 builds — all checks green, frames verified, zero manual steps. HandyCam arm = APOSTLE_HC build — Setup click done, effect keyframes laid correctly (13 keys on Position Offset, zero transform keys on the null), expressions clean, margins green. Results that decided it:
+A/B protocol: identical sample-beats (a 7-beat client corridor) through both rigs. Expression arm = APOSTLE_P1/P2 builds — all checks green, frames verified, zero manual steps. HandyCam arm = APOSTLE_HC build — Setup click done, effect keyframes laid correctly (13 keys on Position Offset, zero transform keys on the null), expressions clean, margins green. Results that decided it:
 
 1. **HandyCam cannot do station transport.** `checkCameraDistance` reported zGap = 0 at stations 2–7 (camera exactly ON each scene plane); rendered frames corroborated: blank at the station-2 dwell, off-by-one scene at every later station. Sampling the Setup-generated (obfuscated) camera expressions showed why: camera position tracks Position Offset, but the look-at target is baked at Setup as controller + [0, 0, 2666.7] and stays pinned near the rig home — so a corridor-scale offset translates the camera onto the target plane facing backward. Position Offset is shake-scale by design. Small offsets (station 1, ≤ tens of px) frame correctly.
 2. The only HandyCam-native big-move path is keyframing the controller's transform — exactly the double-transform bug that broke the old panel. The expression chain is obfuscated compiled-plugin output; not scriptably fixable with confidence.
@@ -92,7 +92,7 @@ User feedback after reviewing the Phase 1–4 builds in motion: animations had v
 
 **Master font control**: two guide text layers on the master comp — `FONT Heading` and `FONT Body` (guide, video off) — hold PostScript font names as their text. Every linked text layer's style expression reads its font from the matching guide layer (and size/color from the CONTROL sliders as before). Changing every font in a build = retyping one layer. Verified live: heading swapped to AvenirNext-Bold via one text edit, rendered, reverted. The old 3-item font dropdown is gone (dropdowns can't hold arbitrary PS names); the safe-margin check skips guide/disabled layers.
 
-Verified on `YELLO_REDEEM_v001` (demo-beats-redeem, gallery, rig auto→expression): checks green (8 text layers, 7 stations), 8-frame strip confirms the streak is gone, arrivals land crisp, and each transit flavor reads distinctly.
+Verified on a 6-beat client build ( gallery, rig auto→expression): checks green (8 text layers, 7 stations), 8-frame strip confirms the streak is gone, arrivals land crisp, and each transit flavor reads distinctly.
 
 ## Phase 0 gate results (2026-07-27, AE 26.2.1, bridge v1.10.0)
 

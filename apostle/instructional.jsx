@@ -25,7 +25,7 @@
   // the logo: one layer over everything, every card included, its bottom
   // right corner on the margins (CBA, 2026-10-14: twice the old 88px)
   var LOGO = { h: 170, right: W - LX, bottom: H - 56 };
-  var HEAD_TRACK = -20; // headings: CBA Beacon Sans Black, tracked -20 (CBA, 2026-10-14)
+  var HEAD_TRACK = -20; // headings: the kit's Black weight, tracked -20 (2026-10-14)
   var SLOT = { top: 540, h: 92, step: 108, wList: 600, wGrid: 404, gapGrid: 20 };
 
   // ---------------------------------------------------------------- utils

@@ -50,7 +50,7 @@ function captionChunks(vo, maxWords) {
 function compileInstructional(plan, opts) {
   opts = opts || {};
   const repo = opts.repo || path.resolve(__dirname, "..", "..");
-  // no kit (a brief without a brand yet): neutral defaults, CommBank-free
+  // no kit (a brief without a brand yet): neutral, client-free defaults
   const kit = opts.kit || (plan.kit ? JSON.parse(fs.readFileSync(path.isAbsolute(plan.kit) ? plan.kit : path.join(repo, plan.kit), "utf8")) : { colors: {} });
   const warnings = [];
   const timing = plan.timing || { mode: "wpm" };
@@ -107,10 +107,11 @@ function compileInstructional(plan, opts) {
       navy: plan.colors && plan.colors.navy || "#1D2B4F", gold: plan.colors && plan.colors.gold || "#D9B45B"
     },
     fonts: {
-      black: plan.fonts && plan.fonts.black || "CBABeaconSans-Black",
-      xbold: plan.fonts && plan.fonts.xbold || "CBABeaconSans-ExtraBold",
-      bold: kit.fontHeadingPS || "CBABeaconSans-Bold",
-      regular: kit.fontBodyPS || "CBABeaconSans-Regular"
+      // plan, then kit, then the kit's heading face, then fonts every Mac has
+      black: plan.fonts && plan.fonts.black || kit.fontBlackPS || kit.fontHeadingPS || "HelveticaNeue-Bold",
+      xbold: plan.fonts && plan.fonts.xbold || kit.fontXBoldPS || kit.fontHeadingPS || "HelveticaNeue-Bold",
+      bold: kit.fontHeadingPS || "HelveticaNeue-Bold",
+      regular: kit.fontBodyPS || "HelveticaNeue"
     },
     screens: [],
     cards: [], pages: [], items: [], phone: [], shots: [], rings: [], badges: [], props: [], captions: [], fx: []

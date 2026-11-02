@@ -4,6 +4,8 @@
  "note": "Built 2026-10-12 for the CBA Migrant onboarding video. Yellow is the classic CommBank gold #FFCC00 (Tim, 2026-10-12, CBA Migrant). The October 2026 app screens use a brighter #FAEC20; the film deliberately does not match it. The stage is white like the app, with black CBA Beacon Sans type and yellow accents. Icons are the client's own pictograms ONLY (pictogramSet): CBA does not allow home-made icons in animation (Tim, 2026-10-13). The client may not show the iPhone Dynamic Island: phones read as Android (phone.device). Logo: 00.ADMIN/02.Client Assets/CAN & Beacon/CBA_CAN_PRM_BCN_STK_WM_BLACK_SRGB_300425.ai.",
  "fontHeadingPS": "CBABeaconSans-Bold",
  "fontBodyPS": "CBABeaconSans-Regular",
+ "fontBlackPS": "CBABeaconSans-Black",
+ "fontXBoldPS": "CBABeaconSans-ExtraBold",
  "headingSize": 84,
  "bodySize": 42,
  "headingTracking": 0,

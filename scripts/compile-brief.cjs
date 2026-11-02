@@ -121,7 +121,7 @@ const TEXT_EXT = [".md", ".txt", ".csv", ".json", ".srt", ".rtf"];
 // macOS textutil. Everything else (PDF, images, decks exported to PDF) is
 // listed for the model to Read itself.
 // Images embedded in a Word brief, in document order, each named after the
-// script text just before it. textutil keeps only the text, and the CBA Migrant
+// script text just before it. textutil keeps only the text, and one client
 // script carried 21 images that way: the ePassport symbol reference, a photo of
 // the chip scan, and the client's chosen screen for every step. Missing them
 // made the treatment ask for an image the brief already contained.

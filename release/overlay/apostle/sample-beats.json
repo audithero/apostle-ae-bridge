@@ -1,0 +1,95 @@
+{
+  "meta": {
+    "title": "Northwind Transit: one card, every ride (demo)",
+    "masterName": "NORTHWIND_DEMO",
+    "fps": 25,
+    "resolution": [
+      1920,
+      1080
+    ],
+    "wpm": 150,
+    "layout": "corridor"
+  },
+  "brand": {
+    "fontHeadingPS": "AvenirNext-Bold",
+    "fontBodyPS": "AvenirNext-Regular",
+    "headingSize": 84,
+    "bodySize": 42,
+    "safeMarginPct": 10,
+    "colors": {
+      "primary": "#34D399",
+      "secondary": "#0F172A",
+      "background": "#FFFFFF",
+      "text": "#0F172A"
+    },
+    "logo": null
+  },
+  "beats": [
+    {
+      "id": 1,
+      "vo": "Northwind gets you around the city by bus, tram and ferry, all on one travel card.",
+      "voSpokenWords": 16,
+      "superText": "One card, every ride",
+      "visual": "Title card",
+      "stylePreset": "titleCard",
+      "durationSec": null,
+      "transitIn": "dollyPush"
+    },
+    {
+      "id": 2,
+      "vo": "Pick up a card at any station, order one online, or add a digital card to your phone.",
+      "voSpokenWords": 18,
+      "superText": "Three ways to get a card",
+      "visual": "Icons: station, online, phone",
+      "stylePreset": "listBuild",
+      "durationSec": null,
+      "transitIn": "dollyPush"
+    },
+    {
+      "id": 3,
+      "vo": "Top up in the Northwind app and switch on auto top-up so you never run low.",
+      "voSpokenWords": 17,
+      "superText": "Top up in the app",
+      "visual": "App top-up screen",
+      "stylePreset": "uiWalkthrough",
+      "uiStates": 2,
+      "durationSec": null,
+      "transitIn": "whipOrbit"
+    },
+    {
+      "id": 4,
+      "vo": "Tap on when you board and tap off when you get off. We work out the lowest fare.",
+      "voSpokenWords": 18,
+      "superText": "Tap on, tap off",
+      "visual": "Card tap moment",
+      "stylePreset": "titleCard",
+      "durationSec": null,
+      "transitIn": "dollyPush"
+    },
+    {
+      "id": 5,
+      "vo": "Travel outside the morning and evening rush and save thirty percent on every trip.",
+      "voSpokenWords": 14,
+      "superText": "Save 30% off-peak",
+      "visual": "Clock and percentage",
+      "stylePreset": "titleCard",
+      "durationSec": null,
+      "transitIn": "dollyPush"
+    },
+    {
+      "id": 6,
+      "vo": "Register your card online, so a lost card never means lost money.",
+      "voSpokenWords": 12,
+      "superText": "Register your card",
+      "visual": "Shield icon",
+      "stylePreset": "titleCard",
+      "durationSec": null,
+      "transitIn": "lateralTruck"
+    }
+  ],
+  "endcard": {
+    "superText": "Get your Northwind card today",
+    "url": "northwind.example/card",
+    "holdSec": 3
+  }
+}

@@ -1,0 +1,297 @@
+{
+ "name": "NORTHWIND_APP_SETUP",
+ "version": "v001",
+ "totalSteps": 6,
+ "open": {
+  "heading": [
+   "Set up the",
+   "Northwind app"
+  ],
+  "sub": "A step-by-step guide for new riders",
+  "dur": 3.4
+ },
+ "outro": {
+  "heading": [
+   "You're ready to ride.",
+   "See you on board."
+  ],
+  "hold": 4.0
+ },
+ "beats": [
+  {
+   "vo": "In this video we will show you how to set up the Northwind app and add your travel card.",
+   "page": {
+    "eyebrow": "GETTING STARTED",
+    "heading": [
+     "Set up the app.",
+     "Add your card."
+    ],
+    "highlight": "card.",
+    "items": "list"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "01. Welcome",
+     "delay": 0.2
+    },
+    {
+     "cue": "how to set up the Northwind app",
+     "do": "item",
+     "glyph": "phone",
+     "title": "All in the Northwind app",
+     "sub": "6 steps. Have your card handy."
+    }
+   ]
+  },
+  {
+   "vo": "Before you begin make sure you have: your travel card, an email address, and a mobile number.",
+   "chapter": {
+    "step": 1,
+    "title": "Before you begin"
+   },
+   "page": {
+    "heading": [
+     "Have these",
+     "ready"
+    ],
+    "highlight": "ready",
+    "items": "grid"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "02. Before you begin"
+    },
+    {
+     "cue": "your travel card",
+     "do": "item",
+     "glyph": "card",
+     "title": "Your travel card",
+     "sub": "The number is on the back"
+    },
+    {
+     "cue": "your travel card",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       3
+      ]
+     }
+    },
+    {
+     "cue": "an email address",
+     "do": "item",
+     "glyph": "mail",
+     "title": "An email address"
+    },
+    {
+     "cue": "an email address",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       4
+      ]
+     }
+    },
+    {
+     "cue": "a mobile number",
+     "do": "item",
+     "glyph": "phone",
+     "title": "A mobile number"
+    },
+    {
+     "cue": "a mobile number",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       5
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "vo": "Your card number is the sixteen digits printed under the barcode on the back of the card.",
+   "events": [
+    {
+     "cue": "Your card number is",
+     "do": "prop",
+     "prop": "hero",
+     "glyph": "card",
+     "label": "Back of your card"
+    },
+    {
+     "cue": "the sixteen digits printed",
+     "do": "label",
+     "text": "16-digit card number"
+    },
+    {
+     "cue": "under the barcode",
+     "do": "label",
+     "text": "Under the barcode"
+    }
+   ]
+  },
+  {
+   "vo": "No card yet? You can still create an account now, order a card in the app, and link it when it arrives.",
+   "events": [
+    {
+     "cue": "No card yet",
+     "do": "page",
+     "eyebrow": "NO CARD YET?",
+     "heading": [
+      "No card yet?",
+      "Start now."
+     ],
+     "highlight": "now.",
+     "items": "list",
+     "lead": 0.3
+    },
+    {
+     "cue": "No card yet",
+     "do": "prop",
+     "prop": "path",
+     "nodes": [],
+     "traveler": "dot"
+    },
+    {
+     "cue": "create an account now",
+     "do": "node",
+     "glyph": "lock",
+     "label": "Create an account"
+    },
+    {
+     "cue": "order a card in the app",
+     "do": "node",
+     "glyph": "mail",
+     "label": "Order a card"
+    },
+    {
+     "cue": "link it when it arrives",
+     "do": "node",
+     "glyph": "card",
+     "label": "Link it on arrival"
+    }
+   ]
+  },
+  {
+   "vo": "Choose how you travel most: Mostly buses and trams. Mostly ferries. A bit of everything.",
+   "chapter": {
+    "step": 2,
+    "title": "How you travel"
+   },
+   "page": {
+    "heading": [
+     "Choose how",
+     "you travel"
+    ],
+    "highlight": "travel",
+    "items": "numbered"
+   },
+   "events": [
+    {
+     "do": "screen",
+     "shot": "05. Travel preferences"
+    },
+    {
+     "cue": "Mostly buses and trams",
+     "do": "item",
+     "title": "Mostly buses and trams"
+    },
+    {
+     "cue": "Mostly buses and trams",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       3
+      ]
+     }
+    },
+    {
+     "cue": "Mostly ferries",
+     "do": "item",
+     "title": "Mostly ferries"
+    },
+    {
+     "cue": "Mostly ferries",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       4
+      ]
+     }
+    },
+    {
+     "cue": "A bit of everything",
+     "do": "item",
+     "title": "A bit of everything"
+    },
+    {
+     "cue": "A bit of everything",
+     "do": "ring",
+     "ring": {
+      "bands": [
+       5
+      ]
+     }
+    }
+   ]
+  },
+  {
+   "vo": "Next, add value. Top up from ten dollars, and riders who switch on auto top-up save five percent on every top-up. Don't pay at the gate: tap and go is cheaper.",
+   "chapter": {
+    "step": 3,
+    "title": "Add value"
+   },
+   "page": {
+    "heading": [
+     "Top up",
+     "your card"
+    ],
+    "highlight": "Top up",
+    "items": "list"
+   },
+   "events": [
+    {
+     "cue": "Top up from ten dollars",
+     "do": "prop",
+     "prop": "stat",
+     "value": "$10",
+     "unit": "minimum top-up"
+    },
+    {
+     "cue": "Top up from ten dollars",
+     "do": "item",
+     "glyph": "coin",
+     "title": "Top up from $10"
+    },
+    {
+     "cue": "switch on auto top-up",
+     "do": "item",
+     "glyph": "renew",
+     "title": "Switch on auto top-up"
+    },
+    {
+     "cue": "save five percent",
+     "do": "value",
+     "value": "5%",
+     "unit": "off every auto top-up"
+    },
+    {
+     "cue": "Don't pay at the gate",
+     "do": "screen",
+     "shot": "09. Pay at gate",
+     "badge": "cross"
+    },
+    {
+     "cue": "tap and go is cheaper",
+     "do": "screen",
+     "shot": "10. Tap and go",
+     "badge": "tick"
+    }
+   ]
+  }
+ ],
+ "_note": "EXCERPT: 6 of the beats of a worked example plan (a fictional transit app). A real plan covers every beat of the VO. Screen names, band numbers and figures here are illustrative; use only the screens, bands and facts of your own brief."
+}

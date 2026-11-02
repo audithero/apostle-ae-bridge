@@ -1,0 +1,46 @@
+{
+ "kitId": "demo",
+ "client": "Northwind Transit (fictional demo brand)",
+ "note": "A made-up brand for trying the system out. Fonts are Avenir Next, which ships with every Mac, so nothing needs installing. Copy this file to brands/<your-brand>.json and change the fonts (PostScript names, as listed in Font Book > Info) and colours. No pictogramSet: icons are the built-in drawn glyphs. No logo: the stage draws a LOGO placeholder box; set \"logo\" to an absolute path to a PNG to use a real one. For instructional films also set plan.fonts.black / plan.fonts.xbold in the plan (see briefs/demo/instructional/demo.plan.json).",
+ "fontHeadingPS": "AvenirNext-DemiBold",
+ "fontBodyPS": "AvenirNext-Regular",
+ "fontBlackPS": "AvenirNext-Heavy",
+ "fontXBoldPS": "AvenirNext-Bold",
+ "headingSize": 84,
+ "bodySize": 42,
+ "headingTracking": 0,
+ "bodyTracking": 0,
+ "safeMarginPct": 10,
+ "colors": {
+  "primary": "#34D399",
+  "secondary": "#0F172A",
+  "background": "#FFFFFF",
+  "text": "#0F172A",
+  "surface": "#F1F5F9"
+ },
+ "moments": {
+  "tileShape": "circle",
+  "tileFill": "brand",
+  "palette": {
+   "ink": "#0F172A",
+   "brand": "#34D399",
+   "paper": "#FFFFFF",
+   "hole": "#FFFFFF",
+   "muted": "#CBD5E1"
+  },
+  "plateFill": "paper",
+  "plateStroke": "ink"
+ },
+ "logo": null,
+ "defaults": {
+  "wpm": 150,
+  "fps": 25,
+  "resolution": [1920, 1080],
+  "layout": "gallery",
+  "easeProfile": "curvaceous",
+  "handycam": "subtle"
+ },
+ "phone": {
+  "device": "iphone"
+ }
+}

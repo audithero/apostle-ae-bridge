@@ -6,8 +6,8 @@
  * (rows of ink separated by white space; lines closer than a gap merge into
  * one block), draw them numbered on a contact sheet the model can Read, and
  * let it say { "bands": [4] }. compile-instructional resolves that to an
- * exact rect. Measured on the CBA screens: the three status options of
- * "6. ZPO - Migrant redirect" come out as three blocks.
+ * exact rect. Measured on real app screens: the three status options of
+ * a visa-status screen come out as three blocks.
  *
  * Needs python3 + Pillow; returns {} (and the plan must use rect) without.
  */

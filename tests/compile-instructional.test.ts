@@ -181,3 +181,29 @@ describe("brand assets (CBA, 2026-10-13)", () => {
     expect(androidScreens([{ name: "s", file: src }], path.join(dir, "out")).s.file).toBe(r.s.file);
   });
 });
+
+describe("instructional fonts", () => {
+  const bare = { ...kit, pictogramSet: undefined, logo: null };
+  const fontsFor = (k: Record<string, unknown>, p: Record<string, unknown> = plan) =>
+    compileInstructional(p, { repo: REPO, kit: k }).timeline.fonts;
+
+  it("takes Black and ExtraBold from the kit", () => {
+    const f = fontsFor({ ...bare, fontBlackPS: "X-Black", fontXBoldPS: "X-XBold" });
+    expect(f.black).toBe("X-Black");
+    expect(f.xbold).toBe("X-XBold");
+  });
+
+  it("falls back to the kit's heading font, never a client font", () => {
+    const k = { ...bare, fontHeadingPS: "AvenirNext-DemiBold", fontBodyPS: "AvenirNext-Regular" };
+    delete (k as Record<string, unknown>).fontBlackPS;
+    delete (k as Record<string, unknown>).fontXBoldPS;
+    const f = fontsFor(k);
+    expect(f).toMatchObject({ black: "AvenirNext-DemiBold", xbold: "AvenirNext-DemiBold", bold: "AvenirNext-DemiBold", regular: "AvenirNext-Regular" });
+  });
+
+  it("plan fonts still win", () => {
+    const f = fontsFor(bare, { ...plan, fonts: { black: "P-Black", xbold: "P-XBold" } });
+    expect(f.black).toBe("P-Black");
+    expect(f.xbold).toBe("P-XBold");
+  });
+});

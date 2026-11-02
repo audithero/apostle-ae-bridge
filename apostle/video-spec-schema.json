@@ -2,7 +2,7 @@
   "$schema": "http://json-schema.org/draft-07/schema#",
   "$id": "apostle-video-spec-schema",
   "title": "Apostle video spec",
-  "description": "What the model writes in the compile pipeline (scripts/compile-brief.cjs, prompts/compile/spec.v1.md) and what a human edits by hand. scripts/lib/compile-spec.cjs turns it into a beats doc (beats-schema.json) and a moments doc (applyMoments). Structural checks live here; the semantic ones (cues found in the VO, glyph names, VO verbatim, per-layout payloads) are in scripts/lib/validate-spec.cjs. The CommBank specs in briefs/commbank-yello/specs/ are the measured-timing form of the same format.",
+  "description": "What the model writes in the compile pipeline (scripts/compile-brief.cjs, prompts/compile/spec.v1.md) and what a human edits by hand. scripts/lib/compile-spec.cjs turns it into a beats doc (beats-schema.json) and a moments doc (applyMoments). Structural checks live here; the semantic ones (cues found in the VO, glyph names, VO verbatim, per-layout payloads) are in scripts/lib/validate-spec.cjs. Hand-timed client specs are the measured-timing form of the same format.",
   "type": "object",
   "required": ["name", "slug", "briefId", "beats"],
   "properties": {
@@ -26,7 +26,7 @@
     "timing": {
       "type": "object",
       "properties": {
-        "mode": { "type": "string", "enum": ["wpm", "words", "measured"], "description": "wpm: estimate from word counts (no VO yet). words: align to a vo-align.py words.json. measured: beats[].start and spec.end in seconds (the CommBank form). Default: measured when spec.end is set, else wpm." },
+        "mode": { "type": "string", "enum": ["wpm", "words", "measured"], "description": "wpm: estimate from word counts (no VO yet). words: align to a vo-align.py words.json. measured: beats[].start and spec.end in seconds (the hand-timed form). Default: measured when spec.end is set, else wpm." },
         "wpm": { "type": "number", "default": 150 },
         "words": { "type": "string", "description": "words mode: repo-relative path to words.json" }
       }

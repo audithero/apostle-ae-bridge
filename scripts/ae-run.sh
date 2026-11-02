@@ -9,10 +9,18 @@ set -euo pipefail
 
 TARGET="$1"
 TIMEOUT="${2:-60}"
-AE_APP="${3:-Adobe After Effects 2026}"
+# AE app name: argument, else the running After Effects, else the newest installed
+detect_ae() {
+  local exe
+  exe="$(ps -Ao comm= 2>/dev/null | grep -m1 '/MacOS/After Effects$' || true)"
+  if [ -n "$exe" ]; then basename "${exe%%.app/*}"; return; fi
+  ls -d /Applications/Adobe\ After\ Effects\ 20*/Adobe\ After\ Effects\ 20*.app 2>/dev/null | sort | tail -1 | xargs -I{} basename {} .app
+}
+AE_APP="${3:-$(detect_ae)}"
+[ -n "$AE_APP" ] || { echo '{"status":"error","error":"After Effects not found"}'; exit 1; }
 RUNDIR="${AE_RUN_DIR:-${TMPDIR:-/tmp}/ae-run}"
 # Repo root, handed to scripts as $.global.APOSTLE_REPO so nothing hardcodes
-# the volume path (it has changed under us before: "Apostle_8TB 1" -> "Apostle_8TB-1").
+# the repo path (external volumes get renamed when remounted).
 REPO="$(cd "$(dirname "$0")/.." && pwd)"
 mkdir -p "$RUNDIR"
 

@@ -16,7 +16,7 @@
  *   --dry     validate + print the resolved plan, touch nothing in AE
  *
  * Example:
- *   node scripts/apply-moments.cjs briefs/commbank-yello/moments/video1.json
+ *   node scripts/apply-moments.cjs briefs/<client>/moments/video1.json
  *
  * The interpreter is APOSTLE.applyMoments in apostle/apostle.jsx — this
  * is only the CLI face of it, so the panel and the CLI share one code

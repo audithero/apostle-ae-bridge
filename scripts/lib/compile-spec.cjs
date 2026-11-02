@@ -103,7 +103,7 @@ function makeAligner(words) {
     return (at === -1 || at - cursor > window) ? -1 : at;
   };
   // Time at which `text` starts, searching forward from the last match.
-  // Whisper spells some words its own way ("Com Bank" for "CommBank",
+  // Whisper spells some words its own way (splitting brand names into two words,
   // digits for numbers), so if the opening words miss, probe from a few
   // words in and step back that many recognised words. `expectedFrac`
   // (0..1 through the whole script) is the last resort. `maxAhead` caps how

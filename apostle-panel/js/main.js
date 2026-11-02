@@ -222,10 +222,10 @@ function rdReset() {
   store.cleanup();
   loadKitSelectors();
   await loadFonts(); // before kit load, so the font combos can resolve PS names
-  const dflt = path.join(REPO, "brands", DEFAULT_KIT);
+  const dflt = defaultKitPath();
   // arm SAVE with the house default, but leave the fields alone — checkProject
   // fills them from the target comp, which is what SYNC will overwrite
-  if (fs.existsSync(dflt)) selectKitSilently(dflt);
+  if (dflt) selectKitSilently(dflt);
   rdProviderNote();
   await checkProject(); // scopes memory + fills comp lists for the open project
   setInterval(checkProject, 5000); // follow project switches automatically
@@ -250,10 +250,19 @@ function loadBrandKits() {
   sel.add(new Option("— NONE —", ""));
 }
 
-// Kits are deliberately global (repo brands/, not per-project) so CommBank
-// Yello etc. are one click away in any project. Both dropdowns — the BRIEF
+// Kits are deliberately global (repo brands/, not per-project) so each
+// client's kit is one click away in any project. Both dropdowns — the BRIEF
 // parse kit and the BRAND editor kit — read the same folder.
-const DEFAULT_KIT = "commbank-yello.json";
+const DEFAULT_KIT = "demo.json";
+// the default kit if present, else the first kit in brands/ (null when none)
+function defaultKitPath() {
+  const want = path.join(REPO, "brands", DEFAULT_KIT);
+  if (fs.existsSync(want)) return want;
+  try {
+    const f = fs.readdirSync(path.join(REPO, "brands")).filter((n) => n.endsWith(".json")).sort()[0];
+    return f ? path.join(REPO, "brands", f) : null;
+  } catch (e) { return null; }
+}
 function loadKitSelectors(selectPath) {
   loadBrandKits();
   const sel = $id("kitSel");
@@ -264,9 +273,9 @@ function loadKitSelectors(selectPath) {
       if (f.endsWith(".json")) sel.add(new Option(f.replace(".json", "").toUpperCase(), path.join(REPO, "brands", f)));
     }
   } catch (e) {}
-  const dflt = path.join(REPO, "brands", DEFAULT_KIT);
+  const dflt = defaultKitPath();
   if (keep) sel.value = keep;
-  else if (fs.existsSync(dflt)) { sel.value = dflt; $id("brandKit").value = dflt; }
+  else if (dflt) { sel.value = dflt; $id("brandKit").value = dflt; }
 }
 
 let MASTERS = [];
@@ -336,7 +345,7 @@ async function loadFonts() {
   const r = await host("listFonts", []);
   state.fonts = r.ok && Array.isArray(r.result) ? r.result : [];
   // AE splits some families across several entries under the SAME family name
-  // (CBA Beacon Sans arrives twice: Regular..ExtraBold, then Black). Two
+  // (a family can arrive twice: Regular..ExtraBold, then Black). Two
   // identical rows in the picker are a coin flip, so label the duplicates with
   // the styles they actually carry.
   const seen = {};

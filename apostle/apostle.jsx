@@ -167,7 +167,7 @@ var APOSTLE = (function () {
     "corporate-smooth": { transitIn: 92, transitOut: 78, reveal: "outQuint", revealDur: 0.7, stagger: 0.14 },
     "snappy":           { transitIn: 96, transitOut: 55, reveal: "outExpo",  revealDur: 0.45, stagger: 0.10 },
     "playful":          { transitIn: 88, transitOut: 82, reveal: "outBack",  revealDur: 0.75, stagger: 0.18 },
-    // The CommBank Yello house style from 2026-08-02: expo in/out on every
+    // The house style of a client series from 2026-08-02: expo in/out on every
     // moment Position and Scale, plus the word-by-word text reveal.
     "curvaceous":       { transitIn: 92, transitOut: 78, reveal: "inOutExpo", revealDur: 0.7, stagger: 0.14 }
   };
@@ -2842,7 +2842,7 @@ var APOSTLE = (function () {
     ],
     // ICAO ePassport chip mark, as printed on the cover: a rectangle, a
     // circle at its centre, and a mid-height line broken by the circle.
-    // Added 2026-10-12 for the CBA Migrant video, where recognising this
+    // Added 2026-10-12 for an onboarding video, where recognising this
     // symbol decides the viewer's path.
     epassport: [
       { t: "rect", x: 8, y: 26, w: 84, h: 48, r: 6, s: "ink", sw: 6 },
@@ -3229,7 +3229,7 @@ var APOSTLE = (function () {
   // own layer (opacity does not inherit through parenting, so it cannot be a
   // child; it gets its own animation at an identical delay instead).
   function momTile(comp, name, glyph, cx, cy, size, pal, masterName) {
-    // Tile geometry is skin-controlled. The CommBank Yello 3.0 reference puts
+    // Tile geometry is skin-controlled. A client reference puts
     // black line art in WHITE CIRCLES on a yellow backdrop; the original kit
     // put black glyphs on YELLOW ROUNDED SQUARES on white. Same glyph
     // vocabulary either way — only the plate under it changes.
@@ -4123,7 +4123,7 @@ var APOSTLE = (function () {
   //
   // Art is drawn natively, not imported, so it stays CONTROL-linked and
   // resolution-free. Proportions are measured off the supplied toolkit SVG
-  // (Yello_CurrencyIcon Light_sRGB.svg, 1080 box): ring centreline diameter
+  // (a client currency icon SVG, 1080 box): ring centreline diameter
   // 0.600 of the box, stroke 0.0148; diamond side 0.200 rotated 45 degrees
   // with the same 0.0148 stroke.
   // ---------------------------------------------------------------
@@ -4360,7 +4360,7 @@ var APOSTLE = (function () {
   // The build already links every BG solid and moment fill to CONTROL, and
   // reads fonts off the FONT guide layers, so colour/type re-skinning is just
   // setting those. What CONTROL cannot express is a *textured* backdrop: the
-  // Yello 3.0 reference is a yellow gradient with a diagonal white beacon
+  // client reference was a yellow gradient with a diagonal white beacon
   // sweep and scattered confetti. That gets built once as a shared comp and
   // dropped in behind every BG, so one edit repaints the whole video.
   // ---------------------------------------------------------------

@@ -1,0 +1,136 @@
+{
+ "name": "NORTHWIND_TRAVEL_CARD",
+ "version": "v001",
+ "totalSteps": 5,
+ "kit": "brands/demo.json",
+ "screens": [],
+ "label": "",
+ "fonts": {
+  "black": "AvenirNext-Heavy",
+  "xbold": "AvenirNext-Bold"
+ },
+ "colors": {
+  "bg": "#F1F5F9",
+  "tint": "#D1FAE5",
+  "navy": "#0F172A",
+  "gold": "#34D399"
+ },
+ "timing": {
+  "mode": "wpm",
+  "wpm": 150,
+  "gap": 0.45
+ },
+ "captions": {
+  "maxWords": 4
+ },
+ "open": {
+  "heading": ["Start riding", "with Northwind"],
+  "sub": "Getting started with your travel card",
+  "dur": 3.4
+ },
+ "outro": {
+  "heading": ["You're all set.", "See you on board."],
+  "hold": 4.0
+ },
+ "beats": [
+  {
+   "vo": "Getting around with Northwind is easy. Here's how to start riding with a travel card.",
+   "page": {
+    "heading": ["Start riding", "with Northwind"],
+    "highlight": "Northwind",
+    "items": "list"
+   },
+   "events": [
+    { "cue": "Getting around with Northwind", "do": "prop", "prop": "hero", "glyph": "ticket", "label": "Your travel card" },
+    { "cue": "start riding with", "do": "item", "glyph": "card", "title": "One card for every ride", "sub": "Buses, trams and ferries" }
+   ]
+  },
+  {
+   "vo": "Step one: get your card. Pick up a card at any station, order one online, or add a digital card to your phone.",
+   "chapter": { "step": 1, "title": "Get your card" },
+   "page": {
+    "heading": ["Get your", "card"],
+    "highlight": "card",
+    "items": "grid"
+   },
+   "events": [
+    { "cue": "Pick up a card", "do": "item", "glyph": "ticket", "title": "At any station" },
+    { "cue": "Pick up a card", "do": "prop", "prop": "path", "nodes": [], "traveler": "dot" },
+    { "cue": "Pick up a card", "do": "node", "glyph": "ticket", "label": "Station" },
+    { "cue": "order one online", "do": "item", "glyph": "mail", "title": "Order online" },
+    { "cue": "order one online", "do": "node", "glyph": "mail", "label": "Online" },
+    { "cue": "add a digital card", "do": "item", "glyph": "phone", "title": "A digital card on your phone" },
+    { "cue": "add a digital card", "do": "node", "glyph": "phone", "label": "Your phone" }
+   ]
+  },
+  {
+   "vo": "Step two: add value. Top up from as little as ten dollars. Turn on auto top-up and your card refills itself when it runs low.",
+   "chapter": { "step": 2, "title": "Add value" },
+   "page": {
+    "heading": ["Add", "value"],
+    "highlight": "value",
+    "items": "list"
+   },
+   "events": [
+    { "cue": "Top up from", "do": "prop", "prop": "stat", "value": "$10", "unit": "minimum top-up" },
+    { "cue": "Top up from", "do": "item", "glyph": "coin", "title": "Top up from $10" },
+    { "cue": "Turn on auto top-up", "do": "item", "glyph": "renew", "title": "Turn on auto top-up", "sub": "Your card refills itself when it runs low" }
+   ]
+  },
+  {
+   "vo": "Step three: tap on, tap off. Tap your card when you board, enjoy the ride, then tap off when you get off. We work out the lowest fare for you.",
+   "chapter": { "step": 3, "title": "Tap on, tap off" },
+   "page": {
+    "heading": ["Tap on,", "tap off"],
+    "highlight": "tap off",
+    "items": "numbered"
+   },
+   "events": [
+    { "cue": "Tap your card when", "do": "item", "title": "Tap on when you board" },
+    { "cue": "Tap your card when", "do": "prop", "prop": "hero", "glyph": "card", "label": "Tap on, tap off" },
+    { "cue": "Tap your card when", "do": "label", "text": "Tap on" },
+    { "cue": "enjoy the ride", "do": "item", "title": "Enjoy the ride" },
+    { "cue": "then tap off", "do": "item", "title": "Tap off when you get off" },
+    { "cue": "then tap off", "do": "label", "text": "Tap off" },
+    { "cue": "We work out the lowest fare", "do": "label", "text": "Lowest fare, worked out for you" }
+   ]
+  },
+  {
+   "vo": "Step four: travel off-peak. Ride outside the morning and evening rush and you save thirty percent on every trip.",
+   "chapter": { "step": 4, "title": "Travel off-peak" },
+   "page": {
+    "heading": ["Travel", "off-peak"],
+    "highlight": "off-peak",
+    "items": "list"
+   },
+   "events": [
+    { "cue": "Ride outside the morning", "do": "item", "glyph": "percent", "title": "Skip the rush hours", "sub": "Outside the morning and evening peaks" },
+    { "cue": "you save thirty percent", "do": "prop", "prop": "stat", "value": "30%", "unit": "off every off-peak trip" }
+   ]
+  },
+  {
+   "vo": "Step five: protect your card. Register your card online. If it's ever lost or stolen, we'll cancel it and move your balance to a new one.",
+   "chapter": { "step": 5, "title": "Protect your card" },
+   "page": {
+    "heading": ["Protect", "your card"],
+    "highlight": "Protect",
+    "items": "list"
+   },
+   "events": [
+    { "cue": "Register your card online", "do": "prop", "prop": "path", "nodes": [], "traveler": "dot" },
+    { "cue": "Register your card online", "do": "item", "glyph": "lock", "title": "Register your card online" },
+    { "cue": "Register your card online", "do": "node", "glyph": "lock", "label": "Register" },
+    { "cue": "lost or stolen", "do": "item", "glyph": "shield", "title": "Lost or stolen? We cancel it" },
+    { "cue": "lost or stolen", "do": "node", "glyph": "cross", "label": "Cancelled" },
+    { "cue": "move your balance", "do": "item", "glyph": "transfer", "title": "Your balance moves to a new card" },
+    { "cue": "move your balance", "do": "node", "glyph": "card", "label": "New card" }
+   ]
+  },
+  {
+   "vo": "You're all set. See you on board.",
+   "events": [
+    { "cue": "You're all set", "do": "outro" }
+   ]
+  }
+ ]
+}

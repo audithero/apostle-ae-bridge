@@ -11,7 +11,7 @@ is usable in After Effects as delivered:
   * 324 of the 501 SVGs contain NO vector geometry at all. They are a single
     <rect> filled by a <pattern> that wraps an embedded base64 PNG — a bitmap
     in an SVG envelope. Every usefully-named pictogram this brief needs (plane,
-    gift, star, coin stack, dining, store, offers, CommBank Card, ...) is one
+    gift, star, coin stack, dining, store, offers, bank card, ...) is one
     of these.
   * The .ai mirror was produced from those SVGs by a converter that wrote plain
     PDF with neither the vector data nor the embedded bitmap. In AE they import

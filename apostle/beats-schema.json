@@ -10,7 +10,7 @@
       "type": "object",
       "properties": {
         "schemaVersion": { "type": "number", "default": 1, "description": "2 = brief-pipeline schema: stable beatIds, sections, per-beat motion block, brand kit provenance. All v2 fields are optional additions; v1 files remain valid." },
-        "briefId": { "type": "string", "description": "v2: stable identifier for the client brief this build came from (e.g. commbank-yello-video1)" },
+        "briefId": { "type": "string", "description": "v2: stable identifier for the client brief this build came from (e.g. acme-launch-video1)" },
         "scriptVersion": { "type": "number", "description": "v2: increments each time the client revises the script; diffBeats compares consecutive versions" },
         "sourceScriptPath": { "type": "string", "description": "v2: repo-relative path of the raw script this was parsed from" },
         "title": { "type": "string" },
